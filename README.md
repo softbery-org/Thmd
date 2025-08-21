@@ -72,4 +72,8 @@ Projekt został stworzony przez zespół **Softbery by Paweł Tobis**. Wszelkie 
 
 ## Licencja
 
+<<<<<<< HEAD
 Ten projekt jest objęty licencją MIT. Szczeguły znajdują się w pliku `LICENSE`.
+=======
+Ten projekt jest objęty licencją MIT. Szczeguły znajdują się w pliku `LICENSE`.
+>>>>>>> e7d2391c2f8730385c5bea458b7120289ba10a9b

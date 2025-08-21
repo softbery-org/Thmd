@@ -1,0 +1,242 @@
+{
+  "version": 3,
+  "targets": {
+    ".NETFramework,Version=v4.8.1": {
+      "MediaToolkit/1.1.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/net40/MediaToolkit.dll": {}
+        },
+        "runtime": {
+          "lib/net40/MediaToolkit.dll": {}
+        }
+      },
+      "Newtonsoft.Json/13.0.3": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Newtonsoft.Json.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net45/Newtonsoft.Json.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Vlc.DotNet.Core/3.1.0": {
+        "type": "package",
+        "dependencies": {
+          "Vlc.DotNet.Core.Interops": "3.1.0"
+        },
+        "compile": {
+          "lib/net45/Vlc.DotNet.Core.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Vlc.DotNet.Core.dll": {}
+        }
+      },
+      "Vlc.DotNet.Core.Interops/3.1.0": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Vlc.DotNet.Core.Interops.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Vlc.DotNet.Core.Interops.dll": {}
+        }
+      },
+      "Vlc.DotNet.Wpf/3.1.0": {
+        "type": "package",
+        "dependencies": {
+          "Vlc.DotNet.Core": "3.1.0"
+        },
+        "compile": {
+          "lib/net45/Vlc.DotNet.Wpf.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Vlc.DotNet.Wpf.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "MediaToolkit/1.1.0.1": {
+      "sha512": "R3u+udQOUDBGUzx4wOHsp6yiSLMdJle7a9E7JK4/btL4w/pdXAmNHP2JMe2Fpt35kLjKNE74oNKUM1hc6RceIA==",
+      "type": "package",
+      "path": "mediatoolkit/1.1.0.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "build/readme.txt",
+        "lib/net20/MediaToolkit.dll",
+        "lib/net40/MediaToolkit.dll",
+        "mediatoolkit.1.1.0.1.nupkg.sha512",
+        "mediatoolkit.nuspec"
+      ]
+    },
+    "Newtonsoft.Json/13.0.3": {
+      "sha512": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ==",
+      "type": "package",
+      "path": "newtonsoft.json/13.0.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.md",
+        "README.md",
+        "lib/net20/Newtonsoft.Json.dll",
+        "lib/net20/Newtonsoft.Json.xml",
+        "lib/net35/Newtonsoft.Json.dll",
+        "lib/net35/Newtonsoft.Json.xml",
+        "lib/net40/Newtonsoft.Json.dll",
+        "lib/net40/Newtonsoft.Json.xml",
+        "lib/net45/Newtonsoft.Json.dll",
+        "lib/net45/Newtonsoft.Json.xml",
+        "lib/net6.0/Newtonsoft.Json.dll",
+        "lib/net6.0/Newtonsoft.Json.xml",
+        "lib/netstandard1.0/Newtonsoft.Json.dll",
+        "lib/netstandard1.0/Newtonsoft.Json.xml",
+        "lib/netstandard1.3/Newtonsoft.Json.dll",
+        "lib/netstandard1.3/Newtonsoft.Json.xml",
+        "lib/netstandard2.0/Newtonsoft.Json.dll",
+        "lib/netstandard2.0/Newtonsoft.Json.xml",
+        "newtonsoft.json.13.0.3.nupkg.sha512",
+        "newtonsoft.json.nuspec",
+        "packageIcon.png"
+      ]
+    },
+    "Vlc.DotNet.Core/3.1.0": {
+      "sha512": "t9jinVlEEgS0PHyNeu+jGE06yKeqyQ4RG7Bpno1M1ghxAhogpc7rFkRg5/CMHINsZJw4nr88I3xrUecanlA5kA==",
+      "type": "package",
+      "path": "vlc.dotnet.core/3.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net35/Vlc.DotNet.Core.dll",
+        "lib/net40/Vlc.DotNet.Core.dll",
+        "lib/net45/Vlc.DotNet.Core.dll",
+        "lib/netstandard1.3/Vlc.DotNet.Core.dll",
+        "lib/netstandard2.0/Vlc.DotNet.Core.dll",
+        "logo.png",
+        "vlc.dotnet.core.3.1.0.nupkg.sha512",
+        "vlc.dotnet.core.nuspec"
+      ]
+    },
+    "Vlc.DotNet.Core.Interops/3.1.0": {
+      "sha512": "22JkrxSBN9OVkxT3zMgwT67kUc+RQx35+NG5md9n9qM7vEI2EUEVqHeKiO8ssF7/mYi6Z8lJx4AgdWa5JAvONw==",
+      "type": "package",
+      "path": "vlc.dotnet.core.interops/3.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net35/Vlc.DotNet.Core.Interops.dll",
+        "lib/net40/Vlc.DotNet.Core.Interops.dll",
+        "lib/net45/Vlc.DotNet.Core.Interops.dll",
+        "lib/netstandard1.3/Vlc.DotNet.Core.Interops.dll",
+        "lib/netstandard2.0/Vlc.DotNet.Core.Interops.dll",
+        "logo.png",
+        "vlc.dotnet.core.interops.3.1.0.nupkg.sha512",
+        "vlc.dotnet.core.interops.nuspec"
+      ]
+    },
+    "Vlc.DotNet.Wpf/3.1.0": {
+      "sha512": "JvCAsjK67rjEeoOwFSZdGi7bx0Sp1/KjVat3GgdAfSKDrxy0ZD5Ih5GWuBZzQfplhEAbTT3DzqsvzcVYeWnI5w==",
+      "type": "package",
+      "path": "vlc.dotnet.wpf/3.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net35/Vlc.DotNet.Wpf.dll",
+        "lib/net40/Vlc.DotNet.Wpf.dll",
+        "lib/net45/Vlc.DotNet.Wpf.dll",
+        "lib/netcoreapp3.0/Vlc.DotNet.Wpf.dll",
+        "logo.png",
+        "vlc.dotnet.wpf.3.1.0.nupkg.sha512",
+        "vlc.dotnet.wpf.nuspec"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    ".NETFramework,Version=v4.8.1": [
+      "MediaToolkit >= 1.1.0.1",
+      "Newtonsoft.Json >= 13.0.3",
+      "Vlc.DotNet.Core >= 3.1.0",
+      "Vlc.DotNet.Wpf >= 3.1.0"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\Paweł\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "F:\\dev\\Thmd\\Thmd\\Thmd.csproj",
+      "projectName": "Thmd",
+      "projectPath": "F:\\dev\\Thmd\\Thmd\\Thmd.csproj",
+      "packagesPath": "C:\\Users\\Paweł\\.nuget\\packages\\",
+      "outputPath": "F:\\dev\\Thmd\\Thmd\\obj\\",
+      "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
+      "configFilePaths": [
+        "C:\\Users\\Paweł\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "net481"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
+        "C:\\Users\\Paweł\\AppData\\Roaming\\NuGet\\MonoGame": {},
+        "C:\\Users\\Paweł\\AppData\\Roaming\\NuGet\\MonoGame": {},
+        "C:\\Users\\Paweł\\AppData\\Roaming\\NuGet\\Newtonsoft": {},
+        "C:\\Users\\Paweł\\AppData\\Roaming\\NuGet\\ScreenRecorderLib": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net481": {
+          "targetAlias": "net481",
+          "projectReferences": {}
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "9.0.300"
+    },
+    "frameworks": {
+      "net481": {
+        "targetAlias": "net481",
+        "dependencies": {
+          "MediaToolkit": {
+            "target": "Package",
+            "version": "[1.1.0.1, )"
+          },
+          "Newtonsoft.Json": {
+            "target": "Package",
+            "version": "[13.0.3, )"
+          },
+          "Vlc.DotNet.Core": {
+            "target": "Package",
+            "version": "[3.1.0, )"
+          },
+          "Vlc.DotNet.Wpf": {
+            "target": "Package",
+            "version": "[3.1.0, )"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304\\RuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}

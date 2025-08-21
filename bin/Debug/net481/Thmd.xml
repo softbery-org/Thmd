@@ -1,0 +1,760 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Thmd</name>
+    </assembly>
+    <members>
+        <member name="T:Thmd.Controls.ControlBarControl">
+            <summary>
+            ControlBarControl
+            </summary>
+        </member>
+        <member name="M:Thmd.Controls.ControlBarControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Thmd.Controls.ControlButtons.PlayerButtonsControl">
+            <summary>
+            PlayerButtonsControl
+            </summary>
+        </member>
+        <member name="M:Thmd.Controls.ControlButtons.PlayerButtonsControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Thmd.Controls.ControlButtons.PlayerButtonsControlSecondRow">
+            <summary>
+            PlayerButtonsControlSecondRow
+            </summary>
+        </member>
+        <member name="M:Thmd.Controls.ControlButtons.PlayerButtonsControlSecondRow.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Thmd.Controls.ControlButtons.PlayerCloseButtonControl">
+            <summary>
+            PlayerCloseButtonControl
+            </summary>
+        </member>
+        <member name="M:Thmd.Controls.ControlButtons.PlayerCloseButtonControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Thmd.Controls.ControlButtons.PlayerVolumeButtonControl">
+            <summary>
+            PlayerVolumeButtonControl
+            </summary>
+        </member>
+        <member name="M:Thmd.Controls.ControlButtons.PlayerVolumeButtonControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Thmd.Controls.PlayerControl">
+            <summary>
+            A custom UserControl for media playback using VLC, integrated with a playlist, progress bar,
+            control bar, and subtitle functionality. Provides methods for playing, pausing, stopping,
+            seeking, and controlling volume, as well as handling fullscreen mode, repeat modes (including random),
+            and mouse interactions. Implements IPlayer interface for media control operations.
+            </summary>
+            <summary>
+            PlayerControl
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlayerControl.MouseSleeps">
+            <summary>
+            Gets or sets the duration in seconds after which the control bar and progress bar are hidden if the mouse is inactive.
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlayerControl.Repeat">
+            <summary>
+            Gets or sets the repeat mode for playback (e.g., None, Current, All, Random).
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlayerControl.Playlist">
+            <summary>
+            Gets or sets the playlist view associated with the player.
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlayerControl.ProgressBar">
+            <summary>
+            Gets or sets the progress bar control for displaying playback progress.
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlayerControl.ControlBar">
+            <summary>
+            Gets or sets the control bar for media playback controls.
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlayerControl.SeekDuration">
+            <summary>
+            Gets or sets the duration for seeking forward or backward.
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlayerControl.PlayerStatus">
+            <summary>
+            Gets or sets the current status of the media player (e.g., Play, Pause, Stop).
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlayerControl.CurrentTime">
+            <summary>
+            Gets or sets the current playback position of the media.
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlayerControl.Handle">
+            <summary>
+            Gets the handle to the player control (not implemented).
+            </summary>
+            <exception cref="T:System.NotImplementedException">Thrown as this property is not implemented.</exception>
+        </member>
+        <member name="P:Thmd.Controls.PlayerControl.IsPlaying">
+            <summary>
+            Gets or sets whether the player is in a playing state (not implemented).
+            </summary>
+            <exception cref="T:System.NotImplementedException">Thrown as this property is not implemented.</exception>
+        </member>
+        <member name="P:Thmd.Controls.PlayerControl.IsPaused">
+            <summary>
+            Gets or sets whether the player is in a paused state (not implemented).
+            </summary>
+            <exception cref="T:System.NotImplementedException">Thrown as this property is not implemented.</exception>
+        </member>
+        <member name="P:Thmd.Controls.PlayerControl.IsStoped">
+            <summary>
+            Gets or sets whether the player is in a stopped state (not implemented).
+            </summary>
+            <exception cref="T:System.NotImplementedException">Thrown as this property is not implemented.</exception>
+        </member>
+        <member name="P:Thmd.Controls.PlayerControl.SubtitleVisibility">
+            <summary>
+            Gets or sets the visibility of the subtitle control.
+            Displays an error message if no subtitle file is selected when attempting to show subtitles.
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlayerControl.Volume">
+            <summary>
+            Gets or sets the volume level of the media player (0 to 100).
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlayerControl.Mute">
+            <summary>
+            Gets or sets whether the audio is muted.
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlayerControl.Fullscreen">
+            <summary>
+            Gets or sets whether the player is in fullscreen mode.
+            </summary>
+        </member>
+        <member name="E:Thmd.Controls.PlayerControl.PropertyChanged">
+            <summary>
+            Occurs when a property value changes, used for data binding.
+            </summary>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.SetThreadExecutionState(System.UInt32)">
+            <summary>
+            Sets the system execution state to prevent sleep during playback.
+            </summary>
+            <param name="esFlags">The execution state flags.</param>
+            <returns>The previous execution state.</returns>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Thmd.Controls.PlayerControl"/> class.
+            Sets up the VLC control, progress bar, control bar, playlist, and subtitle control,
+            and initializes event handlers for media playback and user interactions.
+            </summary>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.ControlBarButtonEvent">
+            <summary>
+            Sets up event handlers for control bar buttons (play, stop, next, previous, volume, etc.).
+            </summary>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.UserControl_Loaded(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Handles the Loaded event to initialize the progress bar and control bar with the current video's information.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The event arguments.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.ProgressBar_MouseMove(System.Object,System.Windows.Input.MouseEventArgs)">
+            <summary>
+            Handles mouse move events on the progress bar to display the time at the mouse position.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The mouse event arguments.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.ProgressBar_MouseDown(System.Object,System.Windows.Input.MouseButtonEventArgs)">
+            <summary>
+            Handles mouse down events on the progress bar to seek to the clicked position.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The mouse event arguments.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.VolumeProgressBar_MouseMove(System.Object,System.Windows.Input.MouseEventArgs)">
+            <summary>
+            Handles mouse move events on the volume progress bar to adjust the volume.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The mouse event arguments.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.VolumeProgressBar_MouseDown(System.Object,System.Windows.Input.MouseButtonEventArgs)">
+            <summary>
+            Handles mouse down events on the volume progress bar to set the volume.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The mouse event arguments.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.ProgressBarMouseEventHandler(System.Object,System.Windows.Input.MouseEventArgs)">
+            <summary>
+            Handles mouse events on the progress bar to seek to a specific time.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The mouse event arguments.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.MediaPlayer_TimeChanged(System.Object,Vlc.DotNet.Core.VlcMediaPlayerTimeChangedEventArgs)">
+            <summary>
+            Handles time changes in the media player, updating the progress bar, control bar, and subtitles.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The time changed event arguments.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.OnPropertyChanged(System.String)">
+            <summary>
+            Raises the <see cref="E:Thmd.Controls.PlayerControl.PropertyChanged"/> event to notify the UI of property changes.
+            </summary>
+            <param name="propertyName">The name of the property that changed.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.OnPropertyChanged``1(System.String,``0@,``0)">
+            <summary>
+            Raises the <see cref="E:Thmd.Controls.PlayerControl.PropertyChanged"/> event for a specific field and updates its value.
+            </summary>
+            <typeparam name="T">The type of the field.</typeparam>
+            <param name="propertyName">The name of the property that changed.</param>
+            <param name="field">The field to update.</param>
+            <param name="value">The new value for the field.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl._mouseNotMoveWorker_DoWork(System.Object,System.ComponentModel.DoWorkEventArgs)">
+            <summary>
+            Background worker to hide the control bar and progress bar after mouse inactivity.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The event arguments.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.IfMouseMoved">
+            <summary>
+            Checks for mouse movement and hides controls after a period of inactivity.
+            </summary>
+            <returns>A task that returns true if the mouse moved, false otherwise.</returns>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.OnMouseMove(System.Object,System.Windows.Input.MouseEventArgs)">
+            <summary>
+            Shows the control bar and progress bar when the mouse moves.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The mouse event arguments.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.OnPlaying(System.Object,Vlc.DotNet.Core.VlcMediaPlayerPlayingEventArgs)">
+            <summary>
+            Handles the Playing event of the media player, updating the UI and system state.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The event arguments.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.OnStopped(System.Object,Vlc.DotNet.Core.VlcMediaPlayerStoppedEventArgs)">
+            <summary>
+            Handles the Stopped event of the media player, stopping playback and updating the system state.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The event arguments.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.OnPaused(System.Object,Vlc.DotNet.Core.VlcMediaPlayerPausedEventArgs)">
+            <summary>
+            Handles the Paused event of the media player, updating the system state.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The event arguments.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.OnEndReached(System.Object,Vlc.DotNet.Core.VlcMediaPlayerEndReachedEventArgs)">
+            <summary>
+            Handles the EndReached event of the media player, processing repeat logic.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The event arguments.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.HandleRepeat">
+            <summary>
+            Handles repeat logic based on the current repeat mode.
+            </summary>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.OnBuffering(System.Object,Vlc.DotNet.Core.VlcMediaPlayerBufferingEventArgs)">
+            <summary>
+            Handles the Buffering event of the media player, updating the progress bar's buffer value.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The buffering event arguments.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.Pause">
+            <summary>
+            Pauses the current media playback.
+            </summary>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.Stop">
+            <summary>
+            Stops the current media playback.
+            </summary>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.Next">
+            <summary>
+            Plays the next video in the playlist.
+            </summary>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.Preview">
+            <summary>
+            Plays the previous video in the playlist.
+            </summary>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.Seek(System.TimeSpan)">
+            <summary>
+            Seeks to a specific time in the current media.
+            </summary>
+            <param name="time">The time to seek to.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.Seek(System.TimeSpan,Thmd.Media.SeekDirection)">
+            <summary>
+            Seeks forward or backward by a specified duration.
+            </summary>
+            <param name="time">The duration to seek by.</param>
+            <param name="direction">The direction to seek (Forward or Backward).</param>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.Subtitle(System.String)">
+            <summary>
+            Loads and displays subtitles from a specified file path.
+            </summary>
+            <param name="path">The path to the subtitle file.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl._Play(Thmd.Media.Video)">
+            <summary>
+            Plays the specified media or the current playlist item.
+            </summary>
+            <param name="media">The video to play, or null to play the current playlist item.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.Play(Thmd.Media.Video)">
+            <summary>
+            Plays the specified video.
+            </summary>
+            <param name="media">The video to play.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.Play">
+            <summary>
+            Plays the current video in the playlist.
+            </summary>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.Dispose">
+            <summary>
+            Disposes of the player control, releasing resources and unsubscribing from events.
+            </summary>
+        </member>
+        <member name="M:Thmd.Controls.PlayerControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Thmd.Controls.PlaylistControl">
+            <summary>
+            PlaylistControl
+            </summary>
+        </member>
+        <member name="M:Thmd.Controls.PlaylistControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Thmd.Controls.PlaylistView">
+            <summary>
+            A custom ListView control for managing a playlist of video media items.
+            Provides functionality to play, pause, remove, and reorder videos, with support for
+            user interactions like double-click and right-click context menu actions.
+            Implements INotifyPropertyChanged for data binding and uses an ObservableCollection
+            to dynamically update the UI when the playlist changes.
+            </summary>
+            <summary>
+            PlaylistView
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlaylistView.PlayCommand">
+            <summary>
+            Gets the command to play a selected video.
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlaylistView.PauseCommand">
+            <summary>
+            Gets the command to pause the currently playing video.
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlaylistView.RemoveCommand">
+            <summary>
+            Gets the command to remove a video from the playlist.
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlaylistView.MoveToTopCommand">
+            <summary>
+            Gets the command to move a video to the top of the playlist.
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlaylistView.Videos">
+            <summary>
+            Gets or sets the collection of videos in the playlist and updates the UI.
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlaylistView.CurrentIndex">
+            <summary>
+            Gets or sets the index of the current video, ensuring valid bounds.
+            Returns -1 if the playlist is empty.
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlaylistView.NextIndex">
+            <summary>
+            Gets the index of the next video in the playlist, looping to 0 if at the end.
+            Returns -1 if the playlist is empty.
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlaylistView.PreviousIndex">
+            <summary>
+            Gets the index of the previous video in the playlist, looping to the end if at the start.
+            Returns -1 if the playlist is empty.
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlaylistView.Next">
+            <summary>
+            Gets the next video in the playlist based on <see cref="P:Thmd.Controls.PlaylistView.NextIndex"/>.
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlaylistView.Previous">
+            <summary>
+            Gets the previous video in the playlist based on <see cref="P:Thmd.Controls.PlaylistView.PreviousIndex"/>.
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlaylistView.MoveNext">
+            <summary>
+            Moves to the next video in the playlist and returns it.
+            Updates <see cref="P:Thmd.Controls.PlaylistView.CurrentIndex"/> and notifies the UI of the change.
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlaylistView.MovePrevious">
+            <summary>
+            Moves to the previous video in the playlist and returns it.
+            Updates <see cref="P:Thmd.Controls.PlaylistView.CurrentIndex"/> and notifies the UI of the change.
+            </summary>
+        </member>
+        <member name="P:Thmd.Controls.PlaylistView.Current">
+            <summary>
+            Gets or sets the current video in the playlist.
+            </summary>
+        </member>
+        <member name="E:Thmd.Controls.PlaylistView.PropertyChanged">
+            <summary>
+            Occurs when a property value changes, used for data binding.
+            </summary>
+        </member>
+        <member name="M:Thmd.Controls.PlaylistView.#ctor(Thmd.Media.IPlayer)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Thmd.Controls.PlaylistView"/> class.
+            </summary>
+            <param name="player">The media player used to control video playback.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlaylistView.OnPropertyChanged(System.String)">
+            <summary>
+            Raises the <see cref="E:Thmd.Controls.PlaylistView.PropertyChanged"/> event to notify the UI of property changes.
+            </summary>
+            <param name="propertyName">The name of the property that changed.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlaylistView.ClearTracks">
+            <summary>
+            Clears all videos from the playlist and unsubscribes from their events.
+            </summary>
+        </member>
+        <member name="M:Thmd.Controls.PlaylistView.Contains(Thmd.Media.Video)">
+            <summary>
+            Checks if a video is already in the playlist based on its URI.
+            </summary>
+            <param name="media">The video to check for.</param>
+            <returns>True if the video is in the playlist; otherwise, false.</returns>
+        </member>
+        <member name="M:Thmd.Controls.PlaylistView.Remove(Thmd.Media.Video)">
+            <summary>
+            Removes a video from the playlist and adjusts the current index if necessary.
+            </summary>
+            <param name="media">The video to remove.</param>
+            <returns>The removed video, or null if the video was not found.</returns>
+        </member>
+        <member name="M:Thmd.Controls.PlaylistView.New(System.String,System.String)">
+            <summary>
+            Clears the current playlist to start a new one.
+            </summary>
+            <param name="name">The name of the new playlist (not currently used).</param>
+            <param name="description">The description of the new playlist (not currently used).</param>
+        </member>
+        <member name="M:Thmd.Controls.PlaylistView.Add(Thmd.Media.Video)">
+            <summary>
+            Adds a single video to the playlist and sets up its player and event handlers.
+            </summary>
+            <param name="media">The video to add.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlaylistView.Add(Thmd.Media.Video[])">
+            <summary>
+            Adds multiple videos to the playlist and sets up their player and event handlers.
+            </summary>
+            <param name="medias">The array of videos to add.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlaylistView.Video_PositionChanged(System.Object,System.Double)">
+            <summary>
+            Handles position changes in a video and logs the event.
+            </summary>
+            <param name="sender">The video that triggered the position change.</param>
+            <param name="newPosition">The new position of the video playback.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlaylistView.ListView_MouseDoubleClick(System.Object,System.Windows.Input.MouseButtonEventArgs)">
+            <summary>
+            Handles double-click events to play the selected video.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The mouse event arguments.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlaylistView.ListView_MouseDown(System.Object,System.Windows.Input.MouseButtonEventArgs)">
+            <summary>
+            Handles right-click events to show the context menu (currently incomplete).
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The mouse event arguments.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlaylistView.PlayVideo(Thmd.Media.Video)">
+            <summary>
+            Plays a video selected from the context menu.
+            </summary>
+            <param name="video">The video to play.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlaylistView.PauseVideo(Thmd.Media.Video)">
+            <summary>
+            Pauses a video selected from the context menu.
+            </summary>
+            <param name="video">The video to pause.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlaylistView.RemoveVideo(Thmd.Media.Video)">
+            <summary>
+            Removes a video selected from the context menu and shows a confirmation message.
+            </summary>
+            <param name="video">The video to remove.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlaylistView.MoveVideoToTop(Thmd.Media.Video)">
+            <summary>
+            Moves a video selected from the context menu to the top of the playlist.
+            </summary>
+            <param name="video">The video to move to the top.</param>
+        </member>
+        <member name="M:Thmd.Controls.PlaylistView.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Thmd.Controls.ProgressBarControl">
+            <summary>
+            ProgressBarControl
+            </summary>
+        </member>
+        <member name="M:Thmd.Controls.ProgressBarControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Thmd.Controls.ProgressBarControlNew">
+            <summary>
+            ProgressBarControlNew
+            </summary>
+        </member>
+        <member name="M:Thmd.Controls.ProgressBarControlNew.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Thmd.Controls.RepeatControl">
+            <summary>
+            RepeatControl
+            </summary>
+        </member>
+        <member name="E:Thmd.Controls.RepeatControl.PropertyChanged">
+            <summary>
+            Occurs when a property value changes, used for data binding.
+            </summary>
+        </member>
+        <member name="M:Thmd.Controls.RepeatControl.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Thmd.Controls.RepeatControl"/> class.
+            </summary>
+        </member>
+        <member name="M:Thmd.Controls.RepeatControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Thmd.Controls.SubtitleControl">
+            <summary>
+            SubtitleControl
+            </summary>
+        </member>
+        <member name="M:Thmd.Controls.SubtitleControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Thmd.Controls.TextAnimation">
+            <summary>
+            TextAnimation
+            </summary>
+        </member>
+        <member name="M:Thmd.Controls.TextAnimation.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Thmd.Media.IMedia">
+            <summary>
+             Interface representing a media item.
+            </summary>
+        </member>
+        <member name="P:Thmd.Media.IMedia.Source">
+            <summary>
+            Gets or sets media source.
+            </summary>
+        </member>
+        <member name="P:Thmd.Media.IMedia.Title">
+            <summary>
+            Gets or sets media title.
+            </summary>
+        </member>
+        <member name="P:Thmd.Media.IMedia.Duration">
+            <summary>
+            Gets media duration.
+            </summary>
+        </member>
+        <member name="T:Thmd.Repeats.RepeatType">
+            <summary>
+            Defines the repeat modes for media playback.
+            </summary>
+        </member>
+        <member name="F:Thmd.Repeats.RepeatType.None">
+            <summary>
+            No repeat; playback stops after the current video.
+            </summary>
+        </member>
+        <member name="F:Thmd.Repeats.RepeatType.Current">
+            <summary>
+            Repeats the current video.
+            </summary>
+        </member>
+        <member name="F:Thmd.Repeats.RepeatType.All">
+            <summary>
+            Repeats all videos in the playlist in order.
+            </summary>
+        </member>
+        <member name="F:Thmd.Repeats.RepeatType.Random">
+            <summary>
+            Plays a random video from the playlist after the current video ends.
+            </summary>
+        </member>
+        <member name="T:Thmd.Templates.Buttons">
+            <summary>
+            Buttons
+            </summary>
+        </member>
+        <member name="M:Thmd.Templates.Buttons.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Thmd.Templates.PlayerMainButtons">
+            <summary>
+            PlayerMainButtons
+            </summary>
+        </member>
+        <member name="M:Thmd.Templates.PlayerMainButtons.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Thmd.Templates.PlayerSecondButtons">
+            <summary>
+            PlayerSecondButtons
+            </summary>
+        </member>
+        <member name="M:Thmd.Templates.PlayerSecondButtons.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Thmd.Templates.PlaylistTheme">
+            <summary>
+            PlaylistTheme
+            </summary>
+        </member>
+        <member name="M:Thmd.Templates.PlaylistTheme.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Thmd.Templates.ProgressBarTheme">
+            <summary>
+            ProgressBarTheme
+            </summary>
+        </member>
+        <member name="M:Thmd.Templates.ProgressBarTheme.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Thmd.Templates.RepeatButton">
+            <summary>
+            RepeatButton
+            </summary>
+        </member>
+        <member name="M:Thmd.Templates.RepeatButton.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:XamlGeneratedNamespace.GeneratedInternalTypeHelper">
+            <summary>
+            GeneratedInternalTypeHelper
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateInstance(System.Type,System.Globalization.CultureInfo)">
+            <summary>
+            CreateInstance
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.GetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            GetPropertyValue
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.SetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            SetPropertyValue
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateDelegate(System.Type,System.Object,System.String)">
+            <summary>
+            CreateDelegate
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.AddEventHandler(System.Reflection.EventInfo,System.Object,System.Delegate)">
+            <summary>
+            AddEventHandler
+            </summary>
+        </member>
+    </members>
+</doc>
