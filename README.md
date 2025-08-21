@@ -45,19 +45,33 @@ git clone https://github.com/[TwojeRepozytorium]/Thmd.git
 ### Konfiguracja
 ```csharp
 using Thmd.Configuration;
-var config = Config.Instance; config.UpdateAndSave(cfg => { cfg.EnableLogging = true; cfg.ApiKey = "new-api-key"; });
+
+var config = Config.Instance; 
+config.UpdateAndSave(cfg => 
+{ 
+  cfg.EnableLogging = true; 
+  cfg.ApiKey = "new-api-key"; 
+});
 ```
 
 ### Obsługa multimediów
 ```csharp
 using Thmd.Media;
-var mediaStream = new FileMediaStream("sample.mp4"); var duration = mediaStream.GetDuration(); Console.WriteLine($"Czas trwania: {duration} sekund");
+
+var mediaStream = new FileMediaStream("sample.mp4"); 
+var duration = mediaStream.GetDuration(); 
+Console.WriteLine($"Czas trwania: {duration} sekund");
 ```
 
 ### Zarządzanie napisami
 ```csharp
 using Thmd.Subtitles;
-var subtitleManager = new SubtitleManager("napisy.srt"); var subtitles = subtitleManager.GetStartToEndTimeSpan(TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(60)); foreach (var subtitle in subtitles) { Console.WriteLine(subtitle.Text); }
+
+var subtitleManager = new SubtitleManager("napisy.srt"); 
+var subtitles = subtitleManager.GetStartToEndTimeSpan(TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(60)); foreach (var subtitle in subtitles) 
+{ 
+  Console.WriteLine(subtitle.Text); 
+}
 ```
 
 ## Struktura projektu
