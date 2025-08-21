@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary x:Class="Thmd.Templates.PlaylistTheme" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:templates="clr-namespace:Thmd.Templates;assembly=Thmd">
+  <LinearGradientBrush x:Key="OrangeYellowGradient" StartPoint="0,0" EndPoint="1,1">
+    <GradientStop Color="Yellow" Offset="0" />
+    <GradientStop Color="#ff4100" Offset="0.5" />
+    <GradientStop Color="Yellow" Offset="1" />
+  </LinearGradientBrush>
+  <ListView x:Key="ListViewTemplate">
+    <ItemsControl.ItemTemplate>
+      <DataTemplate>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <Grid>
+            <TextBlock FontWeight="Medium" Text="{Binding Name}" />
+          </Grid>
+          <Border Grid.Column="1" BorderBrush="#FFFFA500" BorderThickness="3,0,0,0" Padding="5,0" />
+          <StackPanel>
+            <TextBlock Text="{Binding Duration}" />
+            <TextBlock Text="{Binding Fps}" />
+            <TextBlock Text="{Binding FrameSize}" />
+            <TextBlock Text="{Binding Format}" />
+          </StackPanel>
+        </Grid>
+      </DataTemplate>
+    </ItemsControl.ItemTemplate>
+  </ListView>
+</ResourceDictionary>

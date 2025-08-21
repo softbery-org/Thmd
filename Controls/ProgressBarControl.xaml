@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Thmd.Controls.ProgressBarControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Thmd.Controls" Height="auto" Width="auto">
+  <FrameworkElement.Resources>
+    <ResourceDictionary>
+      <Storyboard x:Key="fadeOutProgressBar" FillBehavior="HoldEnd">
+        <DoubleAnimation Storyboard.TargetName="_grid" Storyboard.TargetProperty="(Opacity)" To="0.0" Duration="0:0:3" />
+      </Storyboard>
+      <Storyboard x:Key="fadeInProgressBar" FillBehavior="HoldEnd">
+        <DoubleAnimation Storyboard.TargetName="_grid" Storyboard.TargetProperty="(Opacity)" To="1.0" Duration="0:0:2" />
+      </Storyboard>
+    </ResourceDictionary>
+  </FrameworkElement.Resources>
+  <Grid Name="_grid" Background="#00000000" MouseMove="_grid_MouseMove" MouseLeave="_grid_MouseLeave">
+    <Rectangle Name="_rectangleBufferMedia" HorizontalAlignment="Left" Fill="#72DEDEDE" Width="12" Height="auto" />
+    <ProgressBar Name="_progressBar" Background="#72000000" Foreground="#BFFF6218" VerticalContentAlignment="Center" HorizontalContentAlignment="Stretch" Value="0" SmallChange="0.01" BorderBrush="{x:Null}" />
+    <Rectangle Name="_rectangleMouseOverPoint" HorizontalAlignment="Left" Fill="#FFFF4500" Width="3" Height="auto" Margin="99,0" />
+    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Foreground="#FFFFFFFF" Text="{Binding ProgressText}">
+      <UIElement.Effect>
+        <DropShadowEffect />
+      </UIElement.Effect>
+    </TextBlock>
+    <Popup Name="_popup" AllowsTransparency="True" Placement="Relative" OpacityMask="#FF000000" PopupAnimation="Fade" PlacementTarget="{Binding ElementName=_progressBar}">
+      <Border BorderThickness="1">
+        <StackPanel Margin="10">
+          <TextBlock Name="_popuptext" Foreground="#FFF" FontSize="14" FontWeight="ExtraBold" Text="00:00:00" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center">
+            <UIElement.Effect>
+              <DropShadowEffect Color="Red" />
+            </UIElement.Effect>
+          </TextBlock>
+        </StackPanel>
+      </Border>
+    </Popup>
+  </Grid>
+</UserControl>

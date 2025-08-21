@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ListView x:Class="Thmd.Controls.PlaylistControl" 
+          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+          xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+          xmlns:local="clr-namespace:Thmd.Controls" 
+          ItemsSource="{Binding VideosList}">  
+    <FrameworkElement.Resources>
+    <ResourceDictionary>
+      <Style x:Key="{x:Type ListViewItem}" TargetType="{x:Type ListViewItem}">
+        <Style.Resources>
+          <ResourceDictionary>
+            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
+          </ResourceDictionary>
+        </Style.Resources>
+      </Style>
+    </ResourceDictionary>
+  </FrameworkElement.Resources>
+  <FrameworkElement.DataContext>
+    <local:VideoExampleList />
+  </FrameworkElement.DataContext>
+  <ItemsControl.ItemTemplate>
+    <DataTemplate>
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="350" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid Column="0" Margin="0,0,15,0">
+          <TextBlock FontWeight="Medium" TextWrapping="Wrap" Text="{Binding Name}" />
+        </Grid>
+        <Border Grid.Column="1" BorderBrush="#FFFFA500" BorderThickness="3,0,0,0" Padding="5,0" />
+        <Grid Column="1" Margin="15,0,15,0">
+          <TextBlock FontWeight="Medium" Text="{Binding Position}" />
+        </Grid>
+        <Border Grid.Column="2" BorderBrush="#FFFFA500" BorderThickness="3,0,0,0" Padding="5,0" />
+        <StackPanel Grid.Column="2" Margin="15,0,15,0">
+          <TextBlock FontWeight="Bold" Foreground="Red" Text="{Binding Duration}" />
+          <TextBlock Text="{Binding Fps}" />
+          <TextBlock Text="{Binding FrameSize}" />
+          <TextBlock Text="{Binding Format}" />
+        </StackPanel>
+      </Grid>
+    </DataTemplate>
+  </ItemsControl.ItemTemplate>
+</ListView>

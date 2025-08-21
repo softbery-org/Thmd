@@ -1,0 +1,617 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary x:Class="Thmd.Templates.PlayerSecondButtons" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:templates="clr-namespace:Thmd.Templates;assembly=Thmd">
+  <LinearGradientBrush x:Key="OrangeYellowGradient" StartPoint="0,0" EndPoint="1,1">
+    <GradientStop Color="Yellow" Offset="0" />
+    <GradientStop Color="#ff4100" Offset="0.5" />
+    <GradientStop Color="Yellow" Offset="1" />
+  </LinearGradientBrush>
+  <Style x:Key="ButtonStyle" TargetType="{x:Type Button}">
+    <Setter Property="Background" Value="{StaticResource OrangeYellowGradient}" />
+    <Setter Property="Width" Value="100" />
+    <Setter Property="Height" Value="75" />
+    <Setter Property="Margin" Value="0" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type Button}">
+          <Grid Width="{TemplateBinding FrameworkElement.Width}" Height="{TemplateBinding FrameworkElement.Height}" ClipToBounds="True">
+            <Rectangle Name="outerRectangle" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RadiusX="20" RadiusY="20" StrokeThickness="5" Fill="#00FFFFFF" Stroke="{StaticResource OrangeYellowGradient}" />
+            <Rectangle Name="innerRectangle" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Stroke="#00FFFFFF" StrokeThickness="20" RadiusX="20" RadiusY="20" Fill="{StaticResource OrangeYellowGradient}" />
+            <DockPanel Name="myContentPresenterDockPanel" Background="#00FFFFFF">
+              <ContentPresenter Name="myContentPresenter" Content="{TemplateBinding ContentControl.Content}" TextBlock.FontWeight="ExtraBold" Margin="0,0,0,0" TextBlock.Foreground="#FF000000" TextBlock.FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </DockPanel>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+    <Style.Triggers>
+      <Trigger Property="UIElement.IsMouseOver" Value="True">
+        <Setter Property="Background" Value="{StaticResource OrangeYellowGradient}" />
+        <TriggerBase.EnterActions>
+          <BeginStoryboard>
+            <Storyboard>
+              <DoubleAnimation Storyboard.TargetProperty="Width" To="130" Duration="0:0:0.3" />
+              <DoubleAnimation Storyboard.TargetProperty="Height" To="100" Duration="0:0:0.3" />
+            </Storyboard>
+          </BeginStoryboard>
+        </TriggerBase.EnterActions>
+        <TriggerBase.ExitActions>
+          <BeginStoryboard>
+            <Storyboard>
+              <DoubleAnimation Storyboard.TargetProperty="Width" To="100" Duration="0:0:0.3" />
+              <DoubleAnimation Storyboard.TargetProperty="Height" To="75" Duration="0:0:0.3" />
+            </Storyboard>
+          </BeginStoryboard>
+        </TriggerBase.ExitActions>
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+  <Style x:Key="Options" TargetType="{x:Type Button}">
+    <Setter Property="Foreground" Value="#FFFFFFFF" />
+    <Setter Property="FontSize" Value="24" />
+    <Setter Property="BorderThickness" Value="3" />
+    <Setter Property="Padding" Value="10" />
+    <Setter Property="FrameworkElement.Cursor" Value="Hand" />
+    <Setter Property="Width" Value="75" />
+    <Setter Property="Height" Value="50" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type Button}">
+          <FrameworkTemplate.Resources>
+            <ResourceDictionary>
+              <DrawingGroup x:Key="options" ClipGeometry="M0,0 L0,30 L30,30 L30,0 L0,0">
+                <DrawingGroup Opacity="1" Transform="1,0,0,1,0,-289.0625">
+                  <DrawingGroup Transform="1,0,0,1,0,289.0625">
+                    <GeometryDrawing Geometry="F1 M30,30 M0,0 M15,4.0253906 C14.317542,4.0253906 13.652686,4.0842581 13,4.1738281 L13,7.265625 C12.271277,7.4558065 11.583139,7.7448996 10.949219,8.1210938 L8.7578125,5.9296875 C8.232937,6.3278575 7.7228051,6.7576644 7.2402344,7.2402344 C6.7576637,7.7228044 6.3278706,8.2329625 5.9296875,8.7578125 L8.1210938,10.949219 C7.7448996,11.583139 7.4558065,12.271277 7.265625,13 L4.1738281,13 C4.0842281,13.65269 4.0253906,14.31754 4.0253906,15 C4.0253906,15.68246 4.0842581,16.34731 4.1738281,17 L7.265625,17 C7.4558065,17.728723 7.7448996,18.416861 8.1210938,19.050781 L5.9296875,21.242188 C6.3278494,21.767058 6.7576637,22.277196 7.2402344,22.759766 C7.7228051,23.242336 8.2329582,23.672123 8.7578125,24.070312 L10.949219,21.878906 C11.583139,22.2551 12.271277,22.544194 13,22.734375 L13,25.826172 C13.652686,25.915772 14.317542,25.974609 15,25.974609 C15.682458,25.974609 16.347314,25.915742 17,25.826172 L17,22.734375 C17.728723,22.544194 18.416861,22.2551 19.050781,21.878906 L21.242188,24.070312 C21.767063,23.672143 22.277196,23.242336 22.759766,22.759766 C23.242337,22.277196 23.672129,21.767038 24.070312,21.242188 L21.878906,19.050781 C22.2551,18.416861 22.544193,17.728723 22.734375,17 L25.826172,17 C25.915772,16.34731 25.974609,15.68246 25.974609,15 C25.974609,14.31754 25.915742,13.65269 25.826172,13 L22.734375,13 C22.544193,12.271277 22.2551,11.583139 21.878906,10.949219 L24.070312,8.7578125 C23.672151,8.2329425 23.242337,7.7228044 22.759766,7.2402344 C22.277196,6.7576644 21.767042,6.3278775 21.242188,5.9296875 L19.050781,8.1210938 C18.416861,7.7448996 17.728723,7.4558065 17,7.265625 L17,4.1738281 C16.347314,4.0842281 15.682458,4.0253906 15,4.0253906 M15,11 C17.232828,11 19,12.76717 19,15 C19,17.23283 17.232828,19 15,19 C12.767172,19 11,17.23283 11,15 C11,12.76717 12.767172,11 15,11" Brush="{StaticResource OrangeYellowGradient}" />
+                  </DrawingGroup>
+                </DrawingGroup>
+              </DrawingGroup>
+            </ResourceDictionary>
+          </FrameworkTemplate.Resources>
+          <ControlTemplate.Triggers>
+            <Trigger Property="UIElement.IsMouseOver" Value="True">
+              <TriggerBase.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Width" To="105" Duration="0:0:0.3" />
+                    <DoubleAnimation Storyboard.TargetProperty="Height" To="75" Duration="0:0:0.3" />
+                  </Storyboard>
+                </BeginStoryboard>
+              </TriggerBase.EnterActions>
+              <TriggerBase.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Width" To="75" Duration="0:0:0.3" />
+                    <DoubleAnimation Storyboard.TargetProperty="Height" To="50" Duration="0:0:0.3" />
+                  </Storyboard>
+                </BeginStoryboard>
+              </TriggerBase.ExitActions>
+            </Trigger>
+          </ControlTemplate.Triggers>
+          <Grid Width="{TemplateBinding FrameworkElement.Width}" Height="{TemplateBinding FrameworkElement.Height}" ClipToBounds="True">
+            <Rectangle Name="outerRectangle" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RadiusX="10" RadiusY="10" StrokeThickness="5" Fill="#00FFFFFF" Stroke="{StaticResource OrangeYellowGradient}" />
+            <Border Name="myIcon">
+              <Image>
+                <Image.Source>
+                  <DrawingImage Drawing="{StaticResource options}" />
+                </Image.Source>
+              </Image>
+            </Border>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+  <Style x:Key="Subtitle" TargetType="{x:Type Button}">
+    <Setter Property="Foreground" Value="#FFFFFFFF" />
+    <Setter Property="FontSize" Value="24" />
+    <Setter Property="BorderThickness" Value="3" />
+    <Setter Property="Padding" Value="10" />
+    <Setter Property="FrameworkElement.Cursor" Value="Hand" />
+    <Setter Property="Width" Value="75" />
+    <Setter Property="Height" Value="50" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type Button}">
+          <FrameworkTemplate.Resources>
+            <ResourceDictionary>
+              <DrawingGroup x:Key="subtitles" ClipGeometry="M0,0 L0,512 L512,512 L512,0 L0,0">
+                <GeometryDrawing Geometry="F1 M512,512 M0,0 M96,416 Q82,416 73,407 Q64,398 64,384 L64,128 Q64,114 73,105 Q82,96 96,96 L416,96 Q430,96 439,105 Q448,114 448,128 L448,384 Q448,398 439,407 Q430,416 416,416 L96,416 M176,296 L176,256 L112,256 L112,296 L176,296 M400,296 L400,256 L208,256 L208,296 L400,296 M304,368 L304,328 L112,328 L112,368 L304,368 M400,368 L400,328 L336,328 L336,368 L400,368" Brush="{StaticResource OrangeYellowGradient}" />
+              </DrawingGroup>
+            </ResourceDictionary>
+          </FrameworkTemplate.Resources>
+          <ControlTemplate.Triggers>
+            <Trigger Property="UIElement.IsMouseOver" Value="True">
+              <TriggerBase.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Width" To="105" Duration="0:0:0.3" />
+                    <DoubleAnimation Storyboard.TargetProperty="Height" To="75" Duration="0:0:0.3" />
+                  </Storyboard>
+                </BeginStoryboard>
+              </TriggerBase.EnterActions>
+              <TriggerBase.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Width" To="75" Duration="0:0:0.3" />
+                    <DoubleAnimation Storyboard.TargetProperty="Height" To="50" Duration="0:0:0.3" />
+                  </Storyboard>
+                </BeginStoryboard>
+              </TriggerBase.ExitActions>
+            </Trigger>
+          </ControlTemplate.Triggers>
+          <Grid Width="{TemplateBinding FrameworkElement.Width}" Height="{TemplateBinding FrameworkElement.Height}" ClipToBounds="True">
+            <Rectangle Name="outerRectangle" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RadiusX="10" RadiusY="10" StrokeThickness="5" Fill="#00FFFFFF" Stroke="{StaticResource OrangeYellowGradient}" />
+            <Border Name="myIcon">
+              <Image>
+                <Image.Source>
+                  <DrawingImage Drawing="{StaticResource subtitles}" />
+                </Image.Source>
+              </Image>
+            </Border>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+  <Style x:Key="Playlist" TargetType="{x:Type Button}">
+    <Setter Property="Foreground" Value="#FFFFFFFF" />
+    <Setter Property="FontSize" Value="24" />
+    <Setter Property="BorderThickness" Value="3" />
+    <Setter Property="Padding" Value="10" />
+    <Setter Property="FrameworkElement.Cursor" Value="Hand" />
+    <Setter Property="Width" Value="75" />
+    <Setter Property="Height" Value="50" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type Button}">
+          <FrameworkTemplate.Resources>
+            <ResourceDictionary>
+              <DrawingGroup x:Key="playlist" ClipGeometry="M0,0 L0,20 L20,20 L20,0 L0,0">
+                <DrawingGroup Opacity="1">
+                  <GeometryDrawing Geometry="F1 M20,20 M0,0 M17,3 L17,1 L2,1 L2,3 L17,3 M17,7 L17,5 L2,5 L2,7 L17,7 M6,11 L6,9 L2,9 L2,11 L6,11 M8,9 L17,9 C17.55,9 18,9.45 18,10 L18,18 C18,18.55 17.55,19 17,19 L8,19 C7.45,19 7,18.55 7,18 L7,10 C7,9.45 7.45,9 8,9 M11,16 L14.33,14 L11,12 L11,16 M6,15 L6,13 L2,13 L2,15 L6,15 M6,19 L6,17 L2,17 L2,19 L6,19" Brush="{StaticResource OrangeYellowGradient}" />
+                </DrawingGroup>
+              </DrawingGroup>
+            </ResourceDictionary>
+          </FrameworkTemplate.Resources>
+          <ControlTemplate.Triggers>
+            <Trigger Property="UIElement.IsMouseOver" Value="True">
+              <TriggerBase.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Width" To="105" Duration="0:0:0.3" />
+                    <DoubleAnimation Storyboard.TargetProperty="Height" To="75" Duration="0:0:0.3" />
+                  </Storyboard>
+                </BeginStoryboard>
+              </TriggerBase.EnterActions>
+              <TriggerBase.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Width" To="75" Duration="0:0:0.3" />
+                    <DoubleAnimation Storyboard.TargetProperty="Height" To="50" Duration="0:0:0.3" />
+                  </Storyboard>
+                </BeginStoryboard>
+              </TriggerBase.ExitActions>
+            </Trigger>
+          </ControlTemplate.Triggers>
+          <Grid Width="{TemplateBinding FrameworkElement.Width}" Height="{TemplateBinding FrameworkElement.Height}" ClipToBounds="True">
+            <Rectangle Name="outerRectangle" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RadiusX="10" RadiusY="10" StrokeThickness="5" Fill="#00FFFFFF" Stroke="{StaticResource OrangeYellowGradient}" />
+            <Border Name="myIcon">
+              <Image>
+                <Image.Source>
+                  <DrawingImage Drawing="{StaticResource playlist}" />
+                </Image.Source>
+              </Image>
+            </Border>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+  <Style x:Key="FullscreenOn" x:Name="FullscreenOn" TargetType="{x:Type Button}">
+    <Setter Property="Foreground" Value="#FFFFFFFF" />
+    <Setter Property="FontSize" Value="24" />
+    <Setter Property="BorderThickness" Value="3" />
+    <Setter Property="Padding" Value="10" />
+    <Setter Property="FrameworkElement.Cursor" Value="Hand" />
+    <Setter Property="Width" Value="75" />
+    <Setter Property="Height" Value="50" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type Button}">
+          <FrameworkTemplate.Resources>
+            <ResourceDictionary>
+              <DrawingGroup x:Key="fullscreenOn" ClipGeometry="M0,0 L0,24 L24,24 L24,0 L0,0">
+                <GeometryDrawing Geometry="M24,24 M0,0 M4,4 L20,4 L20,20 L4,20 L4,4 M5.5,5.5 L5.5,18.5 L18.5,18.5 L18.5,5.5 L5.5,5.5" Brush="{StaticResource OrangeYellowGradient}" />
+                <GeometryDrawing Geometry="M24,24 M0,0 M14.4372,8.50252 L12,8.50252 L12,7.00252 L16.9984,7.00252 L16.9984,12 L15.4984,12 L15.4984,9.56266 L9.56118,15.4975 L11.9984,15.4975 L11.9984,16.9975 L7,16.9975 L7,12 L8.5,12 L8.5,14.4373 L14.4372,8.50252" Brush="{StaticResource OrangeYellowGradient}" />
+              </DrawingGroup>
+            </ResourceDictionary>
+          </FrameworkTemplate.Resources>
+          <ControlTemplate.Triggers>
+            <Trigger Property="UIElement.IsMouseOver" Value="True">
+              <TriggerBase.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Width" To="105" Duration="0:0:0.3" />
+                    <DoubleAnimation Storyboard.TargetProperty="Height" To="75" Duration="0:0:0.3" />
+                  </Storyboard>
+                </BeginStoryboard>
+              </TriggerBase.EnterActions>
+              <TriggerBase.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Width" To="75" Duration="0:0:0.3" />
+                    <DoubleAnimation Storyboard.TargetProperty="Height" To="50" Duration="0:0:0.3" />
+                  </Storyboard>
+                </BeginStoryboard>
+              </TriggerBase.ExitActions>
+            </Trigger>
+          </ControlTemplate.Triggers>
+          <Grid Width="{TemplateBinding FrameworkElement.Width}" Height="{TemplateBinding FrameworkElement.Height}" ClipToBounds="True">
+            <Rectangle Name="outerRectangle" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RadiusX="10" RadiusY="10" StrokeThickness="5" Fill="#00FFFFFF" Stroke="{StaticResource OrangeYellowGradient}" />
+            <Border Name="myIcon">
+              <Image>
+                <Image.Source>
+                  <DrawingImage Drawing="{StaticResource fullscreenOn}" />
+                </Image.Source>
+              </Image>
+            </Border>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+  <Style x:Key="FullscreenOff" x:Name="FullscreenOff" TargetType="{x:Type Button}">
+    <Setter Property="Foreground" Value="#FFFFFFFF" />
+    <Setter Property="FontSize" Value="24" />
+    <Setter Property="BorderThickness" Value="3" />
+    <Setter Property="Padding" Value="10" />
+    <Setter Property="FrameworkElement.Cursor" Value="Hand" />
+    <Setter Property="Width" Value="75" />
+    <Setter Property="Height" Value="50" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type Button}">
+          <FrameworkTemplate.Resources>
+            <ResourceDictionary>
+              <DrawingGroup x:Key="fullscreenOff" ClipGeometry="M0,0 L0,24 L24,24 L24,0 L0,0">
+                <GeometryDrawing Geometry="M24,24 M0,0 M17.5278,7.53033 L14.5607,10.4975 L16.9984,10.4975 L16.9984,11.9975 L12,11.9975 L12,7 L13.5,7 L13.5,9.43681 L16.4671,6.46967 L17.5278,7.53033" Brush="{StaticResource OrangeYellowGradient}" />
+                <GeometryDrawing Brush="#FF4100" Geometry="M24,24 M0,0 M9.43773,13.5025 L7,13.5025 L7,12.0025 L11.9984,12.0025 L11.9984,17 L10.4984,17 L10.4984,14.5632 L7.53125,17.5303 L6.47059,16.4696 L9.43773,13.5025" />
+                <GeometryDrawing Geometry="M24,24 M0,0 M4,4 L20,4 L20,20 L4,20 L4,4 M5.5,5.5 L5.5,18.5 L18.5,18.5 L18.5,5.5 L5.5,5.5" Brush="{StaticResource OrangeYellowGradient}" />
+              </DrawingGroup>
+            </ResourceDictionary>
+          </FrameworkTemplate.Resources>
+          <ControlTemplate.Triggers>
+            <Trigger Property="UIElement.IsMouseOver" Value="True">
+              <TriggerBase.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Width" To="105" Duration="0:0:0.3" />
+                    <DoubleAnimation Storyboard.TargetProperty="Height" To="75" Duration="0:0:0.3" />
+                  </Storyboard>
+                </BeginStoryboard>
+              </TriggerBase.EnterActions>
+              <TriggerBase.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Width" To="75" Duration="0:0:0.3" />
+                    <DoubleAnimation Storyboard.TargetProperty="Height" To="50" Duration="0:0:0.3" />
+                  </Storyboard>
+                </BeginStoryboard>
+              </TriggerBase.ExitActions>
+            </Trigger>
+          </ControlTemplate.Triggers>
+          <Grid Width="{TemplateBinding FrameworkElement.Width}" Height="{TemplateBinding FrameworkElement.Height}" ClipToBounds="True">
+            <Rectangle Name="outerRectangle" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RadiusX="10" RadiusY="10" StrokeThickness="5" Fill="#00FFFFFF" Stroke="{StaticResource OrangeYellowGradient}" />
+            <Border Name="myIcon">
+              <Image>
+                <Image.Source>
+                  <DrawingImage Drawing="{StaticResource fullscreenOff}" />
+                </Image.Source>
+              </Image>
+            </Border>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+  <Style x:Key="Mute" TargetType="{x:Type Button}">
+    <Setter Property="Foreground" Value="#FFFFFFFF" />
+    <Setter Property="FontSize" Value="24" />
+    <Setter Property="BorderThickness" Value="3" />
+    <Setter Property="Padding" Value="10" />
+    <Setter Property="FrameworkElement.Cursor" Value="Hand" />
+    <Setter Property="Width" Value="40" />
+    <Setter Property="Height" Value="40" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type Button}">
+          <FrameworkTemplate.Resources>
+            <ResourceDictionary>
+              <DrawingGroup x:Key="mute" ClipGeometry="M-1.5,0 L-1.5,19 L17.5,19 L17.5,0 L-1.5,0">
+                <DrawingGroup.Transform>
+                  <TranslateTransform X="1.5" Y="0" />
+                </DrawingGroup.Transform>
+                <GeometryDrawing Geometry="F1 M19,19 M0,0 M7.676,4.938 L7.676,14.568 C7.676,15.178 7.323,15.324 6.892,14.893 L3.996,11.997 L2.02,11.997 A1.111,1.111 0 0 1 0.911,10.89L0.911,8.618 A1.112,1.112 0 0 1 2.019,7.509L3.996,7.509 L6.892,4.613 C7.322,4.183 7.676,4.329 7.676,4.938 M14.927,11.826 A0.554,0.554 0 1 1 14.143,12.61L12.071,10.537 L9.998,12.61 A0.554,0.554 0 1 1 9.214,11.826L11.287,9.753 L9.214,7.68 A0.554,0.554 0 0 1 9.998,6.897L12.07,8.97 L14.142,6.897 A0.554,0.554 0 0 1 14.926,7.68L12.854,9.753" Brush="{StaticResource OrangeYellowGradient}" />
+              </DrawingGroup>
+            </ResourceDictionary>
+          </FrameworkTemplate.Resources>
+          <ControlTemplate.Triggers>
+            <Trigger Property="UIElement.IsMouseOver" Value="True">
+              <TriggerBase.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Width" To="50" Duration="0:0:0.3" />
+                    <DoubleAnimation Storyboard.TargetProperty="Height" To="50" Duration="0:0:0.3" />
+                  </Storyboard>
+                </BeginStoryboard>
+              </TriggerBase.EnterActions>
+              <TriggerBase.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Width" To="40" Duration="0:0:0.3" />
+                    <DoubleAnimation Storyboard.TargetProperty="Height" To="40" Duration="0:0:0.3" />
+                  </Storyboard>
+                </BeginStoryboard>
+              </TriggerBase.ExitActions>
+            </Trigger>
+          </ControlTemplate.Triggers>
+          <Grid Width="{TemplateBinding FrameworkElement.Width}" Height="{TemplateBinding FrameworkElement.Height}" ClipToBounds="True">
+            <Rectangle Name="outerRectangle" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RadiusX="10" RadiusY="10" StrokeThickness="5" Fill="#00FFFFFF" Stroke="{StaticResource OrangeYellowGradient}" />
+            <Border Name="myIcon">
+              <Image>
+                <Image.Source>
+                  <DrawingImage Drawing="{StaticResource mute}" />
+                </Image.Source>
+              </Image>
+            </Border>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+  <Style x:Key="Unmute" TargetType="{x:Type Button}">
+    <Setter Property="Foreground" Value="#FFFFFFFF" />
+    <Setter Property="FontSize" Value="24" />
+    <Setter Property="BorderThickness" Value="3" />
+    <Setter Property="Padding" Value="10" />
+    <Setter Property="FrameworkElement.Cursor" Value="Hand" />
+    <Setter Property="Width" Value="40" />
+    <Setter Property="Height" Value="40" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type Button}">
+          <FrameworkTemplate.Resources>
+            <ResourceDictionary>
+              <DrawingGroup x:Key="unmute" ClipGeometry="M0,0 L0,512 L512,512 L512,0 L0,0">
+                <DrawingGroup Opacity="1">
+                  <DrawingGroup Opacity="1">
+                    <DrawingGroup Opacity="1" Transform="1,0,0,1,42.666667,85.333333">
+                      <GeometryDrawing Geometry="M512,512 M0,0 M361.299413,341.610667 L328.014293,314.98176 C402.206933,233.906133 402.206933,109.96608 328.013013,28.8906667 L361.298133,2.26304 C447.910187,98.97536 447.908907,244.898347 361.299413,341.610667 M276.912853,69.77216 L243.588693,96.4309333 C283.38432,138.998613 283.38304,204.87488 243.589973,247.44256 L276.914133,274.101333 C329.118507,215.880107 329.118507,127.992107 276.912853,69.77216 M191.749973,1.42108547E-14 L80.8957867,87.2292267 L7.10542736E-15,87.2292267 L7.10542736E-15,257.895893 L81.0208,257.895893 L191.749973,343.35424 L191.749973,1.42108547E-14 L191.749973,1.42108547E-14" Brush="{StaticResource OrangeYellowGradient}" />
+                    </DrawingGroup>
+                  </DrawingGroup>
+                </DrawingGroup>
+              </DrawingGroup>
+            </ResourceDictionary>
+          </FrameworkTemplate.Resources>
+          <ControlTemplate.Triggers>
+            <Trigger Property="UIElement.IsMouseOver" Value="True">
+              <TriggerBase.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Width" To="50" Duration="0:0:0.3" />
+                    <DoubleAnimation Storyboard.TargetProperty="Height" To="50" Duration="0:0:0.3" />
+                  </Storyboard>
+                </BeginStoryboard>
+              </TriggerBase.EnterActions>
+              <TriggerBase.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Width" To="40" Duration="0:0:0.3" />
+                    <DoubleAnimation Storyboard.TargetProperty="Height" To="40" Duration="0:0:0.3" />
+                  </Storyboard>
+                </BeginStoryboard>
+              </TriggerBase.ExitActions>
+            </Trigger>
+          </ControlTemplate.Triggers>
+          <Grid Width="{TemplateBinding FrameworkElement.Width}" Height="{TemplateBinding FrameworkElement.Height}" ClipToBounds="True">
+            <Rectangle Name="outerRectangle" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RadiusX="10" RadiusY="10" StrokeThickness="5" Fill="#00FFFFFF" Stroke="{StaticResource OrangeYellowGradient}" />
+            <Border Name="myIcon">
+              <Image>
+                <Image.Source>
+                  <DrawingImage Drawing="{StaticResource unmute}" />
+                </Image.Source>
+              </Image>
+            </Border>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+  <Style x:Key="VolumeUp" TargetType="{x:Type Button}">
+    <Setter Property="Foreground" Value="#FFFFFFFF" />
+    <Setter Property="FontSize" Value="24" />
+    <Setter Property="BorderThickness" Value="3" />
+    <Setter Property="Padding" Value="10" />
+    <Setter Property="FrameworkElement.Cursor" Value="Hand" />
+    <Setter Property="Width" Value="40" />
+    <Setter Property="Height" Value="40" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type Button}">
+          <FrameworkTemplate.Resources>
+            <ResourceDictionary>
+              <DrawingGroup x:Key="volumeUp" ClipGeometry="M0,0 L0,48 L48,48 L48,0 L0,0">
+                <DrawingGroup Opacity="1">
+                  <DrawingGroup Opacity="1">
+                    <GeometryDrawing Geometry="F1 M48,48 M0,0 M29,4 A0.9,0.9 0 0 0 28.3,4.3L16.7,15 L8,15 A2,2 0 0 0 6,17L6,31 A2,2 0 0 0 8,33L16.7,33 L28.3,43.7 A0.9,0.9 0 0 0 29,44A1,1 0 0 0 30,43L30,5 A1,1 0 0 0 29,4" Brush="{StaticResource OrangeYellowGradient}" />
+                    <GeometryDrawing Geometry="F1 M48,48 M0,0 M36,42 A2.1,2.1 0 0 1 34.4,41.2A2,2 0 0 1 34.8,38.4A18,18 0 0 0 34.8,9.6A2,2 0 1 1 37.2,6.4A22.4,22.4 0 0 1 46,24A22.4,22.4 0 0 1 37.2,41.6A1.7,1.7 0 0 1 36,42" Brush="{StaticResource OrangeYellowGradient}" />
+                    <GeometryDrawing Geometry="F1 M48,48 M0,0 M34,15.5 L34,32.5 A0.5,0.5 0 0 0 34.9,32.8A14,14 0 0 0 34.9,15.2A0.5,0.5 0 0 0 34,15.5" Brush="{StaticResource OrangeYellowGradient}" />
+                  </DrawingGroup>
+                </DrawingGroup>
+              </DrawingGroup>
+            </ResourceDictionary>
+          </FrameworkTemplate.Resources>
+          <ControlTemplate.Triggers>
+            <Trigger Property="UIElement.IsMouseOver" Value="True">
+              <TriggerBase.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Width" To="50" Duration="0:0:0.3" />
+                    <DoubleAnimation Storyboard.TargetProperty="Height" To="50" Duration="0:0:0.3" />
+                  </Storyboard>
+                </BeginStoryboard>
+              </TriggerBase.EnterActions>
+              <TriggerBase.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Width" To="40" Duration="0:0:0.3" />
+                    <DoubleAnimation Storyboard.TargetProperty="Height" To="40" Duration="0:0:0.3" />
+                  </Storyboard>
+                </BeginStoryboard>
+              </TriggerBase.ExitActions>
+            </Trigger>
+          </ControlTemplate.Triggers>
+          <Grid Width="{TemplateBinding FrameworkElement.Width}" Height="{TemplateBinding FrameworkElement.Height}" ClipToBounds="True">
+            <Rectangle Name="outerRectangle" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RadiusX="10" RadiusY="10" StrokeThickness="5" Fill="#00FFFFFF" Stroke="{StaticResource OrangeYellowGradient}" />
+            <Border Name="myIcon">
+              <Image>
+                <Image.Source>
+                  <DrawingImage Drawing="{StaticResource volumeUp}" />
+                </Image.Source>
+              </Image>
+            </Border>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+  <Style x:Key="VolumeDown" TargetType="{x:Type Button}">
+    <Setter Property="Foreground" Value="#FFFFFFFF" />
+    <Setter Property="FontSize" Value="24" />
+    <Setter Property="BorderThickness" Value="3" />
+    <Setter Property="Padding" Value="10" />
+    <Setter Property="FrameworkElement.Cursor" Value="Hand" />
+    <Setter Property="Width" Value="40" />
+    <Setter Property="Height" Value="40" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type Button}">
+          <FrameworkTemplate.Resources>
+            <ResourceDictionary>
+              <DrawingGroup x:Key="volumeDown" ClipGeometry="M0,0 L0,36 L36,36 L36,0 L0,0">
+                <GeometryDrawing Geometry="F1 M36,36 M0,0 M23.41,25.11 A1,1 0 0 1 22.87,23.26A6.21,6.21 0 0 0 22.68,12.61A1,1 0 1 1 23.68,10.88A8.21,8.21 0 0 1 23.94,25A1,1 0 0 1 23.41,25.11" Brush="{StaticResource OrangeYellowGradient}" />
+                <GeometryDrawing Geometry="F1 M36,36 M0,0 M18.34,3.87 L9,12 L3,12 A1,1 0 0 0 2,13L2,23 A1,1 0 0 0 3,24L8.83,24 L18.34,32.3 A1,1 0 0 0 20,31.55L20,4.62 A1,1 0 0 0 18.34,3.87" Brush="{StaticResource OrangeYellowGradient}" />
+                <GeometryDrawing>
+                  <GeometryDrawing.Brush>
+                    <SolidColorBrush Color="#FF4100" Opacity="0" />
+                  </GeometryDrawing.Brush>
+                  <GeometryDrawing.Geometry>
+                    <RectangleGeometry RadiusX="0" RadiusY="0" Rect="0,0,36,36" />
+                  </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+              </DrawingGroup>
+            </ResourceDictionary>
+          </FrameworkTemplate.Resources>
+          <ControlTemplate.Triggers>
+            <Trigger Property="UIElement.IsMouseOver" Value="True">
+              <TriggerBase.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Width" To="50" Duration="0:0:0.3" />
+                    <DoubleAnimation Storyboard.TargetProperty="Height" To="50" Duration="0:0:0.3" />
+                  </Storyboard>
+                </BeginStoryboard>
+              </TriggerBase.EnterActions>
+              <TriggerBase.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Width" To="40" Duration="0:0:0.3" />
+                    <DoubleAnimation Storyboard.TargetProperty="Height" To="40" Duration="0:0:0.3" />
+                  </Storyboard>
+                </BeginStoryboard>
+              </TriggerBase.ExitActions>
+            </Trigger>
+          </ControlTemplate.Triggers>
+          <Grid Width="{TemplateBinding FrameworkElement.Width}" Height="{TemplateBinding FrameworkElement.Height}" ClipToBounds="True">
+            <Rectangle Name="outerRectangle" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RadiusX="10" RadiusY="10" StrokeThickness="5" Fill="#00FFFFFF" Stroke="{StaticResource OrangeYellowGradient}" />
+            <Border Name="myIcon">
+              <Image>
+                <Image.Source>
+                  <DrawingImage Drawing="{StaticResource volumeDown}" />
+                </Image.Source>
+              </Image>
+            </Border>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+  <Style x:Key="Update" TargetType="{x:Type Button}">
+    <Setter Property="Foreground" Value="#FFFFFFFF" />
+    <Setter Property="FontSize" Value="24" />
+    <Setter Property="BorderThickness" Value="3" />
+    <Setter Property="Padding" Value="10" />
+    <Setter Property="FrameworkElement.Cursor" Value="Hand" />
+    <Setter Property="Width" Value="75" />
+    <Setter Property="Height" Value="50" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type Button}">
+          <FrameworkTemplate.Resources>
+            <ResourceDictionary>
+              <DrawingGroup x:Key="update" ClipGeometry="M0,0 L0,500 L500,500 L500,0 L0,0">
+                <DrawingGroup.Transform>
+                  <TranslateTransform X="54.529998779296875" Y="131.53999328613281" />
+                </DrawingGroup.Transform>
+                <DrawingGroup Opacity="1" Transform="1,0,0,1,65.126266,270.934357" />
+                <DrawingGroup Opacity="1" Transform="1,0,0,1,65.126266,270.934357" />
+                <DrawingGroup Opacity="1" Transform="21.580809,0,0,21.580809,25.984846,34.191925">
+                  <DrawingGroup Opacity="1">
+                    <GeometryDrawing Geometry="F1 M500,500 M0,0 M5.7,9 C6.1,7 7.9,5.5 10,5.5 C11.5,5.5 12.7,6.2 13.5,7.3 L15.2,5.3 C14,3.9 12.1,3 10,3 C6.5,3 3.6,5.6 3.1,9 L1,9 L4.5,13 L8,9 L5.7,9 M15.5,7 L12,11 L14.3,11 C13.8,13 12.1,14.5 10,14.5 C8.5,14.5 7.3,13.8 6.5,12.7 L4.8,14.6 C6,16.1 7.9,17 10,17 C13.5,17 16.4,14.4 16.9,11 L19,11 L15.5,7" Brush="{StaticResource OrangeYellowGradient}" />
+                  </DrawingGroup>
+                </DrawingGroup>
+                <DrawingGroup Opacity="1" Transform="1,0,0,1,205.277786,292.398987" />
+                <DrawingGroup Opacity="1" Transform="1,0,0,1,205.277786,292.398987" />
+                <DrawingGroup Opacity="1" Transform="1,0,0,1,205.277786,292.398987">
+                  <DrawingGroup Opacity="1">
+                    <GeometryDrawing Geometry="F1 M500,500 M0,0 M35.236,-131.54 C-14.336,-131.54 -54.53,-91.343 -54.53,-41.774 C-54.53,7.794 -14.336,47.99 35.236,47.99 C84.804,47.99 125,7.794 125,-41.774 C125,-91.343 84.804,-131.54 35.236,-131.54 M110.039,-66.909 C107.307,-57.973 100.982,-50.551 92.583,-46.463 C88.096,-63.319 76.049,-77.123 59.971,-83.864 C61.266,-88.292 64.06,-92.143 67.848,-94.742 C63.56,-97.526 57.876,-98.926 54.485,-94.035 C49.197,-87.156 54.485,-77.98 56.577,-74.09 L56.577,-72.694 C51.043,-76.054 46.705,-81.072 44.212,-87.057 C34.578,-87.356 25.042,-84.984 16.685,-80.173 C15.816,-85.811 16.363,-91.558 18.28,-96.926 C25.59,-96.234 32.772,-99.22 37.429,-104.91 C42.018,-110.1 36.131,-116.68 31.544,-120.67 L35.134,-120.67 C48.7,-120.77 62.084,-117.33 73.932,-110.7 C87.498,-100.66 95.817,-85.06 96.575,-68.206 C98.967,-68.206 103.557,-73.691 105.649,-77.382 C107.366,-73.991 108.842,-70.501 110.039,-66.909 M35.236,36.419 C14.79,15.675 37.729,-0.983 25.262,-15.842 C16.083,-24.321 2.42,-18.436 -5.758,-28.112 C-8.572,-42.802 -3.096,-57.852 8.506,-67.308 C13.691,-71.698 48.399,-77.282 62.563,-65.114 C70.842,-57.983 76.676,-48.418 79.22,-37.787 C83.808,-37.436 88.376,-38.444 92.385,-40.679 C96.473,-10.955 60.968,26.547 35.236,36.419 M-3.163,-110.7 C4.676,-113.7 13.551,-110.97 18.378,-104.11 C14.191,-100.33 9.003,-97.834 3.417,-96.926 C3.617,-99.86 4.265,-102.76 5.312,-105.51 L-3.163,-110.7" Brush="{StaticResource OrangeYellowGradient}" />
+                  </DrawingGroup>
+                </DrawingGroup>
+              </DrawingGroup>
+            </ResourceDictionary>
+          </FrameworkTemplate.Resources>
+          <ControlTemplate.Triggers>
+            <Trigger Property="UIElement.IsMouseOver" Value="True">
+              <TriggerBase.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Width" To="105" Duration="0:0:0.3" />
+                    <DoubleAnimation Storyboard.TargetProperty="Height" To="75" Duration="0:0:0.3" />
+                  </Storyboard>
+                </BeginStoryboard>
+              </TriggerBase.EnterActions>
+              <TriggerBase.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Width" To="75" Duration="0:0:0.3" />
+                    <DoubleAnimation Storyboard.TargetProperty="Height" To="50" Duration="0:0:0.3" />
+                  </Storyboard>
+                </BeginStoryboard>
+              </TriggerBase.ExitActions>
+            </Trigger>
+          </ControlTemplate.Triggers>
+          <Grid Width="{TemplateBinding FrameworkElement.Width}" Height="{TemplateBinding FrameworkElement.Height}" ClipToBounds="True">
+            <Rectangle Name="outerRectangle" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RadiusX="10" RadiusY="10" StrokeThickness="5" Fill="#00FFFFFF" Stroke="{StaticResource OrangeYellowGradient}" />
+            <Border Name="myIcon">
+              <Image>
+                <Image.Source>
+                  <DrawingImage Drawing="{StaticResource update}" />
+                </Image.Source>
+              </Image>
+            </Border>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+</ResourceDictionary>
