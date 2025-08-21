@@ -1,4 +1,4 @@
-// Version: 0.1.0.17
+// Version: 0.1.0.18
 using System.Threading.Tasks;
 
 namespace Thmd.Logs;

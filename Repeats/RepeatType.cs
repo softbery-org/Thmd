@@ -1,4 +1,4 @@
-// Version: 0.1.0.17
+// Version: 0.1.0.18
 namespace Thmd.Repeats;
 
 // Placeholder for RepeatType enum (assumed to be in Thmd.Repeats)
