@@ -68,7 +68,8 @@ Console.WriteLine($"Czas trwania: {duration} sekund");
 using Thmd.Subtitles;
 
 var subtitleManager = new SubtitleManager("napisy.srt"); 
-var subtitles = subtitleManager.GetStartToEndTimeSpan(TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(60)); foreach (var subtitle in subtitles) 
+var subtitles = subtitleManager.GetStartToEndTimeSpan(TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(60)); 
+foreach (var subtitle in subtitles) 
 { 
   Console.WriteLine(subtitle.Text); 
 }
