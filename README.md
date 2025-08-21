@@ -1,46 +1,46 @@
 # Thmd# Thmd
 
-Thmd to biblioteka napisana w jêzyku C# przeznaczona do obs³ugi multimediów, zarz¹dzania konfiguracj¹ oraz napisami w aplikacjach WPF. Projekt jest zgodny z .NET Framework 4.8.1 i wykorzystuje nowoczesne funkcje jêzyka C# 12.0.
+Thmd to biblioteka napisana w jÄ™zyku C# przeznaczona do obsÅ‚ugi multimediÃ³w, zarzÄ…dzania  oraz napisami w aplikacjach WPF. Projekt jest zgodny z .NET Framework 4.8.1 i wykorzystuje nowoczesne funkcje konfiguracji jÄ™zyka C# 12.0.
 
-## Funkcjonalnoœci
+## FunkcjonalnoÅ›ci
 
 ### 1. **Konfiguracja**
-- Klasa `Config` umo¿liwia zarz¹dzanie ustawieniami aplikacji, w tym:
-  - £adowanie i zapisywanie konfiguracji z/do pliku JSON.
-  - Obs³uga ustawieñ takich jak po³¹czenie z baz¹ danych, logowanie, œcie¿ki do bibliotek, klucze API i inne.
+- Klasa `Config` umoÅ¼liwia zarzÄ…dzanie ustawieniami aplikacji, w tym:
+  - Åadowanie i zapisywanie konfiguracji z/do pliku JSON.
+  - ObsÅ‚uga ustawieÅ„ takich jak poÅ‚Ä…czenie z bazÄ… danych, logowanie, Å›cieÅ¼ki do bibliotek, klucze API i inne.
 
-### 2. **Obs³uga multimediów**
-- Klasa `FileMediaStream` umo¿liwia:
-  - Strumieniowe odczytywanie plików multimedialnych.
-  - Pobieranie zawartoœci M3U8 zdalnie.
-  - Asynchroniczne zarz¹dzanie strumieniami.
+### 2. **ObsÅ‚uga multimediÃ³w**
+- Klasa `FileMediaStream` umoÅ¼liwia:
+  - Strumieniowe odczytywanie plikÃ³w multimedialnych.
+  - Pobieranie zawartoÅ›ci M3U8 zdalnie.
+  - Asynchroniczne zarzÄ…dzanie strumieniami.
 
-### 3. **Zarz¹dzanie napisami**
+### 3. **ZarzÄ…dzanie napisami**
 - Klasa `SubtitleManager` pozwala na:
-  - Wczytywanie napisów z plików w formacie SRT.
-  - Wyszukiwanie napisów w okreœlonym przedziale czasowym.
-  - Obs³ugê wyj¹tków zwi¹zanych z b³êdami wczytywania i parsowania napisów.
+  - Wczytywanie napisÃ³w z plikÃ³w w formacie SRT.
+  - Wyszukiwanie napisÃ³w w okreÅ›lonym przedziale czasowym.
+  - ObsÅ‚ugÄ… wyjÄ…tkÃ³w zwiazanych z bÅ‚Ä™dami wczytywania i parsowania napisÃ³w.
 
 ## Wymagania
 
 - **Platforma:** .NET Framework 4.8.1
-- **Jêzyk:** C# 12.0
+- **JÄ™zyk:** C# 12.0
 - **Dodatkowe biblioteki:**
-  - [Newtonsoft.Json](https://www.nuget.org/packages/Newtonsoft.Json) - do obs³ugi JSON.
-  - [System.Windows.Media](https://learn.microsoft.com/en-us/dotnet/api/system.windows.media) - do obs³ugi kolorów i czcionek w WPF.
+  - [Newtonsoft.Json](https://www.nuget.org/packages/Newtonsoft.Json) - do obsÅ‚ugi JSON.
+  - [System.Windows.Media](https://learn.microsoft.com/en-us/dotnet/api/system.windows.media) - do obsÅ‚ugi kolorÃ³w i czcionek w WPF.
 
 ## Instalacja
 
 1. Sklonuj repozytorium:
 ```bash
-git clone https://github.com/TwojeRepozytorium/Thmd.git
+git clone https://github.com/[TwojeRepozytorium]/Thmd.git
 ```
-2. Otwórz projekt w Visual Studio 2022.
-3. Przygotuj œrodowisko:
-- Upewnij siê, ¿e masz zainstalowany .NET Framework 4.8.1.
+2. OtwÃ³trz projekt w Visual Studio 2022.
+3. Przygotuj Å›rodowisko:
+- Upewnij siÄ™, Å¼e masz zainstalowany .NET Framework 4.8.1.
 - Zainstaluj wymagane pakiety NuGet.
 
-## Przyk³ady u¿ycia
+## PrzykÅ‚ady uÅ¼ycia
 
 ### Konfiguracja
 ```csharp
@@ -48,13 +48,13 @@ using Thmd.Configuration;
 var config = Config.Instance; config.UpdateAndSave(cfg => { cfg.EnableLogging = true; cfg.ApiKey = "new-api-key"; });
 ```
 
-### Obs³uga multimediów
+### ObsÅ‚uga multimediÃ³w
 ```csharp
 using Thmd.Media;
 var mediaStream = new FileMediaStream("sample.mp4"); var duration = mediaStream.GetDuration(); Console.WriteLine($"Czas trwania: {duration} sekund");
 ```
 
-### Zarz¹dzanie napisami
+### ZarzÄ…dzanie napisami
 ```csharp
 using Thmd.Subtitles;
 var subtitleManager = new SubtitleManager("napisy.srt"); var subtitles = subtitleManager.GetStartToEndTimeSpan(TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(60)); foreach (var subtitle in subtitles) { Console.WriteLine(subtitle.Text); }
@@ -62,14 +62,14 @@ var subtitleManager = new SubtitleManager("napisy.srt"); var subtitles = subtitl
 
 ## Struktura projektu
 
-- **Configuration**: Zarz¹dzanie ustawieniami aplikacji.
-- **Media**: Obs³uga plików multimedialnych i strumieni.
-- **Subtitles**: Zarz¹dzanie napisami w formacie SRT.
+- **Configuration**: zarzÄ…dzanie ustawieniami aplikacji.
+- **Media**: ObsÅ‚uga plikÃ³w multimedialnych i strumieni.
+- **Subtitles**: zarzÄ…dzanie napisami w formacie SRT.
 
 ## Autorzy
 
-Projekt zosta³ stworzony przez zespó³ **Softbery by Pawe³ Tobis**. Wszelkie pytania i sugestie prosimy kierowaæ na [adres e-mail](mailto:kontakt@softbery.org).
+Projekt zostaÅ‚ stworzony przez zespÃ³Å‚ **Softbery by PaweÅ‚ Tobis**. Wszelkie pytania i sugestie prosimy kierowaÄ‡ na [adres e-mail](mailto:kontakt@softbery.org).
 
 ## Licencja
 
-Ten projekt jest objêty licencj¹ MIT. Szczegó³y znajduj¹ siê w pliku `LICENSE`.
+Ten projekt jest objÄ™ty licencjÄ… MIT. SzczeguÅ‚y znajdujÄ… siÄ™ w pliku `LICENSE`.
