@@ -1,4 +1,4 @@
-# Thmd# Thmd
+# Thmd
 
 Thmd to biblioteka napisana w języku C# przeznaczona do obsługi multimediów, zarządzania  oraz napisami w aplikacjach WPF. Projekt jest zgodny z .NET Framework 4.8.1 i wykorzystuje nowoczesne funkcje konfiguracji języka C# 12.0.
 
