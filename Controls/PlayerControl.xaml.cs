@@ -1,5 +1,5 @@
 // PlayerControl.cs
-// Version: 0.1.0.19
+// Version: 0.1.0.35
 // A custom UserControl for media playback using VLC, integrated with a playlist, progress bar,
 // control bar, and subtitle functionality. It supports play, pause, stop, seek, volume control,
 // fullscreen toggling, and repeat modes including random playback, with event handling for
@@ -362,6 +362,12 @@ public partial class PlayerControl : UserControl, IPlayer
         ControlBar.BtnPrevious.Click += delegate
         {
             Preview();
+        };
+        ControlBar.BtnClose.Click += async delegate
+        {
+            await ControlBar.HideByStoryboard((Storyboard)ControlBar.FindResource("fadeOutControlBar"));
+            await ProgressBar.HideByStoryboard((Storyboard)ProgressBar.FindResource("fadeOutProgressBar"));
+            base.Cursor = Cursors.None;
         };
         ControlBar.BtnVolumeUp.Click += delegate
         {

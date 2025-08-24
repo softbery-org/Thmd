@@ -6,11 +6,21 @@
     <Grid>
         <TextBlock 
                    x:Name="_repeatTextBlock"
-                   Text="{Binding RepeatTextBlock}" 
+                   Text="None" 
                    HorizontalAlignment="Center" 
                    VerticalAlignment="Center" 
                    FontSize="16" 
-                   FontWeight="Bold" 
-                   Foreground="White" />
+                   FontWeight="Bold"
+                   MouseDown="RepeatTextBlock_Click" Width="80">
+            <TextBlock.Foreground>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" >
+                    <GradientStopCollection>
+                        <GradientStop Color="Yellow" Offset="0" />
+                        <GradientStop Color="OrangeRed" Offset="0.5" />
+                        <GradientStop Color="Yellow" Offset="1" />
+                    </GradientStopCollection>
+                </LinearGradientBrush>
+            </TextBlock.Foreground>
+        </TextBlock>
     </Grid>
 </UserControl>
