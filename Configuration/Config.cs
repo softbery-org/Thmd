@@ -1,5 +1,5 @@
 // Config.cs
-// Version: 0.1.0.34
+// Version: 0.1.0.73
 // A singleton class for managing application configuration settings, including database connections,
 // logging, VLC library settings, subtitles, updates, and plugins. Supports loading and saving
 // configuration data to a JSON file with thread-safe access.
@@ -130,6 +130,7 @@ public class Config
     /// </summary>
     public Config()
     {
+        //Logger.Log.Log(LogLevel.Info, new string[] {"Console", "File"} , "Inicjalizacja domyślnych ustawień konfiguracji.");
         DatabaseConnectionString = "server=localhost;connection=default";
         MaxConnections = 10;
         EnableLogging = true;
@@ -145,12 +146,12 @@ public class Config
             UpdateUrl = "http://thmdplayer.softbery.org/update.rar",
             UpdatePath = "update",
             UpdateFileName = "update",
-            Version = "3.0.0",
+            Version = "4.0.0",
             VersionUrl = "http://thmdplayer.softbery.org/version.txt",
             UpdateInterval = 86400,
             UpdateTimeout = 30
         };
-        PlaylistConfig = LoadFromPlaylist("playliast.config");
+        PlaylistConfig = LoadFromPlaylist("playlist.json");
     }
 
     /// <summary>

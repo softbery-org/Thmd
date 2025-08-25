@@ -1,4 +1,4 @@
-// Version: 0.1.0.35
+// Version: 0.1.0.74
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -9,31 +9,65 @@ using Thmd.Logs;
 
 namespace Thmd.Updates;
 
+/// <summary>
+/// A class responsible
+/// </summary>
 public class Updater : IDisposable
 {
-	private readonly HttpClient _httpClient;
+    // HttpClient instance for making HTTP requests to check for updates and download update packages.
+    private readonly HttpClient _httpClient;
 
-	private bool _disposed = false;
+    // Flag to indicate whether the object has been disposed.
+    private bool _disposed = false;
 
-	private AsyncLogger _logger = new AsyncLogger();
+    // Async logger instance for logging update-related events.
+    private AsyncLogger _logger = new AsyncLogger();
 
-	public Version CurrentVersion { get; private set; }
+    /// <summary>
+    /// Gets the current version of the application.
+    /// </summary>
+    public Version CurrentVersion { get; private set; }
 
-	public Version LatestVersion { get; private set; }
+    /// <summary>
+    /// Gets the latest version available from the update manifest.
+    /// </summary>
+    public Version LatestVersion { get; private set; }
 
-	public string UpdateManifestUrl { get; }
+    /// <summary>
+    /// Gets the URL to fetch the update manifest from.
+    /// </summary>
+    public string UpdateManifestUrl { get; }
 
-	public string TempFilePath { get; private set; }
+    /// <summary>
+    /// Gets the path to the temporary file where the update package is downloaded.
+    /// </summary>
+    public string TempFilePath { get; private set; }
 
-	public event EventHandler<UpdateAvailableEventArgs> UpdateAvailable;
+    /// <summary>
+    /// Occurs when a new update is available.
+    /// </summary>
+    public event EventHandler<UpdateAvailableEventArgs> UpdateAvailable;
 
-	public event EventHandler<ProgressChangedEventArgs> ProgressChanged;
+    /// <summary>
+    /// Occurs when there is progress in downloading the update.
+    /// </summary>
+    public event EventHandler<ProgressChangedEventArgs> ProgressChanged;
 
-	public event EventHandler UpdateCompleted;
+    /// <summary>
+	/// Occurs when the update process is completed successfully.
+	/// </summary>
+    public event EventHandler UpdateCompleted;
 
-	public event EventHandler<Exception> UpdateFailed;
+    /// <summary>
+    /// Occurs when an error happens during the update process.
+    /// </summary>
+    public event EventHandler<Exception> UpdateFailed;
 
-	public Updater(string updateManifestUrl)
+    /// <summary>
+    /// Initializes a new instance of the Updater class with the specified update manifest URL.
+    /// </summary>
+    /// <param name="updateManifestUrl">The URL to fetch the update manifest from.</param>
+    public Updater(string updateManifestUrl)
 	{
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Expected O, but got Unknown
@@ -42,13 +76,20 @@ public class Updater : IDisposable
 		CurrentVersion = Assembly.GetExecutingAssembly().GetName().Version;
 	}
 
-	public void Dispose()
+    /// <summary>
+    /// Disposes the resources used by the Updater.
+    /// </summary>
+    public void Dispose()
 	{
 		Dispose(disposing: true);
 		GC.SuppressFinalize(this);
 	}
 
-	protected virtual void Dispose(bool disposing)
+    /// <summary>
+    /// Disposes the resources used by the Updater.
+    /// </summary>
+    /// <param name="disposing">true or false</param>
+    protected virtual void Dispose(bool disposing)
 	{
 		if (_disposed)
 		{
@@ -65,7 +106,11 @@ public class Updater : IDisposable
 		_disposed = true;
 	}
 
-	public async Task<bool> CheckForUpdatesAsync()
+    /// <summary>
+    /// Checks for updates by fetching the latest version from the update manifest URL
+    /// </summary>
+    /// <returns>Check for updates</returns>
+    public async Task<bool> CheckForUpdatesAsync()
 	{
 		try
 		{
@@ -87,7 +132,12 @@ public class Updater : IDisposable
 		}
 	}
 
-	public async Task DownloadUpdateAsync(string downloadUrl)
+    /// <summary>
+    /// Downloads the update package from the specified URL and saves it to a temporary file.
+    /// </summary>
+    /// <param name="downloadUrl">string</param>
+    /// <returns>Download task</returns>
+    public async Task DownloadUpdateAsync(string downloadUrl)
 	{
 		try
 		{
@@ -139,7 +189,10 @@ public class Updater : IDisposable
 		}
 	}
 
-	public void ApplyUpdate()
+    /// <summary>
+    /// Applies the downloaded update by executing the update file and exiting the current
+    /// </summary>
+    public void ApplyUpdate()
 	{
 		if (!File.Exists(TempFilePath))
 		{
@@ -154,7 +207,12 @@ public class Updater : IDisposable
 		Environment.Exit(0);
 	}
 
-	private Version ParseVersionFromManifest(string manifestContent)
+    /// <summary>
+    /// Parses the version string from the manifest content.
+    /// </summary>
+    /// <param name="manifestContent">content represented by string</param>
+    /// <returns>version</returns>
+    private Version ParseVersionFromManifest(string manifestContent)
 	{
 		return Version.Parse(manifestContent.Trim());
 	}

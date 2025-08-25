@@ -1,4 +1,4 @@
-// Version: 0.1.0.35
+// Version: 0.1.0.74
 using System;
 using System.Collections.Generic;
 using Thmd.Configuration;
@@ -33,7 +33,7 @@ public static class Logger
 		asyncLogger.CategoryFilters["Console"] = true;
 		asyncLogger.CategoryFilters["File"] = true;
 		_log = asyncLogger;
-		_log.AddSink(new CategoryFilterSink(new FileSink("Logs", "log", new TextFormatter(), 10485760L), new string[1] { "File" }));
+		_log.AddSink(new CategoryFilterSink(new FileSink("Logs", "log", new TextFormatter(), 10485760, 5), new string[1] { "File" }));
 		_log.AddSink(new CategoryFilterSink(new ConsoleSink(new TextFormatter()), new string[1] { "Console" }));
 		return _log;
 	}

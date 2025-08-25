@@ -1,5 +1,5 @@
 // PlayerControl.cs
-// Version: 0.1.0.35
+// Version: 0.1.0.74
 // A custom UserControl for media playback using VLC, integrated with a playlist, progress bar,
 // control bar, and subtitle functionality. It supports play, pause, stop, seek, volume control,
 // fullscreen toggling, and repeat modes including random playback, with event handling for
@@ -39,10 +39,10 @@ public partial class PlayerControl : UserControl, IPlayer
     // Grid to hold VLC control, subtitle control, progress bar, control bar, and playlist.
     private Grid _grid = new Grid();
 
-    // Current status of the media player (e.g., Play, Pause, Stop).
+    // One status of the media player (e.g., Play, Pause, Stop).
     private MediaPlayerStatus _playerStatus = MediaPlayerStatus.Stop;
 
-    // Current playback position of the media.
+    // One playback position of the media.
     private TimeSpan _currentTime = TimeSpan.Zero;
 
     // Flag indicating if the mouse is moving.
@@ -51,7 +51,7 @@ public partial class PlayerControl : UserControl, IPlayer
     // Helper for resizing control elements.
     private readonly ResizeControlHelper _resizeHelper;
 
-    // Current volume level of the media player.
+    // One volume level of the media player.
     private double _volume;
 
     // Background worker to detect mouse inactivity.
@@ -69,7 +69,7 @@ public partial class PlayerControl : UserControl, IPlayer
     // Stores the last window stance before entering fullscreen.
     private WindowLastStance _lastWindowStance;
 
-    // Type of repeat mode for playback (e.g., None, Current, All, Random).
+    // Type of repeat mode for playback (e.g., None, One, All, Random).
     private RepeatType _repeatType = RepeatType.None;
 
     // Random number generator for random repeat mode.
@@ -78,12 +78,20 @@ public partial class PlayerControl : UserControl, IPlayer
     // Control for displaying subtitles.
     private SubtitleControl _subtitleControl;
 
+    // Flags indicating the current playback state.
+    private bool _playing = false;
+    private bool _paused = false;
+    private bool _stoped = true;
+
     // System execution state flags to prevent system sleep during playback.
     private const uint ES_CONTINUOUS = 2147483648u;
     private const uint ES_SYSTEM_REQUIRED = 1u;
     private const uint ES_DISPLAY_REQUIRED = 2u;
-    private const uint EXECUTE_U = 2147483651u;
-    private const uint EXECUTE_D = 2147483648u;
+    private const uint ES_AWAYMODE_REQUIRED = 64u;
+    // Combination to block sleep mode.
+    private const uint BLOCK_SLEEP_MODE = 2147483651u;
+    // Combination to allow sleep mode.
+    private const uint DONT_BLOCK_SLEEP_MODE = 2147483648u;
 
 
     /// <summary>
@@ -92,7 +100,7 @@ public partial class PlayerControl : UserControl, IPlayer
     public int MouseSleeps { get; set; } = 7;
 
     /// <summary>
-    /// Gets or sets the repeat mode for playback (e.g., None, Current, All, Random).
+    /// Gets or sets the repeat mode for playback (e.g., None, One, All, Random).
     /// </summary>
     public RepeatType Repeat
     {
@@ -162,30 +170,42 @@ public partial class PlayerControl : UserControl, IPlayer
     /// Gets or sets whether the player is in a playing state (not implemented).
     /// </summary>
     /// <exception cref="NotImplementedException">Thrown as this property is not implemented.</exception>
-    public bool IsPlaying
+    public bool isPlaying
     {
-        get => throw new NotImplementedException();
-        set => throw new NotImplementedException();
+        get => _playing;
+        set {
+            if (value)
+            {
+                _playing = true;
+                SetThreadExecutionState(BLOCK_SLEEP_MODE);
+            }
+            else
+            {
+                _playing = false;
+                SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
+            }
+            OnPropertyChanged("isPlaying", ref _playing, value);
+        }
     }
 
     /// <summary>
     /// Gets or sets whether the player is in a paused state (not implemented).
     /// </summary>
     /// <exception cref="NotImplementedException">Thrown as this property is not implemented.</exception>
-    public bool IsPaused
+    public bool isPaused
     {
-        get => throw new NotImplementedException();
-        set => throw new NotImplementedException();
+        get => _paused;
+        set => OnPropertyChanged(nameof(isPaused), ref _paused, value);
     }
 
     /// <summary>
     /// Gets or sets whether the player is in a stopped state (not implemented).
     /// </summary>
     /// <exception cref="NotImplementedException">Thrown as this property is not implemented.</exception>
-    public bool IsStoped
+    public bool isStoped
     {
-        get => throw new NotImplementedException();
-        set => throw new NotImplementedException();
+        get => _stoped;
+        set => OnPropertyChanged(nameof(isStoped), ref _stoped, value);
     }
 
     /// <summary>
@@ -232,7 +252,7 @@ public partial class PlayerControl : UserControl, IPlayer
     /// <summary>
     /// Gets or sets whether the audio is muted.
     /// </summary>
-    public bool Mute
+    public bool isMute
     {
         get => _isMuted;
         set
@@ -247,7 +267,7 @@ public partial class PlayerControl : UserControl, IPlayer
                 _isMuted = false;
                 _vlcControl.SourceProvider.MediaPlayer.Audio.Volume = (int)_volume;
             }
-            OnPropertyChanged("_isMuted", ref _isMuted, value);
+            OnPropertyChanged("isMute", ref _isMuted, value);
         }
     }
 
@@ -392,8 +412,8 @@ public partial class PlayerControl : UserControl, IPlayer
             if (_vlcControl.SourceProvider.MediaPlayer.Audio.IsMute)
             {
                 _vlcControl.SourceProvider.MediaPlayer.Audio.IsMute = false;
-                ControlBar.BtnMute.Content = "Mute";
-                ControlBar.BtnMute.Style = FindResource("Mute") as Style;
+                ControlBar.BtnMute.Content = "isMute";
+                ControlBar.BtnMute.Style = FindResource("isMute") as Style;
                 ControlBar._playerBtnVolume._volumeProgressBar._progressBar.Value = _vlcControl.SourceProvider.MediaPlayer.Audio.Volume;
                 ControlBar._playerBtnVolume._volumeProgressBar.ProgressText = $"Volume: {(int)_volume}";
                 _volume = _vlcControl.SourceProvider.MediaPlayer.Audio.Volume;
@@ -494,6 +514,7 @@ public partial class PlayerControl : UserControl, IPlayer
         double time_in_ms = (double)_vlcControl.SourceProvider.MediaPlayer.Length * position / ProgressBar.Maximum;
         TimeSpan time = TimeSpan.FromMilliseconds(time_in_ms);
         ProgressBar.PopupText = $"{time.Hours:00} : {time.Minutes:00} : {time.Seconds:00}";
+
         if (e.LeftButton == MouseButtonState.Pressed)
         {
             ProgressBarMouseEventHandler(sender, e);
@@ -684,10 +705,21 @@ public partial class PlayerControl : UserControl, IPlayer
     /// <param name="e">The event arguments.</param>
     private void OnPlaying(object sender, VlcMediaPlayerPlayingEventArgs e)
     {
-        SetThreadExecutionState(EXECUTE_U);
-        _playerStatus = MediaPlayerStatus.Play;
-        ControlBar.VideoName = Playlist.Current?.Name ?? "No video loaded";
-        ControlBar.VideoTime = "00 : 00 : 00/00 : 00 : 00";
+        this.Dispatcher.InvokeAsync(delegate
+        {
+            ProgressBar.Duration = Playlist.Current?.Duration ?? TimeSpan.Zero;
+            ProgressBar.Value = 0.0;
+            ProgressBar.ProgressText = "00 : 00 : 00/00 : 00 : 00";
+            _playerStatus = MediaPlayerStatus.Play;
+            _playing = true;
+            _paused = false;
+            _stoped = false;
+            ControlBar.VideoName = Playlist.Current?.Name ?? "No video loaded";
+            ControlBar.VideoTime = "00 : 00 : 00/00 : 00 : 00";
+            ControlBar._videoNextName.Text = Playlist.Next?.Name ?? "No next media";
+            ControlBar._videoPreviewName.Text = Playlist.Previous?.Name ?? "No previous media";
+            SetThreadExecutionState(BLOCK_SLEEP_MODE);
+        });
     }
 
     /// <summary>
@@ -696,12 +728,12 @@ public partial class PlayerControl : UserControl, IPlayer
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The event arguments.</param>
     private void OnStopped(object sender, VlcMediaPlayerStoppedEventArgs e)
-    {
-        ThreadPool.QueueUserWorkItem(delegate
-        {
-            Stop();
-        });
-        SetThreadExecutionState(EXECUTE_D);
+    {       
+        _playing = false;
+        _paused = false;
+        _stoped = true;
+        _playerStatus = MediaPlayerStatus.Stop;
+        SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
     }
 
     /// <summary>
@@ -711,7 +743,11 @@ public partial class PlayerControl : UserControl, IPlayer
     /// <param name="e">The event arguments.</param>
     private void OnPaused(object sender, VlcMediaPlayerPausedEventArgs e)
     {
-        SetThreadExecutionState(EXECUTE_D);
+        _playing = false;
+        _paused = true;
+        _stoped = false;
+        _playerStatus = MediaPlayerStatus.Pause;
+        SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
     }
 
     /// <summary>
@@ -732,9 +768,11 @@ public partial class PlayerControl : UserControl, IPlayer
     /// </summary>
     private void HandleRepeat()
     {
-        switch (_repeatType)
+        Console.WriteLine($"{ControlBar.RepeatControl.RepeatType}");
+
+        switch (ControlBar.RepeatControl.RepeatType)
         {
-            case RepeatType.Current:
+            case RepeatType.One:
                 base.Dispatcher.InvokeAsync(delegate
                 {
                     Play(Playlist.Current);
@@ -743,41 +781,37 @@ public partial class PlayerControl : UserControl, IPlayer
             case RepeatType.All:
                 base.Dispatcher.InvokeAsync(delegate
                 {
-                    if (Playlist.MoveNext != null)
+                    // If shuffle is enabled, play a random media from the playlist
+                    if (ControlBar.RepeatControl.EnableShuffle)
                     {
-                        Playlist.MoveNext.Play();
-                    }
-                    else
-                    {
-                        Playlist.Current.Play();
-                    }
-                });
-                break;
-            case RepeatType.Random:
-                base.Dispatcher.InvokeAsync(delegate
-                {
-                    if (Playlist.Videos.Count > 0)
-                    {
-                        int randomIndex = _random.Next(0, Playlist.Videos.Count);
-                        if (randomIndex == Playlist.CurrentIndex)
+                        base.Dispatcher.InvokeAsync(delegate
                         {
-                            randomIndex = (randomIndex + 1) % Playlist.Videos.Count; // Ensure we don't repeat the current video
-                        }
-                        Playlist.CurrentIndex = randomIndex;
-                        Playlist.Current.Play();
+                            if (Playlist.Videos.Count > 0)
+                            {
+                                int randomIndex = _random.Next(0, Playlist.Videos.Count);
+                                if (randomIndex == Playlist.CurrentIndex)
+                                {
+                                    randomIndex = (randomIndex + 1) % Playlist.Videos.Count; // Ensure we don't repeat the current video
+                                }
+                                Playlist.CurrentIndex = randomIndex;
+                                Playlist.Current.Play();
+                            }
+                            else
+                                Stop();
+                        });
                     }
-                    else
+                    else // Normal behavior
                     {
-                        Stop();
+                        if (Playlist.MoveNext != null)
+                            Next();
+                        else
+                            Play();
                     }
                 });
                 break;
             case RepeatType.None:
             default:
-                ThreadPool.QueueUserWorkItem(delegate
-                {
                     Stop();
-                });
                 break;
         }
     }
@@ -799,9 +833,17 @@ public partial class PlayerControl : UserControl, IPlayer
     {
         try
         {
-            _vlcControl.SourceProvider.MediaPlayer.Pause();
-            _playerStatus = MediaPlayerStatus.Pause;
-            Logger.Log.Log(LogLevel.Debug, new string[2] { "File", "Console" }, "Media was paused.");
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+
+                _playing = false;
+                _paused = true;
+                _stoped = false;
+                _vlcControl.SourceProvider.MediaPlayer?.SetPause(true);
+                SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
+                _playerStatus = MediaPlayerStatus.Pause;
+                Logger.Log.Log(LogLevel.Debug, new string[2] { "File", "Console" }, "Media was paused.");
+            });
         }
         catch (Exception ex)
         {
@@ -818,11 +860,14 @@ public partial class PlayerControl : UserControl, IPlayer
         {
             ThreadPool.QueueUserWorkItem(delegate
             {
+                _playing = false;
+                _paused = false;
+                _stoped = true;
+                _playerStatus = MediaPlayerStatus.Stop;
+                SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
+                Logger.Log.Log(LogLevel.Info, new string[2] { "File", "Console" }, "Media was stopped.");
                 _vlcControl.SourceProvider.MediaPlayer?.Stop();
             });
-            SetThreadExecutionState(2147483648u);
-            _playerStatus = MediaPlayerStatus.Stop;
-            Logger.Log.Log(LogLevel.Info, new string[2] { "File", "Console" }, "Media was stopped.");
         }
         catch (Exception ex)
         {
@@ -835,6 +880,13 @@ public partial class PlayerControl : UserControl, IPlayer
     /// </summary>
     public void Next()
     {
+        if (Playlist.MoveNext == null)
+        {
+            Logger.Log.Log(LogLevel.Warning, new string[2] { "Console", "File" }, "No next media in the playlist.");
+            return;
+        }
+        Stop();
+        Logger.Log.Log(LogLevel.Info, new string[2] { "File", "Console" }, "Next media is playing.");
         Playlist.MoveNext.Play();
     }
 
@@ -843,6 +895,8 @@ public partial class PlayerControl : UserControl, IPlayer
     /// </summary>
     public void Preview()
     {
+        Stop();
+        Logger.Log.Log(LogLevel.Info, new string[2] { "File", "Console" }, "Before media is playing.");
         Playlist.MovePrevious.Play();
     }
 
@@ -913,10 +967,19 @@ public partial class PlayerControl : UserControl, IPlayer
         }
         try
         {
-            _vlcControl.SourceProvider.MediaPlayer.Play(media.Uri);
-            _playerStatus = MediaPlayerStatus.Play;
-            Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "Playing media: " + Playlist.Current.Name);
-            Console.WriteLine(Playlist.Next.Name);
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+                _playing = true;
+                _paused = false;
+                _stoped = false;
+                Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "Playing media: " + Playlist.Current.Name);
+                Console.WriteLine(Playlist.Next.Name);
+                if (_vlcControl.SourceProvider.MediaPlayer.IsPausable())
+                    _vlcControl.SourceProvider.MediaPlayer?.SetPause(false);
+                else
+                    _vlcControl.SourceProvider.MediaPlayer?.Play(media.Uri);
+                _playerStatus = MediaPlayerStatus.Play;
+            });
         }
         catch (Exception ex)
         {

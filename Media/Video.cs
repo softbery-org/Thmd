@@ -1,4 +1,4 @@
-// Version: 0.1.0.35
+// Version: 0.1.0.74
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -207,37 +207,32 @@ public class Video : INotifyPropertyChanged
 	public void Play()
 	{
 		_player.Play(this);
-		Logger.Log.Log(LogLevel.Info, "Console", "[" + GetType().Name + "]: Playing media " + Name);
-		Logger.Log.Log(LogLevel.Info, "File", "[" + GetType().Name + "]: Playing media " + Name);
+		Logger.Log.Log(LogLevel.Info, new string[]{"Console", "File"}, "[" + GetType().Name + "]: Playing media " + Name);
 	}
 
 	public void Pause()
 	{
 		_player.Pause();
-		Logger.Log.Log(LogLevel.Info, "Console", "[" + GetType().Name + "]: Pause media " + Name);
-		Logger.Log.Log(LogLevel.Info, "File", "[" + GetType().Name + "]: Pause media " + Name);
-	}
+        Logger.Log.Log(LogLevel.Info, new string[] { "Console", "File" }, "[" + GetType().Name + "]: Pause media " + Name);
+    }
 
 	public void Stop()
 	{
 		_player.Stop();
 		Position = 0.0;
-		Logger.Log.Log(LogLevel.Info, "Console", "[" + GetType().Name + "]: Stopped media " + Name);
-		Logger.Log.Log(LogLevel.Info, "File", "[" + GetType().Name + "]: Stopped media " + Name);
+        Logger.Log.Log(LogLevel.Info, new string[] { "Console", "File" }, "[" + GetType().Name + "]: Stopped media " + Name);
 	}
 
 	public void Forward(double seconds)
 	{
 		Position += seconds;
-		Logger.Log.Log(LogLevel.Info, "Console", $"[{GetType().Name}]: Change position to forward with +{seconds} second(s)");
-		Logger.Log.Log(LogLevel.Info, "File", $"[{GetType().Name}]: Change position to forward with +{seconds} second(s)");
+		Logger.Log.Log(LogLevel.Info, new string[] { "Console", "File" }, $"[{GetType().Name}]: Change position to forward with +{seconds} second(s)");
 	}
 
 	public void Rewind(double seconds)
 	{
 		Position -= seconds;
-		Logger.Log.Log(LogLevel.Info, "Console", $"[{GetType().Name}]: Rewind position by -{seconds} second(s)");
-		Logger.Log.Log(LogLevel.Info, "File", $"[{GetType().Name}]: Rewind position by -{seconds} second(s)");
+		Logger.Log.Log(LogLevel.Info, new string[] { "Console", "File" }, $"[{GetType().Name}]: Rewind position by -{seconds} second(s)");
 	}
 
 	private Metadata GetMetadata()

@@ -1,4 +1,4 @@
-// Version: 0.1.0.35
+// Version: 0.1.0.74
 namespace Thmd.Repeats;
 
 // Placeholder for RepeatType enum (assumed to be in Thmd.Repeats)
@@ -15,13 +15,9 @@ public enum RepeatType
     /// <summary>
     /// Repeats the current video.
     /// </summary>
-    Current,
+    One,
     /// <summary>
     /// Repeats all videos in the playlist in order.
     /// </summary>
-    All,
-    /// <summary>
-    /// Plays a random video from the playlist after the current video ends.
-    /// </summary>
-    Random
+    All
 }

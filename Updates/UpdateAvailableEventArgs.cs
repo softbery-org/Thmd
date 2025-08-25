@@ -1,4 +1,4 @@
-// Version: 0.1.0.35
+// Version: 0.1.0.74
 using System;
 
 namespace Thmd.Updates;

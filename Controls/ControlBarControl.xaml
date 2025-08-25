@@ -7,77 +7,92 @@
              xmlns:local="clr-namespace:Thmd.Controls" 
              xmlns:ControlButtons="clr-namespace:Thmd.Controls.ControlButtons" 
              Height="274">
-  <FrameworkElement.Resources>
-    <ResourceDictionary>
-      <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="/Thmd;component/Templates/Buttons.xaml" />
-      </ResourceDictionary.MergedDictionaries>
-      <Storyboard x:Key="fadeOutControlBar" FillBehavior="HoldEnd">
-        <DoubleAnimation Storyboard.TargetName="_grid" Storyboard.TargetProperty="(Opacity)" To="0.0" Duration="0:0:2" />
-      </Storyboard>
-      <Storyboard x:Key="fadeInControlBar" FillBehavior="HoldEnd">
-        <DoubleAnimation Storyboard.TargetName="_grid" Storyboard.TargetProperty="(Opacity)" To="1.0" Duration="0:0:4" />
-      </Storyboard>
-    </ResourceDictionary>
-  </FrameworkElement.Resources>
-  <Grid Name="_grid" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-    <Grid.RowDefinitions>
-      <RowDefinition Height="62*" />
-      <RowDefinition Height="127*" />
-      <RowDefinition Height="50*" />
-      <RowDefinition Height="35*" />
-    </Grid.RowDefinitions>
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="50" />
-      <ColumnDefinition Width="50" />
-      <ColumnDefinition Width="50" />
-      <ColumnDefinition Width="50" />
-      <ColumnDefinition Width="50" />
-      <ColumnDefinition Width="50" />
-      <ColumnDefinition Width="50" />
-      <ColumnDefinition Width="50" />
-      <ColumnDefinition Width="50" />
-      <ColumnDefinition Width="50" />
-      <ColumnDefinition Width="50" />
-      <ColumnDefinition Width="50" />
-      <ColumnDefinition Width="50" />
-      <ColumnDefinition Width="50" />
-      <ColumnDefinition Width="50" />
-    </Grid.ColumnDefinitions>
-    <Grid Row="0" Column="0" RowSpan="4" ColumnSpan="14">
-      <Border CornerRadius="10" Background="#A5353535">
-        <ControlButtons:PlayerButtonsControl x:Name="_playerBtnControl" />
-      </Border>
-    </Grid>
-    <Grid Column="0" ColumnSpan="10">
-      <Border BorderBrush="#FFFF0000" BorderThickness="3,3,0,3" CornerRadius="0,0,0,25">
-        <DockPanel>
-          <TextBlock Name="_videoNameTextBlock" Text="MMM" Foreground="#FFFFFFFF" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="UltraBold" FontSize="14" TextWrapping="Wrap">
+    <FrameworkElement.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Thmd;component/Templates/Buttons.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <Storyboard x:Key="fadeOutControlBar" FillBehavior="HoldEnd">
+                <DoubleAnimation Storyboard.TargetName="_grid" Storyboard.TargetProperty="(Opacity)" To="0.0" Duration="0:0:2" />
+            </Storyboard>
+            <Storyboard x:Key="fadeInControlBar" FillBehavior="HoldEnd">
+                <DoubleAnimation Storyboard.TargetName="_grid" Storyboard.TargetProperty="(Opacity)" To="1.0" Duration="0:0:4" />
+            </Storyboard>
+        </ResourceDictionary>
+    </FrameworkElement.Resources>
+    <Grid Name="_grid" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40*" />
+            <RowDefinition Height="22*"/>
+            <RowDefinition Height="127*" />
+            <RowDefinition Height="50*" />
+            <RowDefinition Height="35*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition Width="50" />
+        </Grid.ColumnDefinitions>
+        <Grid Row="0" Column="0" Grid.RowSpan="5" ColumnSpan="14">
+            <Border CornerRadius="10" Background="#A5353535">
+                <ControlButtons:PlayerButtonsControl x:Name="_playerBtnControl" />
+            </Border>
+        </Grid>
+        <Grid Column="0" ColumnSpan="10" Grid.Row="0" Grid.RowSpan="2">
+            <Border BorderBrush="#FFFF0000" BorderThickness="3,3,0,3" CornerRadius="0,0,0,25">
+                <DockPanel>
+                    <TextBlock Name="_videoNameTextBlock" Text="MMM" Foreground="#FFFFFFFF" FontWeight="UltraBold" FontSize="14" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Top">
+                        <UIElement.Effect>
+                            <DropShadowEffect />
+                        </UIElement.Effect>
+                    </TextBlock>
+                </DockPanel>
+            </Border>
+        </Grid>
+        <Grid Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="4">
+            <DockPanel>
+                <TextBlock Name="_videoPreviewName" Text="next" Foreground="#FFFFFFFF" FontWeight="Light" FontSize="10" TextWrapping="Wrap" TextAlignment="Left" VerticalAlignment="Center">
+        <UIElement.Effect>
+            <DropShadowEffect />
+        </UIElement.Effect>
+                </TextBlock>
+            </DockPanel>
+        </Grid>
+        <Grid Grid.Column="6" Grid.Row="1" Grid.ColumnSpan="4">
+            <DockPanel>
+                <TextBlock Name="_videoNextName" Text="next" Foreground="#FFFFFFFF" FontWeight="Light" FontSize="10" TextWrapping="Wrap" TextAlignment="Right" VerticalAlignment="Center">
+                    <UIElement.Effect>
+                        <DropShadowEffect />
+                    </UIElement.Effect>
+                </TextBlock>
+            </DockPanel>
+        </Grid>
+        <Grid Row="0" Column="10" ColumnSpan="3" Grid.RowSpan="2">
+            <Border BorderBrush="#FFFF0000" BorderThickness="0,3,3,3" CornerRadius="0,0,25,0">
+                <DockPanel>
+                    <TextBlock Name="_videoTimeTextBlock" Text="00:00:00/00:00:00" Foreground="#FFFFFFFF" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="UltraBold" FontSize="14">
             <UIElement.Effect>
               <DropShadowEffect />
             </UIElement.Effect>
-          </TextBlock>
-        </DockPanel>
-      </Border>
-    </Grid>
-    <Grid Row="0" Column="10" ColumnSpan="3">
-      <Border BorderBrush="#FFFF0000" BorderThickness="0,3,3,3" CornerRadius="0,0,25,0">
-        <DockPanel>
-          <TextBlock Name="_videoTimeTextBlock" Text="00:00:00/00:00:00" Foreground="#FFFFFFFF" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="UltraBold" FontSize="14">
-            <UIElement.Effect>
-              <DropShadowEffect />
-            </UIElement.Effect>
-          </TextBlock>
-        </DockPanel>
-      </Border>
-    </Grid>
-        <ControlButtons:PlayerCloseButtonControl x:Name="_btnClose" Grid.Column="13" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0" Grid.ColumnSpan="2" Grid.RowSpan="1" Grid.Row="0"/>
-        <RadioButton Name="_repeatOne" Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="2" HorizontalAlignment="Center" Foreground="#FFFFFFFF" Content="Repeat one" Margin="0,18,0,2" IsChecked="False" Width="80" />
-        <RadioButton Name="_repeatAll" Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="2" HorizontalAlignment="Left" Foreground="#FFFFFFFF" Content="Repeat all" Margin="10,3,0,17" Width="71" />
-        <RadioButton Name="_repeatNone" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" HorizontalAlignment="Left" Foreground="#FFFFFFFF" Content="Repeat none" Margin="0,3,0,16" Width="86" />
-        <RadioButton Name="_repeatRandom" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" HorizontalAlignment="Center" Foreground="#FFFFFFFF" Content="Repeat random" Margin="0,16,0,0" Width="100" />
-        <ControlButtons:PlayerButtonsControlSecondRow x:Name="_playerBtnSecondRow" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="7" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-        <ControlButtons:PlayerVolumeButtonControl x:Name="_playerBtnVolume" Grid.Column="8" Grid.ColumnSpan="6" HorizontalAlignment="Left" Grid.Row="2" Grid.RowSpan="2" VerticalAlignment="Top" Width="280" Margin="8,0,0,0" Height="59" />
-        <local:RepeatControl x:Name="_repeatControl" Grid.Row="3" Grid.Column="10" Grid.ColumnSpan="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0" />
+                    </TextBlock>
+                </DockPanel>
+            </Border>
+        </Grid>
+        <ControlButtons:PlayerButtonsControlSecondRow x:Name="_playerBtnSecondRow" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="7" />
+        <ControlButtons:PlayerVolumeButtonControl x:Name="_playerBtnVolume" Grid.Column="8" Grid.ColumnSpan="6" HorizontalAlignment="Left" Grid.Row="3" Grid.RowSpan="2" VerticalAlignment="Top" Width="280" Margin="8,0,0,0" Height="59" />
+        <local:RepeatControl x:Name="RepeatControl" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4" MouseDown="RepeatControl_Click" MouseEnter="RepeatControl_MouseEnter" MouseLeave="RepeatControl_MouseLeave" />
+        <ControlButtons:PlayerCloseButtonControl x:Name="_btnClose" Grid.Column="13" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Grid.RowSpan="2" Grid.Row="0" Height="25" Width="25"/>
     </Grid>
 </UserControl>

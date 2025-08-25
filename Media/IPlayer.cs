@@ -1,4 +1,4 @@
-// Version: 0.1.0.35
+// Version: 0.1.0.74
 using System;
 using System.Windows;
 using Thmd.Controls;
@@ -18,11 +18,11 @@ public interface IPlayer
 
 	TimeSpan CurrentTime { get; set; }
 
-	bool IsPlaying { get; set; }
+	bool isPlaying { get; set; }
 
-	bool IsPaused { get; set; }
+	bool isPaused { get; set; }
 
-	bool IsStoped { get; set; }
+	bool isStoped { get; set; }
 
 	Visibility SubtitleVisibility { get; set; }
 
@@ -30,7 +30,7 @@ public interface IPlayer
 
 	double Volume { get; set; }
 
-	bool Mute { get; set; }
+	bool isMute { get; set; }
 
 	void Play();
 

@@ -1,12 +1,16 @@
-// Version: 0.1.0.34
+// Version: 0.1.0.73
 // ControlBarControl.cs
 // A custom UserControl that provides a control bar for media playback, including buttons for
 // play, stop, next, previous, volume control, subtitles, fullscreen, and playlist management.
 // It also includes repeat mode controls and displays video name and playback time.
 
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using Thmd.Configuration;
 using Thmd.Media;
 using Thmd.Repeats;
 
@@ -28,6 +32,10 @@ public partial class ControlBarControl : UserControl
 
     // The current playback time and duration of the video.
     private string _videoTime;
+
+    private List<RepeatType> _repeatTypes = new List<RepeatType>();
+
+    private int _repeatIndex = 0;
 
     /// <summary>
     /// Gets the play/pause button.
@@ -148,62 +156,28 @@ public partial class ControlBarControl : UserControl
     public ControlBarControl()
     {
         InitializeComponent();
+
+        _repeatTypes.Add(RepeatType.None);
+        _repeatTypes.Add(RepeatType.One);
+        _repeatTypes.Add(RepeatType.All);
+
+        _repeatIndex = 0;
+
+        RepeatControl.RepeatType = _repeatTypes[_repeatIndex];
     }
 
-    /// <summary>
-    /// Handles the Checked event for the random repeat mode checkbox, setting the player's repeat mode to Random.
-    /// </summary>
-    /// <param name="sender">The source of the event.</param>
-    /// <param name="e">The event arguments.</param>
-    private void _repeatRandom_Checked(object sender, RoutedEventArgs e)
+    private void RepeatControl_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
     {
-        _repeatOne.IsChecked = false;
-        _repeatAll.IsChecked = false;
-        _repeatNone.IsChecked = false;
-        _player.Repeat = RepeatType.Random;
-        _repeatControl.RepeatMode = RepeatType.Random.ToString();
-    }
+        if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
+        {
+            _repeatIndex++;
 
-    /// <summary>
-    /// Handles the Checked event for the none repeat mode checkbox, setting the player's repeat mode to None.
-    /// </summary>
-    /// <param name="sender">The source of the event.</param>
-    /// <param name="e">The event arguments.</param>
-    private void _repeatNone_Checked(object sender, RoutedEventArgs e)
-    {
-        _repeatAll.IsChecked = false;
-        _repeatOne.IsChecked = false;
-        _repeatRandom.IsChecked = false;
-        _player.Repeat = RepeatType.None;
-        _repeatControl.RepeatMode = RepeatType.None.ToString();
-    }
+            if (_repeatIndex > _repeatTypes.Count - 1)
+                _repeatIndex = 0;
 
-    /// <summary>
-    /// Handles the Checked event for the all repeat mode checkbox, setting the player's repeat mode to All.
-    /// </summary>
-    /// <param name="sender">The source of the event.</param>
-    /// <param name="e">The event arguments.</param>
-    private void _repeatAll_Checked(object sender, RoutedEventArgs e)
-    {
-        _repeatNone.IsChecked = false;
-        _repeatOne.IsChecked = false;
-        _repeatRandom.IsChecked = false;
-        _player.Repeat = RepeatType.All;
-        _repeatControl.RepeatMode = RepeatType.All.ToString();
-    }
-
-    /// <summary>
-    /// Handles the Checked event for the one repeat mode checkbox, setting the player's repeat mode to Current.
-    /// </summary>
-    /// <param name="sender">The source of the event.</param>
-    /// <param name="e">The event arguments.</param>
-    private void _repeatOne_Checked(object sender, RoutedEventArgs e)
-    {
-        _repeatRandom.IsChecked = false;
-        _repeatAll.IsChecked = false;
-        _repeatNone.IsChecked = false;
-        _player.Repeat = RepeatType.Current;
-        _repeatControl.RepeatMode = RepeatType.Current.ToString();
+            RepeatControl.RepeatType = _repeatTypes[_repeatIndex];
+            Console.WriteLine(e.LeftButton + " - " + RepeatControl.RepeatType);
+        }
     }
 
     /// <summary>
@@ -250,10 +224,20 @@ public partial class ControlBarControl : UserControl
     public void SetPlayer(IPlayer player)
     {
         _player = player;
-        _repeatOne.Checked += _repeatOne_Checked;
-        _repeatAll.Checked += _repeatAll_Checked;
-        _repeatNone.Checked += _repeatNone_Checked;
-        _repeatRandom.Checked += _repeatRandom_Checked;
-        _repeatNone.IsChecked = true;
+        // Initialize repeat mode from configuration
+        var repeat_type = Enum.Parse(typeof(RepeatType), Config.Instance.PlaylistConfig.RepeatType.ToString());
+        var shuffle = bool.Parse(Config.Instance.PlaylistConfig.EnableShuffle.ToString());
+        RepeatControl.RepeatType = (RepeatType)repeat_type;
+        RepeatControl.EnableShuffle = shuffle;
+    }
+
+    private void RepeatControl_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+    {
+        base.Cursor = System.Windows.Input.Cursors.Arrow;
+    }
+
+    private void RepeatControl_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+    {
+        base.Cursor = System.Windows.Input.Cursors.Hand;
     }
 }
