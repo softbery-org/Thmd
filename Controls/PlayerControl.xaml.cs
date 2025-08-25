@@ -1,5 +1,5 @@
-// PlayerControl.cs
-// Version: 0.1.0.74
+// PlayerControl.xaml.cs
+// Version: 0.1.0.78
 // A custom UserControl for media playback using VLC, integrated with a playlist, progress bar,
 // control bar, and subtitle functionality. It supports play, pause, stop, seek, volume control,
 // fullscreen toggling, and repeat modes including random playback, with event handling for

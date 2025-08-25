@@ -1,4 +1,4 @@
-// Version: 0.1.0.74
+// Version: 0.1.0.78
 using System;
 using System.Collections.Generic;
 using Thmd.Configuration;
@@ -6,14 +6,23 @@ using Thmd.Logs;
 
 namespace Thmd;
 
+/// <summary>
+/// Logger class for centralized logging functionality.
+/// </summary>
 public static class Logger
 {
 	private static List<string> _categories = new List<string> { "Console", "File" };
 
 	private static AsyncLogger _log { get; set; } = new AsyncLogger();
 
+	/// <summary>
+	/// Gets the configuration settings for the logger.
+	/// </summary>
 	public static Config Config { get; set; } = Config.Instance;
 
+	/// <summary>
+	/// Gets the logger instance.
+	/// </summary>
 	public static AsyncLogger Log
 	{
 		get
@@ -26,6 +35,10 @@ public static class Logger
 		}
 	}
 
+	/// <summary>
+	/// Initializes the logging system.
+	/// </summary>
+	/// <returns>Async logger</returns>
 	public static AsyncLogger InitLogs()
 	{
 		AsyncLogger asyncLogger = new AsyncLogger();
@@ -38,6 +51,13 @@ public static class Logger
 		return _log;
 	}
 
+	/// <summary>
+	/// Initializes the logging system.
+	/// </summary>
+	/// <param name="level">log level</param>
+	/// <param name="message">log message</param>
+	/// <param name="category">log categories</param>
+	/// <param name="exception">exception details</param>
 	public static void AddLog(LogLevel level, string message, string[] category = null, Exception exception = null)
 	{
 		if (category != null)

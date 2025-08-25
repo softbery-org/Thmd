@@ -1,4 +1,5 @@
-// Version: 0.1.0.74
+// Updater.cs
+// Version: 0.1.0.78
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -201,7 +202,7 @@ public class Updater : IDisposable
 		ProcessStartInfo startInfo = new ProcessStartInfo(TempFilePath)
 		{
 			UseShellExecute = true,
-			Verb = "runas"
+			Verb = "runas",
 		};
 		Process.Start(startInfo);
 		Environment.Exit(0);

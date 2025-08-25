@@ -1,5 +1,5 @@
-// Version: 0.1.0.73
-// ControlBarControl.cs
+// ControlBarControl.xaml.cs
+// Version: 0.1.0.77
 // A custom UserControl that provides a control bar for media playback, including buttons for
 // play, stop, next, previous, volume control, subtitles, fullscreen, and playlist management.
 // It also includes repeat mode controls and displays video name and playback time.
