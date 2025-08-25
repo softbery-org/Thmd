@@ -1,28 +1,32 @@
 // Updater.cs
-// Version: 0.1.0.78
+// Version: 0.1.2.7
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
+
+using SharpCompress.Archives;
+using SharpCompress.Common;
+
+using Thmd.Configuration;
 using Thmd.Logs;
 
 namespace Thmd.Updates;
 
 /// <summary>
-/// A class responsible
+/// A class responsible for checking, downloading, and applying application updates.
+/// Uses configuration settings from the Config class and supports asynchronous operations
+/// with progress reporting and error handling.
 /// </summary>
 public class Updater : IDisposable
 {
-    // HttpClient instance for making HTTP requests to check for updates and download update packages.
     private readonly HttpClient _httpClient;
-
-    // Flag to indicate whether the object has been disposed.
+    private readonly AsyncLogger _logger;
     private bool _disposed = false;
-
-    // Async logger instance for logging update-related events.
-    private AsyncLogger _logger = new AsyncLogger();
+    private readonly Config _config;
 
     /// <summary>
     /// Gets the current version of the application.
@@ -37,7 +41,7 @@ public class Updater : IDisposable
     /// <summary>
     /// Gets the URL to fetch the update manifest from.
     /// </summary>
-    public string UpdateManifestUrl { get; }
+    public string UpdateManifestUrl => _config.UpdateConfig.VersionUrl;
 
     /// <summary>
     /// Gets the path to the temporary file where the update package is downloaded.
@@ -55,166 +59,318 @@ public class Updater : IDisposable
     public event EventHandler<ProgressChangedEventArgs> ProgressChanged;
 
     /// <summary>
-	/// Occurs when the update process is completed successfully.
-	/// </summary>
+    /// Occurs when the update process is completed successfully.
+    /// </summary>
     public event EventHandler UpdateCompleted;
 
     /// <summary>
     /// Occurs when an error happens during the update process.
     /// </summary>
-    public event EventHandler<Exception> UpdateFailed;
+    public event EventHandler<UpdateErrorEventArgs> UpdateFailed;
 
     /// <summary>
-    /// Initializes a new instance of the Updater class with the specified update manifest URL.
+    /// Initializes a new instance of the <see cref="Updater"/> class using settings from the <see cref="Config"/> class.
     /// </summary>
-    /// <param name="updateManifestUrl">The URL to fetch the update manifest from.</param>
-    public Updater(string updateManifestUrl)
-	{
-		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0025: Expected O, but got Unknown
-		_httpClient = new HttpClient();
-		UpdateManifestUrl = updateManifestUrl;
-		CurrentVersion = Assembly.GetExecutingAssembly().GetName().Version;
-	}
+    public Updater()
+    {
+        _httpClient = new HttpClient
+        {
+            Timeout = TimeSpan.FromSeconds(Config.Instance.UpdateConfig.UpdateTimeout)
+        };
+        _logger = new AsyncLogger();
+        _config = Config.Instance;
+        CurrentVersion = Assembly.GetExecutingAssembly().GetName().Version ?? new Version(0, 1, 0, 99);
+    }
 
     /// <summary>
-    /// Disposes the resources used by the Updater.
+    /// Disposes the resources used by the <see cref="Updater"/>.
     /// </summary>
     public void Dispose()
-	{
-		Dispose(disposing: true);
-		GC.SuppressFinalize(this);
-	}
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
     /// <summary>
-    /// Disposes the resources used by the Updater.
+    /// Disposes the resources used by the <see cref="Updater"/>.
     /// </summary>
-    /// <param name="disposing">true or false</param>
+    /// <param name="disposing">True to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
     protected virtual void Dispose(bool disposing)
-	{
-		if (_disposed)
-		{
-			return;
-		}
-		if (disposing)
-		{
-			HttpClient httpClient = _httpClient;
-			if (httpClient != null)
-			{
-				httpClient.Dispose();
-			}
-		}
-		_disposed = true;
-	}
+    {
+        if (_disposed)
+        {
+            return;
+        }
+        if (disposing)
+        {
+            _httpClient?.Dispose();
+            _logger?.Dispose();
+        }
+        _disposed = true;
+    }
 
     /// <summary>
-    /// Checks for updates by fetching the latest version from the update manifest URL
+    /// Checks for updates by fetching the latest version from the update manifest URL.
     /// </summary>
-    /// <returns>Check for updates</returns>
+    /// <returns>True if an update is available; otherwise, false.</returns>
     public async Task<bool> CheckForUpdatesAsync()
-	{
-		try
-		{
-			LatestVersion = ParseVersionFromManifest(await _httpClient.GetStringAsync(UpdateManifestUrl));
-			if (LatestVersion > CurrentVersion)
-			{
+    {
+        if (!_config.UpdateConfig.CheckForUpdates)
+        {
+            _logger.Log(LogLevel.Info, new[] { "Console", "File" }, "Update checking is disabled in configuration.");
+            return false;
+        }
+
+        try
+        {
+            string manifestContent = await _httpClient.GetStringAsync(UpdateManifestUrl);
+            LatestVersion = ParseVersionFromManifest(manifestContent);
+            if (LatestVersion > CurrentVersion)
+            {
                 UpdateAvailable?.Invoke(this, new UpdateAvailableEventArgs(LatestVersion));
-				_logger.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"New version available: {LatestVersion}");
-				return true;
-			}
-			return false;
-		}
-		catch (Exception ex)
-		{
-			Exception ex2 = ex;
-            UpdateFailed?.Invoke(this, ex2);
-			_logger.Log(LogLevel.Error, new string[2] { "Console", "File" }, "Error checking for updates: " + ex2.Message);
-			return false;
-		}
-	}
+                _logger.Log(LogLevel.Info, new[] { "Console", "File" }, $"New version available: {LatestVersion}");
+                return true;
+            }
+            _logger.Log(LogLevel.Info, new[] { "Console", "File" }, "No new updates available.");
+            return false;
+        }
+        catch (Exception ex)
+        {
+            UpdateFailed?.Invoke(this, new UpdateErrorEventArgs(ex));
+            _logger.Log(LogLevel.Error, new[] { "Console", "File" }, $"Error checking for updates: {ex.Message}", ex);
+            return false;
+        }
+    }
 
     /// <summary>
-    /// Downloads the update package from the specified URL and saves it to a temporary file.
+    /// Downloads the update package from the configured URL and saves it to a temporary file.
     /// </summary>
-    /// <param name="downloadUrl">string</param>
-    /// <returns>Download task</returns>
-    public async Task DownloadUpdateAsync(string downloadUrl)
-	{
-		try
-		{
-			if (!Directory.Exists("update"))
-			{
-				try
-				{
-					Directory.CreateDirectory("update");
-					_logger.Log(LogLevel.Error, new string[2] { "Console", "File" }, "Directory created: update");
-				}
-				catch (Exception ex)
-				{
-					_logger.Log(message: "Error creating update directory: " + ex.Message, level: LogLevel.Error, categories: new string[2] { "Console", "File" });
-				}
-			}
-			TempFilePath = Path.Combine(Path.GetFullPath("update/update"));
-			HttpResponseMessage response = await _httpClient.GetAsync(downloadUrl, (HttpCompletionOption)1);
-			try
-			{
-				using Stream streamToRead = await response.Content.ReadAsStreamAsync();
-				using FileStream streamToWrite = File.OpenWrite(TempFilePath);
-				long totalBytes = response.Content.Headers.ContentLength ?? -1;
-				byte[] buffer = new byte[8192];
-				long totalBytesRead = 0L;
-				while (true)
-				{
-					int num;
-					int bytesRead = num = await streamToRead.ReadAsync(buffer, 0, buffer.Length);
-					if (num <= 0)
-					{
-						break;
-					}
-					await streamToWrite.WriteAsync(buffer, 0, bytesRead);
-					totalBytesRead += bytesRead;
-                    ProgressChanged?.Invoke(this, new ProgressChangedEventArgs(totalBytesRead, totalBytes));
-				}
-			}
-			finally
-			{
-				((IDisposable)response)?.Dispose();
-			}
+    /// <returns>A task representing the asynchronous download operation.</returns>
+    public async Task DownloadUpdateAsync()
+    {
+        try
+        {
+            string updateDir = Path.GetFullPath(_config.UpdateConfig.UpdatePath);
+            if (!Directory.Exists(updateDir))
+            {
+                Directory.CreateDirectory(updateDir);
+                _logger.Log(LogLevel.Info, new[] { "Console", "File" }, $"Directory created: {updateDir}");
+            }
+
+            TempFilePath = Path.Combine(updateDir, _config.UpdateConfig.UpdateFileName);
+            using HttpResponseMessage response = await _httpClient.GetAsync(_config.UpdateConfig.UpdateUrl, HttpCompletionOption.ResponseHeadersRead);
+            response.EnsureSuccessStatusCode();
+
+            using Stream streamToRead = await response.Content.ReadAsStreamAsync();
+            using FileStream streamToWrite = File.OpenWrite(TempFilePath);
+            long totalBytes = response.Content.Headers.ContentLength ?? -1;
+            byte[] buffer = new byte[8192];
+            long totalBytesRead = 0;
+
+            while (true)
+            {
+                int bytesRead = await streamToRead.ReadAsync(buffer, 0, buffer.Length);
+                if (bytesRead <= 0)
+                {
+                    break;
+                }
+                await streamToWrite.WriteAsync(buffer, 0, bytesRead);
+                totalBytesRead += bytesRead;
+                ProgressChanged?.Invoke(this, new ProgressChangedEventArgs(totalBytesRead, totalBytes));
+            }
+
             UpdateCompleted?.Invoke(this, EventArgs.Empty);
-		}
-		catch (Exception ex)
-		{
-			Exception ex2 = ex;
-            UpdateFailed?.Invoke(this, ex2);
-			_logger.Log(LogLevel.Error, new string[2] { "Console", "File" }, "Error downloading update: " + ex2.Message);
-		}
-	}
+            _logger.Log(LogLevel.Info, new[] { "Console", "File" }, $"Update downloaded to: {TempFilePath}");
+        }
+        catch (Exception ex)
+        {
+            UpdateFailed?.Invoke(this, new UpdateErrorEventArgs(ex));
+            _logger.Log(LogLevel.Error, new[] { "Console", "File" }, $"Error downloading update: {ex.Message}", ex);
+        }
+    }
 
     /// <summary>
-    /// Applies the downloaded update by executing the update file and exiting the current
+    /// Applies the downloaded update by extracting the archive (RAR or ZIP) and replacing files in the current application directory, then exiting the application.
     /// </summary>
     public void ApplyUpdate()
-	{
-		if (!File.Exists(TempFilePath))
-		{
-			_logger.Log(LogLevel.Error, new string[2] { "Console", "File" }, "Update package not found", new FileNotFoundException("Update package not found"));
-		}
-		ProcessStartInfo startInfo = new ProcessStartInfo(TempFilePath)
-		{
-			UseShellExecute = true,
-			Verb = "runas",
-		};
-		Process.Start(startInfo);
-		Environment.Exit(0);
-	}
+    {
+        if (string.IsNullOrEmpty(TempFilePath) || !File.Exists(TempFilePath))
+        {
+            var ex = new FileNotFoundException($"Update package not found at: {TempFilePath}");
+            UpdateFailed?.Invoke(this, new UpdateErrorEventArgs(ex));
+            _logger.Log(LogLevel.Error, new[] { "Console", "File" }, ex.Message, ex);
+            return;
+        }
+
+        try
+        {
+            string updateDir = Path.GetFullPath(_config.UpdateConfig.UpdatePath);
+            string extractDir = Path.Combine(updateDir, "extracted");
+            string appDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
+                ?? throw new InvalidOperationException("Unable to determine application directory.");
+            string extension = Path.GetExtension(TempFilePath)?.ToLowerInvariant();
+
+            // Create extraction directory
+            if (!Directory.Exists(extractDir))
+            {
+                Directory.CreateDirectory(extractDir);
+                _logger.Log(LogLevel.Info, new[] { "Console", "File" }, $"Extraction directory created: {extractDir}");
+            }
+
+            // Extract the archive based on its type
+            if (extension == ".zip")
+            {
+                ZipFile.ExtractToDirectory(TempFilePath, extractDir, System.Text.Encoding.UTF8);
+                _logger.Log(LogLevel.Info, new[] { "Console", "File" }, $"Extracted ZIP archive to: {extractDir}");
+            }
+            else if (extension == ".rar")
+            {
+                using var archive = ArchiveFactory.Open(TempFilePath);
+                foreach (var entry in archive.Entries)
+                {
+                    if (!entry.IsDirectory)
+                    {
+                        entry.WriteToDirectory(extractDir, new ExtractionOptions
+                        {
+                            Overwrite = true,
+                            ExtractFullPath = true
+                        });
+                    }
+                }
+                _logger.Log(LogLevel.Info, new[] { "Console", "File" }, $"Extracted RAR archive to: {extractDir}");
+            }
+            else
+            {
+                var ex = new NotSupportedException($"Unsupported archive format: {extension}");
+                UpdateFailed?.Invoke(this, new UpdateErrorEventArgs(ex));
+                _logger.Log(LogLevel.Error, new[] { "Console", "File" }, ex.Message, ex);
+                return;
+            }
+
+            // Copy extracted files to the application directory, overwriting existing files
+            CopyDirectory(extractDir, appDir);
+            _logger.Log(LogLevel.Info, new[] { "Console", "File" }, $"Copied extracted files to: {appDir}");
+
+            // Clean up: Delete extracted directory and original archive
+            try
+            {
+                Directory.Delete(extractDir, recursive: true);
+                File.Delete(TempFilePath);
+                _logger.Log(LogLevel.Info, new[] { "Console", "File" }, $"Cleaned up: {extractDir} and {TempFilePath}");
+            }
+            catch (Exception cleanupEx)
+            {
+                _logger.Log(LogLevel.Warning, new[] { "Console", "File" },
+                    $"Failed to clean up extracted files: {cleanupEx.Message}", cleanupEx);
+            }
+
+            _logger.Log(LogLevel.Info, new[] { "Console", "File" }, "Update applied successfully. Exiting application.");
+            ScheduleFileReplacement(extractDir, appDir);
+            Environment.Exit(0);
+        }
+        catch (Exception ex)
+        {
+            UpdateFailed?.Invoke(this, new UpdateErrorEventArgs(ex));
+            _logger.Log(LogLevel.Error, new[] { "Console", "File" }, $"Error applying update: {ex.Message}", ex);
+        }
+    }
+
+    private void ScheduleFileReplacement(string sourceDir, string destDir)
+    {
+        string batchFile = Path.Combine(_config.UpdateConfig.UpdatePath, "update.bat");
+        string script = $"@echo off\n" +
+                        $"timeout /t 2\n" +
+                        $"xcopy \"{sourceDir}\" \"{destDir}\" /E /H /C /I /Y\n" +
+                        $"del \"{batchFile}\"\n";
+        File.WriteAllText(batchFile, script);
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = batchFile,
+            UseShellExecute = true,
+            Verb = "runas"
+        });
+    }
+
+    /// <summary>
+    /// Recursively copies all files and directories from the source directory to the destination directory, overwriting existing files.
+    /// </summary>
+    /// <param name="sourceDir">The source directory to copy from.</param>
+    /// <param name="destDir">The destination directory to copy to.</param>
+    private void CopyDirectory(string sourceDir, string destDir)
+    {
+        try
+        {
+            DirectoryInfo dir = new DirectoryInfo(sourceDir);
+            DirectoryInfo[] subDirs = dir.GetDirectories();
+            FileInfo[] files = dir.GetFiles();
+
+            if (!Directory.Exists(destDir))
+            {
+                Directory.CreateDirectory(destDir);
+            }
+
+            foreach (FileInfo file in files)
+            {
+                string destFilePath = Path.Combine(destDir, file.Name);
+                try
+                {
+                    file.CopyTo(destFilePath, overwrite: true);
+                    _logger.Log(LogLevel.Info, new[] { "Console", "File" },
+                        $"Copied file: {destFilePath}");
+                }
+                catch (IOException ioEx)
+                {
+                    _logger.Log(LogLevel.Warning, new[] { "Console", "File" },
+                        $"Failed to copy file {file.FullName}: {ioEx.Message}", ioEx);
+                    // Continue copying other files
+                }
+            }
+
+            foreach (DirectoryInfo subDir in subDirs)
+            {
+                string destSubDir = Path.Combine(destDir, subDir.Name);
+                CopyDirectory(subDir.FullName, destSubDir);
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new IOException($"Failed to copy directory {sourceDir} to {destDir}: {ex.Message}", ex);
+        }
+    }
 
     /// <summary>
     /// Parses the version string from the manifest content.
     /// </summary>
-    /// <param name="manifestContent">content represented by string</param>
-    /// <returns>version</returns>
+    /// <param name="manifestContent">The content of the update manifest.</param>
+    /// <returns>The parsed version.</returns>
+    /// <exception cref="ArgumentException">Thrown if the manifest content is not a valid version string.</exception>
     private Version ParseVersionFromManifest(string manifestContent)
-	{
-		return Version.Parse(manifestContent.Trim());
-	}
+    {
+        if (string.IsNullOrWhiteSpace(manifestContent) || !Version.TryParse(manifestContent.Trim(), out var version))
+        {
+            throw new ArgumentException("Invalid version format in manifest content.");
+        }
+        return version;
+    }
+}
+
+/// <summary>
+/// Event arguments for the UpdateFailed event.
+/// </summary>
+public class UpdateErrorEventArgs : EventArgs
+{
+    /// <summary>
+    /// Gets the exception that occurred during the update process.
+    /// </summary>
+    public Exception Exception { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UpdateErrorEventArgs"/> class with the specified exception.
+    /// </summary>
+    /// <param name="exception">The exception that occurred.</param>
+    /// <exception cref="ArgumentNullException">Thrown if the exception is null.</exception>
+    public UpdateErrorEventArgs(Exception exception)
+    {
+        Exception = exception ?? throw new ArgumentNullException(nameof(exception));
+    }
 }

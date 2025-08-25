@@ -1,5 +1,5 @@
 // UpdateConfig.cs
-// Version: 0.1.0.78
+// Version: 0.1.1.17
 // A class representing the configuration settings for application updates.
 // Stores properties such as update check settings, URLs, file paths, version information, and timing settings.
 
@@ -34,7 +34,7 @@ public class UpdateConfig
     /// Gets or sets the name of the update file.
     /// Defaults to "update".
     /// </summary>
-    public string UpdateFileName { get; set; } = "update";
+    public string UpdateFileName { get; set; } = "update.rar";
 
     /// <summary>
     /// Gets or sets the current version of the application.

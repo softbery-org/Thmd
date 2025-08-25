@@ -1,5 +1,5 @@
 // Config.cs
-// Version: 0.1.0.77
+// Version: 0.1.1.9
 // A singleton class for managing application configuration settings, including database connections,
 // logging, VLC library settings, subtitles, updates, and plugins. Supports loading and saving
 // configuration data to a JSON file with thread-safe access.
@@ -31,6 +31,7 @@ public class Config
 
     // Static instance of PlaylistConfig for easy access.
     private static PlaylistConfig _playlistConfig;
+    private static UpdateConfig _updateConfig;
 
     /// <summary>
     /// Gets or sets the database connection string.
@@ -82,46 +83,44 @@ public class Config
     /// </summary>
     public SubtitleConfig SubtitleConfig { get; set; }
 
-    /// <summary>
-    /// Gets or sets the configuration settings for application updates.
-    /// </summary>
-    public UpdateConfig UpdateConfig { get; set; }
-
-    /// <summary>
-    /// Gets or sets an array of plugin configurations.
-    /// </summary>
-    public PluginConfig[] Plugins { get; set; } = new PluginConfig[0];
-
-    /// <summary>
-    /// Gets or sets the configuration settings for playlists.
-    /// </summary>
-    public PlaylistConfig PlaylistConfig 
-    {
-        get
-        {
-            lock (_lock)
-            {
-                return _playlistConfig ?? (_playlistConfig = LoadFromPlaylist("playlist.json"));
-            }
-        }
-        set 
-        { 
-            _playlistConfig = value;
-        } 
-    }
-
-    /// <summary>
-    /// Gets the singleton instance of the <see cref="Config"/> class.
-    /// Loads the configuration from the default file "config.json" if not already initialized.
-    /// </summary>
     public static Config Instance
     {
         get
         {
             lock (_lock)
             {
-                return _instance ?? (_instance = LoadFromFile("config.json"));
+                return _instance ?? (_instance = LoadFromJsonFile<Config>("config.json"));
             }
+        }
+    }
+
+    public PlaylistConfig PlaylistConfig
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return _playlistConfig ?? (_playlistConfig = LoadFromJsonFile<PlaylistConfig>("playlist.json"));
+            }
+        }
+        set
+        {
+            _playlistConfig = value;
+        }
+    }
+
+    public UpdateConfig UpdateConfig
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return _updateConfig ?? (_updateConfig = LoadFromJsonFile<UpdateConfig>("update.json"));
+            }
+        }
+        set
+        {
+            _updateConfig = value;
         }
     }
 
@@ -130,7 +129,7 @@ public class Config
     /// </summary>
     public Config()
     {
-        //Logger.Log.Log(LogLevel.Info, new string[] {"Console", "File"} , "Inicjalizacja domyślnych ustawień konfiguracji.");
+        //Logger.Log.Log(LogLevel.Info, new string[] {"Console", "File"} , "Inicjalizacja domy�lnych ustawie� konfiguracji.");
         DatabaseConnectionString = "server=localhost;connection=default";
         MaxConnections = 10;
         EnableLogging = true;
@@ -145,65 +144,40 @@ public class Config
             CheckForUpdates = true,
             UpdateUrl = "http://thmdplayer.softbery.org/update.rar",
             UpdatePath = "update",
-            UpdateFileName = "update",
+            UpdateFileName = "update.rar",
             Version = "4.0.0",
             VersionUrl = "http://thmdplayer.softbery.org/version.txt",
             UpdateInterval = 86400,
             UpdateTimeout = 30
         };
-        PlaylistConfig = LoadFromPlaylist("playlist.json");
+        PlaylistConfig = LoadFromJsonFile<PlaylistConfig>("playlist.json");
     }
 
     /// <summary>
     /// Loads configuration settings from a specified JSON file.
     /// Creates a new configuration file with default values if the file does not exist.
     /// </summary>
+    /// <typeparam name="T">The type of configuration to load.</typeparam>
     /// <param name="filePath">The path to the JSON configuration file.</param>
-    /// <returns>A <see cref="Config"/> instance populated with the loaded settings.</returns>
+    /// <returns>An instance of type <typeparamref name="T"/> populated with the loaded settings.</returns>
     /// <exception cref="InvalidOperationException">Thrown if there is an error loading the configuration.</exception>
-    public static Config LoadFromFile(string filePath)
+    public static T LoadFromJsonFile<T>(string filePath) where T : new()
     {
         try
         {
-            Console.WriteLine($"Load file {filePath}");
+            Console.WriteLine($"Loading file {filePath}");
             if (!File.Exists(filePath))
             {
-                Config defaultConfig = new Config();
+                T defaultConfig = new T();
                 SaveToFile(filePath, defaultConfig);
                 return defaultConfig;
             }
             string json = File.ReadAllText(filePath);
-            return JsonConvert.DeserializeObject<Config>(json);
+            return JsonConvert.DeserializeObject<T>(json);
         }
         catch (Exception ex)
         {
-            throw new InvalidOperationException("Błąd ładowania konfiguracji: " + ex.Message, ex);
-        }
-    }
-
-    /// <summary>
-    /// Loads configuration settings from a specified playlist file.
-    /// </summary>
-    /// <param name="filePath">The path to the JSON configuration file.</param>
-    /// <returns></returns>
-    /// <exception cref="InvalidOperationException"></exception>
-    public static PlaylistConfig LoadFromPlaylist(string filePath)
-    {
-        try
-        {
-            Console.WriteLine($"Load file {filePath}");
-            if (!File.Exists(filePath))
-            {
-                PlaylistConfig playlistConfig = new PlaylistConfig();
-                SaveToFile(filePath, playlistConfig);
-                return playlistConfig;
-            }
-            string json = File.ReadAllText(filePath);
-            return JsonConvert.DeserializeObject<PlaylistConfig>(json);
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException("Błąd ładowania konfiguracji: " + ex.Message, ex);
+            throw new InvalidOperationException($"Błąd ładowania konfiguracji: {ex.Message}", ex);
         }
     }
 
