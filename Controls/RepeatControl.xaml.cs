@@ -1,27 +1,31 @@
-// RepeatControl.xaml.cs
-// Version: 0.1.1.20
+// Version: 0.1.0.9
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Markup;
+using System.Windows.Threading;
+
 using Thmd.Repeats;
 
 namespace Thmd.Controls;
 
-/// <summary>
-/// A user control that manages repeat functionality for media playback, supporting different repeat modes and shuffle options.
-/// </summary>
-[ContentProperty("RepeatType")]
+///
+
+/// A user control that manages repeat functionality for media playback, supporting different repeat modes and shuffle options. 
+/// /// Clicking the control cycles through available repeat modes (None, One, All). 
+/// /// [ContentProperty("RepeatType")] 
 public partial class RepeatControl : UserControl
 {
     private RepeatType _repeatType = RepeatType.None;
+    private readonly List<RepeatType> _repeatModeList = new List<RepeatType>();
+
+
 
     /// <summary>
     /// Occurs when a property value changes, enabling data binding support.
     /// </summary>
     public event PropertyChangedEventHandler PropertyChanged;
-
-    private List<RepeatType> _repeatModeList = new List<RepeatType>();
 
     /// <summary>
     /// Gets or sets the current repeat type for media playback.
@@ -33,8 +37,12 @@ public partial class RepeatControl : UserControl
         get => _repeatType;
         set
         {
-            _repeatTextBlock.Text = value.ToString();
-            OnPropertyChanged(nameof(RepeatType), ref _repeatType, value);
+            if (_repeatType != value)
+            {
+                _repeatType = value;
+                _repeatTextBlock.Text = value.ToString();
+                OnPropertyChanged(nameof(RepeatType));
+            }
         }
     }
 
@@ -47,14 +55,17 @@ public partial class RepeatControl : UserControl
         get => _enableShuffleCheckBox.IsChecked ?? false;
         set
         {
-            _enableShuffleCheckBox.IsChecked = value;
-            OnPropertyChanged(nameof(EnableShuffle));
+            if (_enableShuffleCheckBox.IsChecked != value)
+            {
+                _enableShuffleCheckBox.IsChecked = value;
+                OnPropertyChanged(nameof(EnableShuffle));
+            }
         }
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RepeatControl"/> class.
-    /// Sets up the component and populates the repeat mode list with available options.
+    /// Sets up the component, populates the repeat mode list, and adds click event handling.
     /// </summary>
     public RepeatControl()
     {
@@ -63,6 +74,30 @@ public partial class RepeatControl : UserControl
         _repeatModeList.Add(RepeatType.None);
         _repeatModeList.Add(RepeatType.One);
         _repeatModeList.Add(RepeatType.All);
+
+        MouseLeftButtonDown += OnRepeatControlClick;
+        KeyDown += (s, e) =>
+        {
+            if (e.Key == Key.Space || e.Key == Key.Enter)
+            {
+                OnRepeatControlClick(this, new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left));
+            }
+        };
+    }
+
+    /// <summary>
+    /// Handles the click event on the control to cycle through available repeat modes.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The mouse button event arguments.</param>
+    private void OnRepeatControlClick(object sender, MouseButtonEventArgs e)
+    {
+        Dispatcher.Invoke(() =>
+        {
+            int currentIndex = _repeatModeList.IndexOf(RepeatType);
+            int nextIndex = (currentIndex + 1) % _repeatModeList.Count;
+            RepeatType = _repeatModeList[nextIndex];
+        });
     }
 
     /// <summary>
@@ -74,28 +109,4 @@ public partial class RepeatControl : UserControl
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    /// <summary>
-    /// Raises the <see cref="PropertyChanged"/> event for a specific field and updates its value.
-    /// </summary>
-    /// <typeparam name="T">The type of the field being updated.</typeparam>
-    /// <param name="propertyName">The name of the property that changed.</param>
-    /// <param name="field">A reference to the field to update.</param>
-    /// <param name="value">The new value for the field.</param>
-    private void OnPropertyChanged<T>(string propertyName, ref T field, T value)
-    {
-        if (field != null || value == null)
-        {
-            if (field == null)
-            {
-                return;
-            }
-            object obj = value;
-            if (field.Equals(obj))
-            {
-                return;
-            }
-        }
-        field = value;
-        this.PropertyChanged?.Invoke(field, new PropertyChangedEventArgs(propertyName));
-    }
 }

@@ -1,4 +1,4 @@
-// Version: 0.1.1.20
+// Version: 0.1.1.30
 using System;
 using System.Windows;
 using Thmd.Controls;
@@ -25,8 +25,6 @@ public interface IPlayer
 	bool isStoped { get; set; }
 
 	Visibility SubtitleVisibility { get; set; }
-
-	RepeatType Repeat { get; set; }
 
 	double Volume { get; set; }
 

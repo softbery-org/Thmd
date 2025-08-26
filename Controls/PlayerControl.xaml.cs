@@ -1,5 +1,5 @@
 // PlayerControl.xaml.cs
-// Version: 0.1.1.20
+// Version: 0.1.1.29
 // A custom UserControl for media playback using VLC, integrated with a playlist, progress bar,
 // control bar, and subtitle functionality. It supports play, pause, stop, seek, volume control,
 // fullscreen toggling, and repeat modes including random playback, with event handling for
@@ -69,9 +69,6 @@ public partial class PlayerControl : UserControl, IPlayer
     // Stores the last window stance before entering fullscreen.
     private WindowLastStance _lastWindowStance;
 
-    // Type of repeat mode for playback (e.g., None, One, All, Random).
-    private RepeatType _repeatType = RepeatType.None;
-
     // Random number generator for random repeat mode.
     private readonly Random _random = new Random();
 
@@ -98,15 +95,6 @@ public partial class PlayerControl : UserControl, IPlayer
     /// Gets or sets the duration in seconds after which the control bar and progress bar are hidden if the mouse is inactive.
     /// </summary>
     public int MouseSleeps { get; set; } = 7;
-
-    /// <summary>
-    /// Gets or sets the repeat mode for playback (e.g., None, One, All, Random).
-    /// </summary>
-    public RepeatType Repeat
-    {
-        get => _repeatType;
-        set => OnPropertyChanged("Repeat", ref _repeatType, value);
-    }
 
     /// <summary>
     /// Gets or sets the playlist view associated with the player.
@@ -759,30 +747,59 @@ public partial class PlayerControl : UserControl, IPlayer
     {
         ThreadPool.QueueUserWorkItem(delegate
         {
-            HandleRepeat();
+            var c = ControlBar.RepeatControl.RepeatType;
+            Stop();
+            HandleRepeat(c);
         });
     }
 
     /// <summary>
     /// Handles repeat logic based on the current repeat mode.
     /// </summary>
-    private void HandleRepeat()
+    private void HandleRepeat(RepeatType repeat)
     {
-        Console.WriteLine($"{ControlBar.RepeatControl.RepeatType}");
+        Console.WriteLine($"{repeat}");
 
-        switch (ControlBar.RepeatControl.RepeatType)
+        switch (repeat)
         {
             case RepeatType.One:
-                base.Dispatcher.InvokeAsync(delegate
+                this.Dispatcher.InvokeAsync(delegate
                 {
-                    Play(Playlist.Current);
+                    Playlist.Current.Play();
                 });
                 break;
             case RepeatType.All:
-                base.Dispatcher.InvokeAsync(delegate
+                this.Dispatcher.InvokeAsync(delegate
                 {
+                    switch (ControlBar.RepeatControl.EnableShuffle)
+                    {
+                        case true:
+                                if (Playlist.Videos.Count > 0)
+                                {
+                                    int randomIndex = _random.Next(0, Playlist.Videos.Count);
+                                    if (randomIndex == Playlist.CurrentIndex)
+                                    {
+                                        randomIndex = (randomIndex + 1) % Playlist.Videos.Count; // Ensure we don't repeat the current video
+                                    }
+                                    Playlist.CurrentIndex = randomIndex;
+                                    Playlist.Current.Play();
+                                }
+                                else
+                                    Stop();
+                            break;
+                        case false:
+                                if (Playlist.MoveNext != null)
+                                    Next();
+                                else
+                                    Playlist.CurrentIndex = 0; // Loop back to the first media
+
+                                Playlist.Current.Play();
+                            break;
+                    }
+                });
+                break;
                     // If shuffle is enabled, play a random media from the playlist
-                    if (ControlBar.RepeatControl.EnableShuffle)
+                    /*if (ControlBar.RepeatControl.EnableShuffle)
                     {
                         base.Dispatcher.InvokeAsync(delegate
                         {
@@ -808,10 +825,11 @@ public partial class PlayerControl : UserControl, IPlayer
                             Play();
                     }
                 });
-                break;
+                break;*/
             case RepeatType.None:
+
+                break;
             default:
-                    Stop();
                 break;
         }
     }
@@ -1001,7 +1019,12 @@ public partial class PlayerControl : UserControl, IPlayer
     /// </summary>
     public void Play()
     {
-        _Play();
+        if (Playlist.Current == null)
+        {
+            Logger.Log.Log(LogLevel.Warning, new string[2] { "Console", "File" }, "Playlist is empty or current media is not set.");
+            return;
+        }
+        _Play(Playlist.Current);
     }
 
     /// <summary>

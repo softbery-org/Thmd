@@ -1,4 +1,4 @@
-// Version: 0.1.1.7
+// Version: 0.1.1.17
 // PlaylistView.cs
 // A custom ListView control for managing and displaying a playlist of video media items.
 // This class provides functionality for playing, pausing, removing, and reordering videos
