@@ -1,5 +1,5 @@
 // RepeatControl.xaml.cs
-// Version: 0.1.1.18
+// Version: 0.1.1.20
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Controls;
