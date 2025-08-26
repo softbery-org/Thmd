@@ -211,10 +211,6 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         Videos = new ObservableCollection<Video>();
         base.DataContext = this;
         base.ItemsSource = Videos;
-        PlayCommand = new RelayCommand<Video>(PlayVideo);
-        PauseCommand = new RelayCommand<Video>(PauseVideo);
-        RemoveCommand = new RelayCommand<Video>(RemoveVideo);
-        MoveToTopCommand = new RelayCommand<Video>(MoveVideoToTop);
 
         // Initialize the context menu
         _rightClickMenu = new ContextMenu();
@@ -402,23 +398,10 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     {
         if (video != null)
         {
-            CurrentIndex = Items.IndexOf(video);
-            _player.Stop();
+            CurrentIndex = Videos.IndexOf(video);
+            Current?.Stop();
             video.Play();
             Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "PlaylistView: Context menu play video " + video.Name);
-        }
-    }
-
-    /// <summary>
-    /// Pauses a video selected from the context menu.
-    /// </summary>
-    /// <param name="video">The video to pause.</param>
-    private void PauseVideo(Video video)
-    {
-        if (video != null)
-        {
-            video.Pause();
-            Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "PlaylistView: Context menu paused video " + video.Name);
         }
     }
 
@@ -430,7 +413,6 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     {
         if (video != null)
         {
-            MessageBox.Show("Removing video");
             Remove(video);
             Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "PlaylistView: Context menu removed video " + video.Name);
         }
