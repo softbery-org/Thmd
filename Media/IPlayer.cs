@@ -1,4 +1,4 @@
-// Version: 0.1.1.30
+// Version: 0.1.1.60
 using System;
 using System.Windows;
 using Thmd.Controls;
@@ -12,7 +12,7 @@ public interface IPlayer
 
 	IntPtr Handle { get; }
 
-	ControlBarControl ControlBar { get; }
+	ControlBox ControlBox { get; }
 
 	MediaPlayerStatus PlayerStatus { get; set; }
 

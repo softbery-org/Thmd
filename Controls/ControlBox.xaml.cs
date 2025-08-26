@@ -1,5 +1,5 @@
-// ControlBarControl.xaml.cs
-// Version: 0.1.1.29
+// ControlBox.xaml.cs
+// Version: 0.1.1.59
 // A custom UserControl that provides a control bar for media playback, including buttons for
 // play, stop, next, previous, volume control, subtitles, fullscreen, and playlist management.
 // It also includes repeat mode controls and displays video name and playback time.
@@ -22,7 +22,7 @@ namespace Thmd.Controls;
 /// playlist management, and repeat mode selection. Displays the current video name and playback time.
 /// Implements INotifyPropertyChanged for data binding.
 /// </summary>
-public partial class ControlBarControl : UserControl
+public partial class ControlBox : UserControl
 {
     // The media player interface for controlling playback.
     private IPlayer _player;
@@ -151,9 +151,9 @@ public partial class ControlBarControl : UserControl
     public event PropertyChangedEventHandler PropertyChanged;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ControlBarControl"/> class.
+    /// Initializes a new instance of the <see cref="ControlBox"/> class.
     /// </summary>
-    public ControlBarControl()
+    public ControlBox()
     {
         InitializeComponent();
 

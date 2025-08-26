@@ -1,5 +1,5 @@
 // Config.cs
-// Version: 0.1.1.21
+// Version: 0.1.1.51
 // A singleton class for managing application configuration settings, including database connections,
 // logging, VLC library settings, subtitles, updates, and plugins. Supports loading and saving
 // configuration data to a JSON file with thread-safe access.

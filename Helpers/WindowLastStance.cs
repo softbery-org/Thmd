@@ -1,4 +1,4 @@
-// Version: 0.1.1.30
+// Version: 0.1.1.60
 using System.Windows;
 
 namespace Thmd.Helpers;

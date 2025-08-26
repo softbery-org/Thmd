@@ -1,4 +1,4 @@
-// Version: 0.1.1.17
+// Version: 0.1.1.47
 // PlaylistView.cs
 // A custom ListView control for managing and displaying a playlist of video media items.
 // This class provides functionality for playing, pausing, removing, and reordering videos
@@ -14,6 +14,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
+using System.Windows.Media;
+
 using Thmd.Logs;
 using Thmd.Media;
 
@@ -202,10 +204,10 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     /// Initializes a new instance of the <see cref="PlaylistView"/> class.
     /// </summary>
     /// <param name="player">The media player used to control video playback.</param>
-    public PlaylistView(IPlayer player)
+    public PlaylistView()
     {
         InitializeComponent();
-        _player = player;
+        
         Videos = new ObservableCollection<Video>();
         base.DataContext = this;
         base.ItemsSource = Videos;
@@ -213,6 +215,30 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         PauseCommand = new RelayCommand<Video>(PauseVideo);
         RemoveCommand = new RelayCommand<Video>(RemoveVideo);
         MoveToTopCommand = new RelayCommand<Video>(MoveVideoToTop);
+
+        // Initialize the context menu
+        _rightClickMenu = new ContextMenu();
+        MenuItem playItem = new MenuItem { Header = "Play", Command = PlayCommand };
+        MenuItem pauseItem = new MenuItem { Header = "Pause", Command = PauseCommand };
+        MenuItem removeItem = new MenuItem { Header = "Remove", Command = RemoveCommand };
+        MenuItem moveToTopItem = new MenuItem { Header = "Move to Top", Command = MoveToTopCommand };
+        _rightClickMenu.Items.Add(playItem);
+        _rightClickMenu.Items.Add(pauseItem);
+        _rightClickMenu.Items.Add(removeItem);
+        _rightClickMenu.Items.Add(moveToTopItem);
+
+        // Set the context menu for the ListView
+        this.ContextMenu = _rightClickMenu;
+
+        // Subscribe to mouse events
+        this.MouseDoubleClick += ListView_MouseDoubleClick;
+        this.MouseDown += ListView_MouseDown;
+    }
+
+    public PlaylistView(IPlayer player)
+        : this()
+    {
+        _player = player;
     }
 
     /// <summary>
@@ -353,7 +379,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Handles right-click events to show the context menu (currently incomplete).
+    /// Handles right-click events to show the context menu.
     /// </summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The mouse event arguments.</param>
@@ -361,9 +387,33 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     {
         if (e.RightButton == MouseButtonState.Pressed)
         {
-            Video selectedVideo = base.SelectedItem as Video;
-            if (selectedVideo == null)
+            // Find the ListViewItem under the mouse cursor
+            DependencyObject dep = (DependencyObject)e.OriginalSource;
+            while (dep != null && !(dep is ListViewItem))
             {
+                dep = VisualTreeHelper.GetParent(dep);
+            }
+
+            if (dep is ListViewItem item)
+            {
+                // Select the item under the cursor
+                this.SelectedItem = item.DataContext;
+
+                // Set the CommandParameter for all menu items to the selected video
+                Video selectedVideo = item.DataContext as Video;
+                foreach (MenuItem menuItem in _rightClickMenu.Items)
+                {
+                    menuItem.CommandParameter = selectedVideo;
+                }
+
+                // Open the context menu at the mouse position
+                _rightClickMenu.IsOpen = true;
+            }
+            else
+            {
+                // If no item is under the cursor, clear selection and hide the context menu
+                this.SelectedItem = null;
+                _rightClickMenu.IsOpen = false;
             }
         }
     }
