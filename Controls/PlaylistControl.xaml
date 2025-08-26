@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ListView x:Class="Thmd.Controls.PlaylistControl" 
+          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+          xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+          xmlns:local="clr-namespace:Thmd.Controls" 
+          ItemsSource="{Binding Videos, RelativeSource={RelativeSource Self}}">
+    <FrameworkElement.Resources>
+        <ResourceDictionary>
+            <Style x:Key="{x:Type ListViewItem}" TargetType="{x:Type ListViewItem}">
+                <Setter Property="FrameworkElement.ContextMenu">
+                    <Setter.Value>
+                        <ContextMenu Name="_contextMenu" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListView}}}">
+                            <MenuItem Header="Play" Command="{Binding PlayCommand}" CommandParameter="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                            <MenuItem Header="Pause" Command="{Binding PauseCommand}" CommandParameter="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                            <MenuItem Header="Remove" Command="{Binding RemoveCommand}" CommandParameter="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                            <MenuItem Header="Move to Top" Command="{Binding MoveToTopCommand}" CommandParameter="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                        </ContextMenu>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="ListBoxItem.IsSelected" Value="True">
+                        <Setter Property="Background" Value="#FFFF4500" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+    </FrameworkElement.Resources>
+    <FrameworkElement.DataContext>
+        <local:VideoExampleList />
+    </FrameworkElement.DataContext>
+    <ItemsControl.ItemTemplate>
+        <DataTemplate>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="350" />
+                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Column="0" Margin="0,0,15,0">
+                    <TextBlock FontWeight="Medium" TextWrapping="Wrap" Text="{Binding Name}" />
+                </Grid>
+                <Border Grid.Column="1" BorderThickness="3,0,0,0" Padding="5,0">
+                    <FrameworkElement.Style>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="BorderBrush" Value="#FFFFA500" />
+                            <Style.Triggers>
+                                <DataTrigger Value="True" Binding="{Binding Path=IsSelected, RelativeSource={RelativeSource AncestorType=ListViewItem}}">
+                                    <Setter Property="BorderBrush" Value="#FFFF0000" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </FrameworkElement.Style>
+                    <Grid Margin="15,0,15,0">
+                        <TextBlock FontWeight="Medium" Text="{Binding PositionFormatted}" />
+                    </Grid>
+                </Border>
+                <Border Grid.Column="2" BorderThickness="3,0,0,0" Padding="5,0">
+                    <FrameworkElement.Style>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="BorderBrush" Value="#FFFFA500" />
+                            <Style.Triggers>
+                                <DataTrigger Value="True" Binding="{Binding Path=IsSelected, RelativeSource={RelativeSource AncestorType=ListViewItem}}">
+                                    <Setter Property="BorderBrush" Value="#FFFF0000" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </FrameworkElement.Style>
+                    <StackPanel Margin="15,0,15,0">
+                        <TextBlock FontWeight="Bold" Foreground="Red" Text="{Binding Duration}" />
+                        <TextBlock Text="{Binding Fps}" />
+                        <TextBlock Text="{Binding FrameSize}" />
+                        <TextBlock Text="{Binding Format}" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </DataTemplate>
+    </ItemsControl.ItemTemplate>
+</ListView>

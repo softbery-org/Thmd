@@ -13,16 +13,15 @@
     <FrameworkElement.Resources>
     <ResourceDictionary>
       <Style x:Key="{x:Type ListViewItem}" TargetType="{x:Type ListViewItem}">
-        <Setter Property="FrameworkElement.ContextMenu">
+        <!--<Setter Property="FrameworkElement.ContextMenu">
           <Setter.Value>
-            <ContextMenu Name="_contextMenu" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListView}}}">
-              <MenuItem Header="Play" Command="{Binding PlayCommand}" CommandParameter="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
-              <MenuItem Header="Pause" Command="{Binding PauseCommand}" CommandParameter="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
-              <MenuItem Header="Remove" Command="{Binding RemoveCommand}" CommandParameter="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
-              <MenuItem Header="Move to Top" Command="{Binding MoveToTopCommand}" CommandParameter="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+            <ContextMenu x:Name="_contextMenu">
+              <MenuItem Header="Play"/>
+              <MenuItem Header="Remove"/>
+              <MenuItem Header="Move To Top"/>
             </ContextMenu>
           </Setter.Value>
-        </Setter>
+        </Setter>-->
         <Style.Triggers>
           <Trigger Property="ListBoxItem.IsSelected" Value="True">
             <Setter Property="Background" Value="#FFFF4500" />
@@ -31,9 +30,9 @@
       </Style>
     </ResourceDictionary>
   </FrameworkElement.Resources>
-    <FrameworkElement.DataContext>
+    <!--<FrameworkElement.DataContext>
         <local:VideoExampleList />
-    </FrameworkElement.DataContext>
+    </FrameworkElement.DataContext>-->
     <ItemsControl.ItemTemplate>
     <DataTemplate>
       <Grid>

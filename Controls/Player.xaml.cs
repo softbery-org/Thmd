@@ -1,5 +1,5 @@
 // Player.xaml.cs
-// Version: 0.1.1.58
+// Version: 0.1.1.84
 // A custom UserControl for media playback using VLC, integrated with a playlist, progress bar,
 // control bar, and subtitle functionality. It supports play, pause, stop, seek, volume control,
 // fullscreen toggling, and repeat modes including random playback, with event handling for
@@ -713,8 +713,6 @@ public partial class Player : UserControl, IPlayer
             _stoped = false;
             ControlBox.VideoName = Playlist.Current?.Name ?? "No video loaded";
             ControlBox.VideoTime = "00 : 00 : 00/00 : 00 : 00";
-            ControlBox._videoNextName.Text = Playlist.Next?.Name ?? "No next media";
-            ControlBox._videoPreviewName.Text = Playlist.Previous?.Name ?? "No previous media";
             SetThreadExecutionState(BLOCK_SLEEP_MODE);
         });
     }
@@ -772,7 +770,6 @@ public partial class Player : UserControl, IPlayer
             case RepeatType.One:
                 base.Dispatcher.InvokeAsync(delegate
                 {
-                    Stop();
                     Playlist.Current.Play();
                 });
                 break;
@@ -781,15 +778,14 @@ public partial class Player : UserControl, IPlayer
                 {
                     if (ControlBox.RepeatControl.EnableShuffle)
                     {
-                        if (Playlist.Videos.Count > 0)
+                        if (Playlist.Items.Count > 0)
                         {
-                            int randomIndex = _random.Next(0, Playlist.Videos.Count);
+                            int randomIndex = _random.Next(0, Playlist.Items.Count);
                             if (randomIndex == Playlist.CurrentIndex)
                             {
-                                randomIndex = (randomIndex + 1) % Playlist.Videos.Count; // Ensure we don't repeat the current video
+                                randomIndex = (randomIndex + 1) % Playlist.Items.Count; // Ensure we don't repeat the current video
                             }
                             Playlist.CurrentIndex = randomIndex;
-                            Stop();
                             Playlist.Current.Play();
                         }
                         else
@@ -799,10 +795,7 @@ public partial class Player : UserControl, IPlayer
                     }
                     else
                     {
-                        if (Playlist.MoveNext != null)
-                            Next();
-                        else
-                            Playlist.CurrentIndex = 0; // Loop back to the first media
+                        Next();
                     }
                 });
                 break;
@@ -834,7 +827,6 @@ public partial class Player : UserControl, IPlayer
         {
             ThreadPool.QueueUserWorkItem(delegate
             {
-
                 _playing = false;
                 _paused = true;
                 _stoped = false;
@@ -879,11 +871,6 @@ public partial class Player : UserControl, IPlayer
     /// </summary>
     public void Next()
     {
-        if (Playlist.MoveNext == null)
-        {
-            Logger.Log.Log(LogLevel.Warning, new string[2] { "Console", "File" }, "No next media in the playlist.");
-            return;
-        }
         Stop();
         Logger.Log.Log(LogLevel.Info, new string[2] { "File", "Console" }, "Next media is playing.");
         Playlist.MoveNext.Play();
@@ -894,11 +881,6 @@ public partial class Player : UserControl, IPlayer
     /// </summary>
     public void Preview()
     {
-        if (Playlist.MovePrevious == null)
-        {
-            Logger.Log.Log(LogLevel.Warning, new string[2] { "Console", "File" }, "No previous media in the playlist.");
-            return;
-        }
         Stop();
         Logger.Log.Log(LogLevel.Info, new string[2] { "File", "Console" }, "Before media is playing.");
         Playlist.MovePrevious.Play();
@@ -977,7 +959,6 @@ public partial class Player : UserControl, IPlayer
                 _paused = false;
                 _stoped = false;
                 Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "Playing media: " + Playlist.Current.Name);
-                Console.WriteLine(Playlist.Next.Name);
                 if (_vlcControl.SourceProvider.MediaPlayer.IsPausable())
                     _vlcControl.SourceProvider.MediaPlayer?.SetPause(false);
                 else

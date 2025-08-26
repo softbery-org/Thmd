@@ -1,34 +1,29 @@
-// Version: 0.1.1.73
-// PlaylistView.cs
-// A custom ListView control for managing and displaying a playlist of video media items.
-// This class provides functionality for playing, pausing, removing, and reordering videos
-// in a playlist, with support for user interactions such as double-click and right-click
-// context menu actions. It implements INotifyPropertyChanged for data binding and
-// uses an ObservableCollection to dynamically update the UI when the playlist changes.
-
+// Version: 0.1.1.66
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Numerics;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 
 using Thmd.Logs;
 using Thmd.Media;
 
+using static MediaToolkit.Model.Metadata;
+
+using Video = Thmd.Media.Video;
+
 namespace Thmd.Controls;
 
-/// <summary>
-/// A custom ListView control for managing a playlist of video media items.
-/// Provides functionality to play, pause, remove, and reorder videos, with support for
-/// user interactions like double-click and right-click context menu actions.
-/// Implements INotifyPropertyChanged for data binding and uses an ObservableCollection
-/// to dynamically update the UI when the playlist changes.
-/// </summary>
-public partial class PlaylistView : ListView, INotifyPropertyChanged
+public partial class PlaylistControl : ListView, INotifyPropertyChanged
 {
     // Stores the index of the currently selected video in the playlist.
     private int _currentIndex = 0;
@@ -200,14 +195,10 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     /// </summary>
     public event PropertyChangedEventHandler PropertyChanged;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PlaylistView"/> class.
-    /// </summary>
-    /// <param name="player">The media player used to control video playback.</param>
-    public PlaylistView()
-    {
+    public PlaylistControl()
+	{
         InitializeComponent();
-        
+
         Videos = new ObservableCollection<Video>();
         base.DataContext = this;
         base.ItemsSource = Videos;
@@ -218,41 +209,24 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
 
         // Initialize the context menu
         _rightClickMenu = new ContextMenu();
-        MenuItem playItem = new MenuItem { Header = "Play" };
-        MenuItem removeItem = new MenuItem { Header = "Remove" };
-        MenuItem moveToTopItem = new MenuItem { Header = "Move to Top"};
-        MenuItem moveUpper = new MenuItem { Header = "Move Upper" };
-        MenuItem moveLower = new MenuItem { Header = "Move Lower" };
+        MenuItem playItem = new MenuItem { Header = "Play", Command = PlayCommand };
+        MenuItem pauseItem = new MenuItem { Header = "Pause", Command = PauseCommand };
+        MenuItem removeItem = new MenuItem { Header = "Remove", Command = RemoveCommand };
+        MenuItem moveToTopItem = new MenuItem { Header = "Move to Top", Command = MoveToTopCommand };
         _rightClickMenu.Items.Add(playItem);
+        _rightClickMenu.Items.Add(pauseItem);
         _rightClickMenu.Items.Add(removeItem);
-        _rightClickMenu.Items.Add(moveUpper);
-        _rightClickMenu.Items.Add(moveLower);
         _rightClickMenu.Items.Add(moveToTopItem);
-
-        foreach (MenuItem menuItem in _rightClickMenu.Items)
-        {
-            menuItem.CommandParameter = this.SelectedItem as Video;
-            if (menuItem.Header.ToString() == "Play")
-                menuItem.Click += MenuItemPlay_Click;
-            if (menuItem.Header.ToString() == "Remove")
-                menuItem.Click += MenuItemRemove_Click;
-            if (menuItem.Header.ToString() == "Move to Top")
-                menuItem.Click += MenuItemMoveToTop_Click;
-            if (menuItem.Header.ToString() == "Move Upper")
-                menuItem.Click += MenuItemMoveUpper_Click;
-            if (menuItem.Header.ToString() == "Move Lower")
-                menuItem.Click += MenuItemMoveLower_Click;
-        }
 
         // Set the context menu for the ListView
         this.ContextMenu = _rightClickMenu;
 
         // Subscribe to mouse events
         this.MouseDoubleClick += ListView_MouseDoubleClick;
+        this.MouseDown += ListView_MouseDown;
     }
 
-    public PlaylistView(IPlayer player)
-        : this()
+    public PlaylistControl(IPlayer player) : this()
     {
         _player = player;
     }
@@ -395,6 +369,46 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     }
 
     /// <summary>
+    /// Handles right-click events to show the context menu.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The mouse event arguments.</param>
+    private void ListView_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.RightButton == MouseButtonState.Pressed)
+        {
+            // Find the ListViewItem under the mouse cursor
+            DependencyObject dep = (DependencyObject)e.OriginalSource;
+            while (dep != null && !(dep is ListViewItem))
+            {
+                dep = VisualTreeHelper.GetParent(dep);
+            }
+
+            if (dep is ListViewItem item)
+            {
+                // Select the item under the cursor
+                this.SelectedItem = item.DataContext;
+
+                // Set the CommandParameter for all menu items to the selected video
+                Video selectedVideo = item.DataContext as Video;
+                foreach (MenuItem menuItem in _rightClickMenu.Items)
+                {
+                    menuItem.CommandParameter = selectedVideo;
+                }
+
+                // Open the context menu at the mouse position
+                _rightClickMenu.IsOpen = true;
+            }
+            else
+            {
+                // If no item is under the cursor, clear selection and hide the context menu
+                this.SelectedItem = null;
+                _rightClickMenu.IsOpen = false;
+            }
+        }
+    }
+
+    /// <summary>
     /// Plays a video selected from the context menu.
     /// </summary>
     /// <param name="video">The video to play.</param>
@@ -402,8 +416,8 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     {
         if (video != null)
         {
-            CurrentIndex = Items.IndexOf(video);
-            _player.Stop();
+            CurrentIndex = Videos.IndexOf(video);
+            Current?.Stop();
             video.Play();
             Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "PlaylistView: Context menu play video " + video.Name);
         }
@@ -450,54 +464,6 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
                 Videos.RemoveAt(currentIndex);
                 Videos.Insert(0, video);
                 Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "PlaylistView: Moved video " + video.Name + " to top");
-            }
-        }
-    }
-
-    private void MenuItemPlay_Click(object sender, RoutedEventArgs e)
-    {
-        if (this.SelectedItem != null)
-            PlayVideo((this.SelectedItem as Video));
-    }
-
-    private void MenuItemMoveToTop_Click(object sender, RoutedEventArgs e)
-    {
-        if (this.SelectedItem != null)
-            MoveVideoToTop((this.SelectedItem as Video));
-    }
-
-    private void MenuItemRemove_Click(object sender, RoutedEventArgs e)
-    {
-        if (this.SelectedItem!=null)
-            RemoveVideo((this.SelectedItem as Video));
-    }
-
-    private void MenuItemMoveUpper_Click(object sender, RoutedEventArgs e)
-    {
-        if (this.SelectedItem != null)
-        {
-            Video video = this.SelectedItem as Video;
-            int currentIndex = Videos.IndexOf(video);
-            if (currentIndex > 0)
-            {
-                Videos.RemoveAt(currentIndex);
-                Videos.Insert(currentIndex - 1, video);
-                Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "PlaylistView: Moved video " + video.Name + " upper");
-            }
-        }
-    }
-
-    private void MenuItemMoveLower_Click(object sender, RoutedEventArgs e)
-    {
-        if (this.SelectedItem != null)
-        {
-            Video video = this.SelectedItem as Video;
-            int currentIndex = Videos.IndexOf(video);
-            if (currentIndex < Videos.Count - 1)
-            {
-                Videos.RemoveAt(currentIndex);
-                Videos.Insert(currentIndex + 1, video);
-                Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "PlaylistView: Moved video " + video.Name + " lower");
             }
         }
     }
