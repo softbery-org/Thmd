@@ -1,4 +1,4 @@
-// Version: 0.1.3.28
+// Version: 0.1.3.73
 using System;
 using System.Windows;
 using Thmd.Controls;
@@ -30,6 +30,7 @@ public interface IPlayer
 
 	bool isMute { get; set; }
 
+	bool Fullscreen { get; set; }
 	void Play();
 
 	void Play(VideoItem media);

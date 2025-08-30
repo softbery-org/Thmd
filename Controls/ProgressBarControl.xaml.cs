@@ -1,4 +1,4 @@
-// Version: 0.1.1.98
+// Version: 0.1.2.43
 using System;
 using System.ComponentModel;
 using System.Windows;
@@ -253,7 +253,7 @@ public partial class ProgressBarControl : UserControl, INotifyPropertyChanged
         this.PropertyChanged?.Invoke(field, new PropertyChangedEventArgs(propertyName));
     }
 
-    private void _grid_MouseMove(object sender, MouseEventArgs e)
+    protected override void OnMouseMove(MouseEventArgs e)
     {
         Point mouse_position = e.GetPosition(_progressBar);
         double width = _progressBar.ActualWidth;
@@ -270,12 +270,17 @@ public partial class ProgressBarControl : UserControl, INotifyPropertyChanged
         }
         _popup.HorizontalOffset = mouse_position.X + 20.0;
         _popup.VerticalOffset = mouse_position.Y;
+
+        base.OnMouseMove(e);
     }
 
-    private void _grid_MouseLeave(object sender, MouseEventArgs e)
+    protected override void OnMouseLeave(MouseEventArgs e)
     {
         _rectangleMouseOverPoint.Visibility = Visibility.Hidden;
         PopupVisibility = false;
+        _popup.IsOpen = false;
+
+        base.OnMouseLeave(e);
     }
 
     private Drawing DrawingBackground()

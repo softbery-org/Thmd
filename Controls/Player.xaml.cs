@@ -1,5 +1,5 @@
 // Player.xaml.cs
-// Version: 0.1.3.11
+// Version: 0.1.3.48
 // A custom UserControl for media playback using VLC, integrated with a playlist, progress bar,
 // control bar, and subtitle functionality. It supports play, pause, stop, seek, volume control,
 // fullscreen toggling, and repeat modes including random playback, with event handling for
@@ -40,7 +40,7 @@ namespace Thmd.Controls;
 /// </summary>
 public partial class Player : UserControl, IPlayer
 {
-    /// VLC control for media playback.
+    // VLC control for media playback.
     private readonly VlcControl _vlcControl;
 
     // Grid to hold VLC control, subtitle control, progress bar, control bar, and playlist.
@@ -81,6 +81,8 @@ public partial class Player : UserControl, IPlayer
 
     // Control for displaying subtitles.
     private SubtitleControl _subtitleControl;
+
+    private TimerBox _timerBox;
 
     // Flags indicating the current playback state.
     private bool _playing = false;
@@ -280,6 +282,16 @@ public partial class Player : UserControl, IPlayer
         }
     }
 
+    public TimerBox TimerBox
+    {
+        get => _timerBox;
+        set
+        {
+            _timerBox = value;
+            OnPropertyChanged(nameof(TimerBox), ref _timerBox, value);
+        }
+    }
+
     /// <summary>
     /// Occurs when a property value changes, used for data binding.
     /// </summary>
@@ -366,8 +378,13 @@ public partial class Player : UserControl, IPlayer
         ProgressBar.MouseDown += ProgressBar_MouseDown;
         ProgressBar.MouseMove += ProgressBar_MouseMove;
 
+        _timerBox = new TimerBox(this);
+        _timerBox.HorizontalAlignment = HorizontalAlignment.Right;
+        _timerBox.VerticalAlignment = VerticalAlignment.Top;
+
         base.Content = _grid;
         _grid.Children.Add(_vlcControl);
+        _grid.Children.Add(_timerBox);
         _grid.Children.Add(_subtitleControl);
         _grid.Children.Add(ProgressBar);
         _grid.Children.Add(ControlBox);
@@ -625,6 +642,7 @@ public partial class Player : UserControl, IPlayer
             ControlBox.VideoName = Playlist.Current.Name;
             ControlBox.VideoTime = TimeSpan.FromMilliseconds(e.NewTime).ToString("hh\\:mm\\:ss") + "/" + Playlist.Current.Duration.ToString("hh\\:mm\\:ss");
             _subtitleControl.PositionTime = TimeSpan.FromMilliseconds(e.NewTime);
+            _timerBox.Timer = ControlBox.VideoTime;
         });
     }
 

@@ -1,4 +1,4 @@
-// Version: 0.1.3.33
+// Version: 0.1.3.78
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,15 +6,15 @@ using System.Text;
 
 namespace Thmd.Helpers;
 
-public class HelpGenerator
+public class GeneratorHelper
 {
 	private readonly string _programName;
 
 	private readonly string _description;
 
-	private readonly List<HelpOption> _options;
+	private readonly List<OptionHelper> _options;
 
-	public HelpGenerator(string programName, string description, List<HelpOption> options)
+	public GeneratorHelper(string programName, string description, List<OptionHelper> options)
 	{
 		_programName = programName;
 		_description = description;
@@ -38,7 +38,7 @@ public class HelpGenerator
 		sb.AppendLine("Opis: " + _description);
 		sb.AppendLine();
 		sb.AppendLine("Opcje:");
-		foreach (HelpOption option in _options)
+		foreach (OptionHelper option in _options)
 		{
 			string flags = FormatFlags(option);
 			sb.AppendLine($"  {flags,-30}  {option.Description}");
@@ -46,7 +46,7 @@ public class HelpGenerator
 		return sb.ToString();
 	}
 
-	private string FormatFlags(HelpOption option)
+	private string FormatFlags(OptionHelper option)
 	{
 		string joinedFlags = string.Join(" lub ", option.Flags);
 		return option.HasValue ? joinedFlags + " {" + option.ValueType + "}" : joinedFlags;

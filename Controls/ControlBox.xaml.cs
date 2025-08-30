@@ -1,248 +1,379 @@
-// ControlBox.xaml.cs
-// Version: 0.1.1.92
-// A custom UserControl that provides a control bar for media playback, including buttons for
-// play, stop, next, previous, volume control, subtitles, fullscreen, and playlist management.
-// It also includes repeat mode controls and displays video name and playback time.
-
+// Version: 0.1.0.25
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media.Animation;
+using System.Windows.Threading;
 
 using Thmd.Configuration;
+using Thmd.Logs;
 using Thmd.Media;
 using Thmd.Repeats;
+using Thmd.Helpers;
 
-namespace Thmd.Controls;
-
-/// <summary>
-/// A custom UserControl that provides a control bar for media playback.
-/// Includes buttons for play, stop, next, previous, volume control, subtitles, fullscreen,
-/// playlist management, and repeat mode selection. Displays the current video name and playback time.
-/// Implements INotifyPropertyChanged for data binding.
-/// </summary>
-public partial class ControlBox : UserControl
+namespace Thmd.Controls
 {
-    // The media player interface for controlling playback.
-    private IPlayer _player;
-
-    // The name of the currently playing video.
-    private string _videoName;
-
-    // The current playback time and duration of the video.
-    private string _videoTime;
-
-    private List<RepeatType> _repeatTypes = new List<RepeatType>();
-
-    private int _repeatIndex = 0;
-
-    /// <summary>
-    /// Gets the play/pause button.
-    /// </summary>
-    public Button BtnPlay => _playerBtnControl._btnPlay;
-
-    /// <summary>
-    /// Gets the stop button.
-    /// </summary>
-    public Button BtnStop => _playerBtnControl._btnStop;
-
-    /// <summary>
-    /// Gets the next track button.
-    /// </summary>
-    public Button BtnNext => _playerBtnControl._btnNext;
-
-    /// <summary>
-    /// Gets the previous track button.
-    /// </summary>
-    public Button BtnPrevious => _playerBtnControl._btnPrevious;
-
-    /// <summary>
-    /// Gets the volume up button.
-    /// </summary>
-    public Button BtnVolumeUp => _playerBtnVolume._btnVolumeUp;
-
-    /// <summary>
-    /// Gets the volume down button.
-    /// </summary>
-    public Button BtnVolumeDown => _playerBtnVolume._btnVolumeDown;
-
-    /// <summary>
-    /// Gets the mute/unmute button.
-    /// </summary>
-    public Button BtnMute => _playerBtnVolume._btnMute;
-
-    /// <summary>
-    /// Gets the settings window button.
-    /// </summary>
-    public Button BtnSettingsWindow => _playerBtnSecondRow._btnSettings;
-
-    /// <summary>
-    /// Gets the subtitle toggle button.
-    /// </summary>
-    public Button BtnSubtitle => _playerBtnSecondRow._btnSubtitle;
-
-    /// <summary>
-    /// Gets the update button.
-    /// </summary>
-    public Button BtnUpdate => _playerBtnSecondRow._btnUpdate;
-
-    /// <summary>
-    /// Gets the open file button.
-    /// </summary>
-    public Button BtnOpen => _playerBtnControl._btnOpen;
-
-    /// <summary>
-    /// Gets the playlist toggle button.
-    /// </summary>
-    public Button BtnPlaylist => _playerBtnSecondRow._btnPlaylist;
-
-    /// <summary>
-    /// Gets the fullscreen toggle button.
-    /// </summary>
-    public Button BtnFullscreen => _playerBtnSecondRow._btnFullscreen;
-
-    /// <summary>
-    /// Gets the close button.
-    /// </summary>
-    public Button BtnClose => _btnClose._btnClose;
-
-    /// <summary>
-    /// Gets or sets the name of the currently playing video, updating the UI text block.
-    /// </summary>
-    public string VideoName
+    public partial class ControlBox : UserControl, INotifyPropertyChanged
     {
-        get => _videoName;
-        set
+        private IPlayer _player;
+        private string _videoName;
+        private string _videoTime;
+        private RepeatType _repeatType;
+        private bool _enableShuffle;
+        private int _scrollTextIndex = 0;
+        private ObservableCollection<VideoItem> _videos; // From MediaPlayerControl
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public string VideoName
         {
-            base.Dispatcher.InvokeAsync(delegate
+            get => _videoName;
+            set
             {
-                if (_videoNameTextBlock != null)
-                {
-                    _videoNameTextBlock.Text = value;
-                }
-            });
-            OnPropertyChanged("VideoName", ref _videoName, value);
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets the current playback time and duration, updating the UI text block.
-    /// </summary>
-    public string VideoTime
-    {
-        get => _videoTime;
-        set
-        {
-            base.Dispatcher.InvokeAsync(delegate
-            {
-                if (_videoTimeTextBlock != null)
-                {
-                    _videoTimeTextBlock.Text = value;
-                }
-            });
-            OnPropertyChanged("VideoTime", ref _videoTime, value);
-        }
-    }
-
-    /// <summary>
-    /// Occurs when a property value changes, used for data binding.
-    /// </summary>
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ControlBox"/> class.
-    /// </summary>
-    public ControlBox()
-    {
-        InitializeComponent();
-
-        _repeatTypes.Add(RepeatType.None);
-        _repeatTypes.Add(RepeatType.One);
-        _repeatTypes.Add(RepeatType.All);
-
-        _repeatIndex = 0;
-
-        RepeatControl.RepeatType = _repeatTypes[_repeatIndex];
-    }
-
-    public ControlBox(IPlayer player) : this()
-    {
-        _player = player;
-    }
-
-    private void RepeatControl_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
-    {
-        if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
-        {
-            _repeatIndex++;
-
-            if (_repeatIndex > _repeatTypes.Count - 1)
-                _repeatIndex = 0;
-
-            RepeatControl.RepeatType = _repeatTypes[_repeatIndex];
-        }
-    }
-
-    /// <summary>
-    /// Raises the <see cref="PropertyChanged"/> event to notify the UI of property changes.
-    /// </summary>
-    /// <param name="propertyName">The name of the property that changed.</param>
-    protected void OnPropertyChanged(string propertyName)
-    {
-        if (this.PropertyChanged != null)
-        {
-            this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
-    }
-
-    /// <summary>
-    /// Raises the <see cref="PropertyChanged"/> event for a specific field and updates its value.
-    /// </summary>
-    /// <typeparam name="T">The type of the field.</typeparam>
-    /// <param name="propertyName">The name of the property that changed.</param>
-    /// <param name="field">The field to update.</param>
-    /// <param name="value">The new value for the field.</param>
-    private void OnPropertyChanged<T>(string propertyName, ref T field, T value)
-    {
-        if (field != null || value == null)
-        {
-            if (field == null)
-            {
-                return;
-            }
-            object obj = value;
-            if (field.Equals(obj))
-            {
-                return;
+                _videoName = value;
+                OnPropertyChanged(nameof(VideoName));
+                StartTextAnimation();
             }
         }
-        field = value;
-        this.PropertyChanged?.Invoke(field, new PropertyChangedEventArgs(propertyName));
-    }
+        
+        public string VideoPreviewName
+        {
+            get => _videoPreviewName.Text;
+            set
+            {
+                _videoPreviewName.Text = value;
+                OnPropertyChanged(nameof(VideoPreviewName));
+            }
+        }
 
-    /// <summary>
-    /// Sets the media player for the control bar and initializes repeat mode event handlers.
-    /// </summary>
-    /// <param name="player">The media player to associate with the control bar.</param>
-    public void SetPlayer(IPlayer player)
-    {
-        _player = player;
-        // Initialize repeat mode from configuration
-        var repeat_type = Enum.Parse(typeof(RepeatType), Config.Instance.PlaylistConfig.RepeatType.ToString());
-        var shuffle = bool.Parse(Config.Instance.PlaylistConfig.EnableShuffle.ToString());
-        RepeatControl.RepeatType = (RepeatType)repeat_type;
-        RepeatControl.EnableShuffle = shuffle;
-    }
+        public string VideoNextName
+        {
+            get => _videoNextName.Text;
+            set
+            {
+                _videoNextName.Text = value;
+                OnPropertyChanged(nameof(VideoNextName));
+            }
+        }
 
-    private void RepeatControl_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
-    {
-        base.Cursor = System.Windows.Input.Cursors.Arrow;
-    }
+        public string VideoTime
+        {
+            get => _videoTime;
+            set
+            {
+                _videoTime = value;
+                OnPropertyChanged(nameof(VideoTime));
+            }
+        }
 
-    private void RepeatControl_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
-    {
-        base.Cursor = System.Windows.Input.Cursors.Hand;
+        public RepeatType RepeatType
+        {
+            get => _repeatType;
+            set
+            {
+                _repeatType = value;
+                OnPropertyChanged(nameof(RepeatType));
+                RepeatControl.RepeatType = value;
+            }
+        }
+
+        public bool EnableShuffle
+        {
+            get => _enableShuffle;
+            set
+            {
+                _enableShuffle = value;
+                OnPropertyChanged(nameof(EnableShuffle));
+                RepeatControl.EnableShuffle = value;
+            }
+        }
+
+        public ObservableCollection<VideoItem> Videos
+        {
+            get => _videos;
+            set
+            {
+                _videos = value;
+                OnPropertyChanged(nameof(Videos));
+                UpdateVideoInfo();
+            }
+        }
+
+        public Button BtnPlay => _playerBtnControl._btnPlay;
+        public Button BtnStop => _playerBtnControl._btnStop;
+        public Button BtnNext => _playerBtnControl._btnNext;
+        public Button BtnPrevious => _playerBtnControl._btnPrevious;
+        public Button BtnVolumeUp => _playerBtnVolume._btnVolumeUp;
+        public Button BtnVolumeDown => _playerBtnVolume._btnVolumeDown;
+        public Button BtnMute => _playerBtnVolume._btnMute;
+        public Button BtnSettingsWindow => _playerBtnSecondRow._btnSettings;
+        public Button BtnSubtitle => _playerBtnSecondRow._btnSubtitle;
+        public Button BtnUpdate => _playerBtnSecondRow._btnUpdate;
+        public Button BtnOpen => _playerBtnControl._btnOpen;
+        public Button BtnPlaylist => _playerBtnSecondRow._btnPlaylist;
+        public Button BtnFullscreen => _playerBtnSecondRow._btnFullscreen;
+        public Button BtnClose => _btnClose._btnClose;
+
+        public ControlBox()
+        {
+            InitializeComponent();
+            DataContext = this;
+            VideoName = "No Video Loaded";
+            VideoPreviewName = "Previous: None";
+            VideoNextName = "Next: None";
+            VideoTime = "00:00:00/00:00:00";
+            RepeatType = RepeatType.None;
+            EnableShuffle = false;
+            Videos = new ObservableCollection<VideoItem>();
+
+            StartTextAnimation();
+        }
+
+        public ControlBox(IPlayer player) : this()
+        {
+            SetPlayer(player);
+        }
+
+        public void SetPlayer(IPlayer player)
+        {
+            _player = player;
+            if (_player != null)
+            {
+                try
+                {
+                    var repeat_type = Enum.Parse(typeof(RepeatType), Config.Instance.PlaylistConfig.RepeatType.ToString());
+                    var shuffle = bool.Parse(Config.Instance.PlaylistConfig.EnableShuffle.ToString());
+                    RepeatControl.RepeatType = (RepeatType)repeat_type;
+                    RepeatControl.EnableShuffle = shuffle;
+                    UpdateVideoInfo();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log.Log(LogLevel.Error, new[] { "Console", "File" }, $"Failed to initialize player settings: {ex.Message}");
+                }
+            }
+        }
+
+        private void StartTextAnimation()
+        {
+            // Ustawienie pocz�tkowego tekstu jako pustego
+            _videoNameTextBlock.Text = string.Empty;
+
+            // Tworzenie animacji opartej na timerze
+            var timer = new System.Windows.Threading.DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(200) // Szybko�� pojawiania si� znak�w (100 ms na znak)
+            };
+
+            timer.Tick += (s, e) =>
+            {
+                if (_scrollTextIndex < VideoName.Length)
+                {
+                    // Dodawanie kolejnego znaku
+                    _videoNameTextBlock.Text = VideoName.Substring(0, _scrollTextIndex + 1);
+                    _scrollTextIndex++;
+                }
+                else
+                {
+                    // Po wy�wietleniu ca�ego tekstu resetujemy i powtarzamy
+                    _scrollTextIndex = 0;
+                    _videoNameTextBlock.Text = string.Empty;
+                }
+            };
+
+            // Uruchomienie animacji po za�adowaniu okna
+            Loaded += (s, e) => timer.Start();
+        }
+
+        private void UpdateVideoInfo()
+        {
+            if (_player != null && Videos != null && Videos.Count > 0)
+            {
+                try
+                {
+                    int currentIndex = _player.Playlist.CurrentIndex;
+                    VideoName = _player.Playlist.Current.Name ?? "Unknown Video";
+                    VideoPreviewName = currentIndex > 0 ? $"Previous: {Videos[currentIndex - 1].Name}" : "Previous: None";
+                    VideoNextName = currentIndex < Videos.Count - 1 ? $"Next: {Videos[currentIndex + 1].Name}" : "Next: None";
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log.Log(LogLevel.Error, new[] { "Console", "File" }, $"Failed to update video info: {ex.Message}");
+                }
+            }
+        }
+
+        private void OnNextVideo()
+        {
+            try
+            {
+                _player?.Next();
+                UpdateVideoInfo();
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Log(LogLevel.Error, new[] { "Console", "File" }, $"Failed to load next video: {ex.Message}");
+            }
+        }
+
+        private void OnPreviousVideo()
+        {
+            try
+            {
+                _player?.Preview();
+                UpdateVideoInfo();
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Log(LogLevel.Error, new[] { "Console", "File" }, $"Failed to load previous video: {ex.Message}");
+            }
+        }
+
+        private void AdjustVolume(double delta)
+        {
+            try
+            {
+                if (_player != null)
+                {
+                    double newVolume = MathHelper.Clamp(_player.Volume + delta, 0.0, 1.0);
+                    _player.Volume = newVolume;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Log(LogLevel.Error, new[] { "Console", "File" }, $"Failed to adjust volume: {ex.Message}");
+            }
+        }
+
+        private void OnOpenSettings()
+        {
+            try
+            {
+                // Implement settings window logic (e.g., open a new window)
+                Logger.Log.Log(LogLevel.Info, new[] { "Console" }, "Settings window opened");
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Log(LogLevel.Error, new[] { "Console", "File" }, $"Failed to open settings: {ex.Message}");
+            }
+        }
+
+        private void OnUpdate()
+        {
+            try
+            {
+                // Implement update logic (e.g., check for software updates)
+                Logger.Log.Log(LogLevel.Info, new[] { "Console" }, "Update check initiated");
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Log(LogLevel.Error, new[] { "Console", "File" }, $"Failed to check updates: {ex.Message}");
+            }
+        }
+
+        private void OnOpenFile()
+        {
+            try
+            {
+                // Implement file open dialog (e.g., using OpenFileDialog)
+                var dialog = new Microsoft.Win32.OpenFileDialog
+                {
+                    Filter = "Media Files (*.mp4,*.avi,*.mkv)|*.mp4;*.avi;*.mkv|All Files (*.*)|*.*"
+                };
+                if (dialog.ShowDialog() == true)
+                {
+                    var media = new VideoItem(dialog.FileName);
+                    _player?.Play(media);
+                    Videos.Add(media);
+                    UpdateVideoInfo();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Log(LogLevel.Error, new[] { "Console", "File" }, $"Failed to open file: {ex.Message}");
+            }
+        }
+
+        private void OnTogglePlaylist()
+        {
+            try
+            {
+                // Implement playlist toggle logic (e.g., show/hide playlist UI)
+                Logger.Log.Log(LogLevel.Info, new[] { "Console" }, "Playlist toggled");
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Log(LogLevel.Error, new[] { "Console", "File" }, $"Failed to toggle playlist: {ex.Message}");
+            }
+        }
+
+        private void OnClose()
+        {
+            try
+            {
+                _player?.Stop();
+                Application.Current.MainWindow?.Close();
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Log(LogLevel.Error, new[] { "Console", "File" }, $"Failed to close: {ex.Message}");
+            }
+        }
+
+        private void RepeatControl_Click(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                try
+                {
+                    _repeatType = _repeatType switch
+                    {
+                        RepeatType.None => RepeatType.One,
+                        RepeatType.One => RepeatType.All,
+                        RepeatType.All => RepeatType.None,
+                        _ => RepeatType.None
+                    };
+                    RepeatType = _repeatType;
+                    //_player?.ToggleRepeat(RepeatType);
+                    Config.Instance.PlaylistConfig.RepeatType = RepeatType;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log.Log(LogLevel.Error, new[] { "Console", "File" }, $"Failed to toggle repeat: {ex.Message}");
+                }
+            }
+        }
+
+        private void RepeatControl_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Cursor = Cursors.Hand;
+            var fadeIn = (Storyboard)FindResource("fadeInControlBar");
+            fadeIn.Begin();
+        }
+
+        protected override void OnMouseEnter(MouseEventArgs e)
+        {
+            var fadeIn = (Storyboard)FindResource("fadeInControlBar");
+            fadeIn.Begin();
+
+            base.OnMouseEnter(e);
+        }
+
+        protected override void OnMouseLeave(MouseEventArgs e)
+        {
+            var fadeOut = (Storyboard)FindResource("fadeOutControlBar");
+            fadeOut.Begin();
+
+            base.OnMouseLeave(e);
+        }
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }
