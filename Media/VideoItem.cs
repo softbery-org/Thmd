@@ -1,7 +1,9 @@
-// Version: 0.1.1.86
+// Version: 0.1.3.33
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.Windows.Controls;
+
 using MediaToolkit;
 using MediaToolkit.Model;
 using Thmd.Logs;
@@ -9,7 +11,7 @@ using Thmd.Logs;
 namespace Thmd.Media;
 
 [Serializable]
-public class Video : INotifyPropertyChanged
+public class VideoItem : INotifyPropertyChanged
 {
 	private Uri _uri;
 
@@ -151,7 +153,7 @@ public class Video : INotifyPropertyChanged
         PlayerChanged?.Invoke(this, player);
 	}
 
-	public Video(string path)
+	public VideoItem(string path)
 	{
 		_uri = new Uri(path);
 		_name = new FileInfo(_uri.LocalPath).Name;
@@ -179,7 +181,7 @@ public class Video : INotifyPropertyChanged
 		}
 	}
 
-	public Video(string path, IPlayer player)
+	public VideoItem(string path, IPlayer player)
 		: this(path)
 	{
 		_player = player;

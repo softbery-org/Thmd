@@ -1,11 +1,10 @@
 // Player.xaml.cs
-// Version: 0.1.1.84
+// Version: 0.1.3.11
 // A custom UserControl for media playback using VLC, integrated with a playlist, progress bar,
 // control bar, and subtitle functionality. It supports play, pause, stop, seek, volume control,
 // fullscreen toggling, and repeat modes including random playback, with event handling for
 // mouse interactions and media state changes.
 
-using Microsoft.Win32;
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -17,10 +16,17 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+
+using LibVLCSharp.Shared;
+
+using Microsoft.Win32;
+
 using Thmd.Helpers;
 using Thmd.Logs;
 using Thmd.Media;
+using Thmd.Media.Effects;
 using Thmd.Repeats;
+
 using Vlc.DotNet.Core;
 using Vlc.DotNet.Wpf;
 
@@ -34,7 +40,7 @@ namespace Thmd.Controls;
 /// </summary>
 public partial class Player : UserControl, IPlayer
 {
-    // VLC control for media playback.
+    /// VLC control for media playback.
     private readonly VlcControl _vlcControl;
 
     // Grid to hold VLC control, subtitle control, progress bar, control bar, and playlist.
@@ -287,6 +293,18 @@ public partial class Player : UserControl, IPlayer
     [DllImport("kernel32.dll", SetLastError = true)]
     private static extern uint SetThreadExecutionState(uint esFlags);
 
+    private EnhancedSharpenEffect _sharpenEffect;
+
+    // Zmienna do zmuszenia u�ycia NVIDIA GPU (dla potencjalnego VSR)
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern IntPtr GetDesktopWindow();
+
+    // Eksport dla NVIDIA Optimus (wymusza u�ycie dedykowanej GPU)
+    // Dodaj to do pliku .cs (np. Program.cs) lub DLL, aby aktywowa�
+    // extern "C" { public static uint NvOptimusEnablement = 0x00000001; }
+    // Ale w C# u�ywamy atrybutu lub tej zmiennej
+    public static uint NvOptimusEnablement = 0x00000001; // Statyczna zmienna do eksportu
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Player"/> class.
     /// Sets up the VLC control, progress bar, control bar, playlist, and subtitle control,
@@ -296,15 +314,20 @@ public partial class Player : UserControl, IPlayer
     {
         InitializeComponent();
 
-        ProgressBar = new ProgressBarControl();
-        ProgressBar.SetPlayer(this);
-        ProgressBar.VerticalAlignment = VerticalAlignment.Bottom;
-        ProgressBar.HorizontalAlignment = HorizontalAlignment.Stretch;
-        ProgressBar.MouseDown += ProgressBar_MouseDown;
-        ProgressBar.MouseMove += ProgressBar_MouseMove;
+        Core.Initialize(Path.Combine(Logger.Config.LibVlcPath, (IntPtr.Size == 4) ? "win-x86" : "win-x64"));
 
-        ControlBox = new ControlBox();
-        ControlBox.SetPlayer(this);
+        // Optymalizacja renderowania WPF
+        RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.HighQuality);
+        RenderOptions.SetEdgeMode(this, EdgeMode.Aliased);
+
+        // Stw�rz i zastosuj custom shader
+        /*_sharpenEffect = new EnhancedSharpenEffect { SmoothAmount = 1.5f }; // Dostosuj amount dla intensywności
+        this.Effect = _sharpenEffect;*/
+
+        // Inicjalizacja VSR: Sprawd� i w��cz je�li mo�liwe (systemowo)
+        //InitializeVsrOptimization();
+
+        ControlBox = new ControlBox(this);
         _resizeHelper = new ResizeControlHelper(ControlBox);
         ControlBox.VerticalAlignment = VerticalAlignment.Top;
         ControlBox.HorizontalAlignment = HorizontalAlignment.Left;
@@ -336,6 +359,12 @@ public partial class Player : UserControl, IPlayer
         _subtitleControl.HorizontalAlignment = HorizontalAlignment.Stretch;
         _subtitleControl.Margin = new Thickness(0.0, 0.0, 0.0, 30.0);
         _subtitleControl.Visibility = Visibility.Collapsed;
+
+        ProgressBar = new ProgressBarControl(this);
+        ProgressBar.VerticalAlignment = VerticalAlignment.Bottom;
+        ProgressBar.HorizontalAlignment = HorizontalAlignment.Stretch;
+        ProgressBar.MouseDown += ProgressBar_MouseDown;
+        ProgressBar.MouseMove += ProgressBar_MouseMove;
 
         base.Content = _grid;
         _grid.Children.Add(_vlcControl);
@@ -428,7 +457,7 @@ public partial class Player : UserControl, IPlayer
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                Filter = "Video files|*.mp4;*.mkv;*.avi;*.mov;*.flv;*.wmv|All files|*.*",
+                Filter = "VideoItem files|*.mp4;*.mkv;*.avi;*.mov;*.flv;*.wmv|All files|*.*",
                 Multiselect = true
             };
             if (openFileDialog.ShowDialog() == true)
@@ -436,7 +465,7 @@ public partial class Player : UserControl, IPlayer
                 string[] fileNames = openFileDialog.FileNames;
                 foreach (string path in fileNames)
                 {
-                    Playlist.Add(new Video(path));
+                    Playlist.Add(new VideoItem(path));
                 }
             }
         };
@@ -494,6 +523,7 @@ public partial class Player : UserControl, IPlayer
         ProgressBar.Duration = Playlist.Current?.Duration ?? TimeSpan.Zero;
         ProgressBar.Value = 0.0;
         ProgressBar.ProgressText = "00 : 00 : 00/00 : 00 : 00";
+        ProgressBar.PopupText = "Volume: 100";
         ControlBox.VideoName = Playlist.Current?.Name ?? "No video loaded";
         ControlBox.VideoTime = "00 : 00 : 00/00 : 00 : 00";
     }
@@ -538,6 +568,7 @@ public partial class Player : UserControl, IPlayer
         double position = e.GetPosition(sender as ProgressBarControl).X;
         double width = (sender as ProgressBarControl).ActualWidth;
         double result = position / width * (sender as ProgressBarControl).Maximum;
+        (sender as ProgressBarControl).PopupText = $"Volume: {(int)result}";
         if (e.LeftButton == MouseButtonState.Pressed)
         {
             (sender as ProgressBarControl)._progressBar.Value = result;
@@ -833,12 +864,12 @@ public partial class Player : UserControl, IPlayer
                 _vlcControl.SourceProvider.MediaPlayer?.SetPause(true);
                 SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
                 _playerStatus = MediaPlayerStatus.Pause;
-                Logger.Log.Log(LogLevel.Debug, new string[2] { "File", "Console" }, "Media was paused.");
+                Logger.Log.Log(Thmd.Logs.LogLevel.Debug, new string[2] { "File", "Console" }, "Media was paused.");
             });
         }
         catch (Exception ex)
         {
-            Logger.Log.Log(LogLevel.Error, new string[2] { "Console", "File" }, "Error while pausing media: " + ex.Message);
+            Logger.Log.Log(Thmd.Logs.LogLevel.Error, new string[2] { "Console", "File" }, "Error while pausing media: " + ex.Message);
         }
     }
 
@@ -856,13 +887,13 @@ public partial class Player : UserControl, IPlayer
                 _stoped = true;
                 _playerStatus = MediaPlayerStatus.Stop;
                 SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
-                Logger.Log.Log(LogLevel.Info, new string[2] { "File", "Console" }, "Media was stopped.");
+                Logger.Log.Log(Thmd.Logs.LogLevel.Info, new string[2] { "File", "Console" }, "Media was stopped.");
                 _vlcControl.SourceProvider.MediaPlayer?.Stop();
             });
         }
         catch (Exception ex)
         {
-            Logger.Log.Log(LogLevel.Error, new string[2] { "File", "Console" }, ex.Message ?? "");
+            Logger.Log.Log(Thmd.Logs.LogLevel.Error, new string[2] { "File", "Console" }, ex.Message ?? "");
         }
     }
 
@@ -872,7 +903,7 @@ public partial class Player : UserControl, IPlayer
     public void Next()
     {
         Stop();
-        Logger.Log.Log(LogLevel.Info, new string[2] { "File", "Console" }, "Next media is playing.");
+        Logger.Log.Log(Thmd.Logs.LogLevel.Info, new string[2] { "File", "Console" }, "Next media is playing.");
         Playlist.MoveNext.Play();
     }
 
@@ -882,7 +913,7 @@ public partial class Player : UserControl, IPlayer
     public void Preview()
     {
         Stop();
-        Logger.Log.Log(LogLevel.Info, new string[2] { "File", "Console" }, "Before media is playing.");
+        Logger.Log.Log(Thmd.Logs.LogLevel.Info, new string[2] { "File", "Console" }, "Before media is playing.");
         Playlist.MovePrevious.Play();
     }
 
@@ -940,11 +971,11 @@ public partial class Player : UserControl, IPlayer
     /// Plays the specified media or the current playlist item.
     /// </summary>
     /// <param name="media">The video to play, or null to play the current playlist item.</param>
-    private void _Play(Video media = null)
+    private void _Play(VideoItem media = null)
     {
         if (Playlist.Current == null)
         {
-            Logger.Log.Log(LogLevel.Warning, new string[2] { "Console", "File" }, "Playlist is empty or current media is not set.");
+            Logger.Log.Log(Thmd.Logs.LogLevel.Warning, new string[2] { "Console", "File" }, "Playlist is empty or current media is not set.");
             return;
         }
         if (media == null)
@@ -958,7 +989,7 @@ public partial class Player : UserControl, IPlayer
                 _playing = true;
                 _paused = false;
                 _stoped = false;
-                Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "Playing media: " + Playlist.Current.Name);
+                Logger.Log.Log(Thmd.Logs.LogLevel.Info, new string[2] { "Console", "File" }, "Playing media: " + Playlist.Current.Name);
                 if (_vlcControl.SourceProvider.MediaPlayer.IsPausable())
                     _vlcControl.SourceProvider.MediaPlayer?.SetPause(false);
                 else
@@ -968,7 +999,7 @@ public partial class Player : UserControl, IPlayer
         }
         catch (Exception ex)
         {
-            Logger.Log.Log(LogLevel.Error, new string[2] { "Console", "File" }, "Error while playing media: " + ex.Message);
+            Logger.Log.Log(Thmd.Logs.LogLevel.Error, new string[2] { "Console", "File" }, "Error while playing media: " + ex.Message);
         }
     }
 
@@ -976,7 +1007,7 @@ public partial class Player : UserControl, IPlayer
     /// Plays the specified video.
     /// </summary>
     /// <param name="media">The video to play.</param>
-    public void Play(Video media)
+    public void Play(VideoItem media)
     {
         _Play(media);
     }
@@ -988,7 +1019,7 @@ public partial class Player : UserControl, IPlayer
     {
         if (Playlist.Current == null)
         {
-            Logger.Log.Log(LogLevel.Warning, new string[2] { "Console", "File" }, "Playlist is empty or current media is not set.");
+            Logger.Log.Log(Thmd.Logs.LogLevel.Warning, new string[2] { "Console", "File" }, "Playlist is empty or current media is not set.");
             return;
         }
         _Play();
@@ -1014,5 +1045,15 @@ public partial class Player : UserControl, IPlayer
         _vlcControl.Dispose();
         base.MouseMove -= OnMouseMove;
         base.Loaded -= UserControl_Loaded;
+    }
+
+    private void Grid_MouseLeave(object sender, MouseEventArgs e)
+    {
+
+    }
+
+    private void Grid_MouseMove(object sender, MouseEventArgs e)
+    {
+
     }
 }

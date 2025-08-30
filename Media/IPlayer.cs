@@ -1,4 +1,4 @@
-// Version: 0.1.1.86
+// Version: 0.1.3.28
 using System;
 using System.Windows;
 using Thmd.Controls;
@@ -32,7 +32,7 @@ public interface IPlayer
 
 	void Play();
 
-	void Play(Video media);
+	void Play(VideoItem media);
 
 	void Pause();
 

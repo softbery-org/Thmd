@@ -1,16 +1,16 @@
-// Version: 0.1.1.86
+// Version: 0.1.3.33
 using System;
 using System.Collections.Generic;
 
 namespace Thmd.Media;
 
-public class Playlist : List<Video>
+public class Playlist : List<VideoItem>
 {
-	private Video _current;
+	private VideoItem _current;
 
-	private Video _next;
+	private VideoItem _next;
 
-	private Video _previous;
+	private VideoItem _previous;
 
 	private TimeSpan _playlistDuration = TimeSpan.Zero;
 
@@ -18,9 +18,9 @@ public class Playlist : List<Video>
 
 	public string Description { get; set; }
 
-	public List<Video> Media { get; private set; }
+	public List<VideoItem> Media { get; private set; }
 
-	public Video Current
+	public VideoItem Current
 	{
 		get
 		{
@@ -32,7 +32,7 @@ public class Playlist : List<Video>
 		}
 	}
 
-	public Video Next
+	public VideoItem Next
 	{
 		get
 		{
@@ -44,7 +44,7 @@ public class Playlist : List<Video>
 		}
 	}
 
-	public Video Previous
+	public VideoItem Previous
 	{
 		get
 		{
@@ -104,11 +104,11 @@ public class Playlist : List<Video>
 	{
 		Name = name;
 		Description = description;
-		Media = new List<Video>();
+		Media = new List<VideoItem>();
 		CreationDate = DateTime.Now;
 	}
 
-	public new void Add(Video media)
+	public new void Add(VideoItem media)
 	{
 		if (media != null)
 		{
@@ -121,7 +121,7 @@ public class Playlist : List<Video>
 		}
 	}
 
-	public void RemoveMedia(Video media)
+	public void RemoveMedia(VideoItem media)
 	{
 		if (media != null)
 		{
@@ -148,7 +148,7 @@ public class Playlist : List<Video>
 			return;
 		}
 		Console.WriteLine("Media in playlist \"" + Name + "\":");
-		foreach (Video mediia in Media)
+		foreach (VideoItem mediia in Media)
 		{
 			Console.WriteLine("- (" + mediia.ToString() + ")");
 		}
@@ -162,7 +162,7 @@ public class Playlist : List<Video>
 	public TimeSpan GetTotalDuration()
 	{
 		TimeSpan totalDuration = TimeSpan.Zero;
-		foreach (Video media in Media)
+		foreach (VideoItem media in Media)
 		{
 			totalDuration += media.Duration;
 		}

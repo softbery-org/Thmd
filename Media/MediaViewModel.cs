@@ -1,4 +1,4 @@
-// Version: 0.1.1.86
+// Version: 0.1.3.33
 using System;
 using System.ComponentModel;
 
@@ -8,7 +8,7 @@ public class MediaViewModel : INotifyPropertyChanged
 {
 	private TimeSpan _playbackPosition;
 
-	public Video Media { get; }
+	public VideoItem Media { get; }
 
 	public string Name => Media.Name;
 
@@ -35,7 +35,7 @@ public class MediaViewModel : INotifyPropertyChanged
 
 	public event PropertyChangedEventHandler PropertyChanged;
 
-	public MediaViewModel(Video media)
+	public MediaViewModel(VideoItem media)
 	{
 		Media = media;
 	}

@@ -1,4 +1,4 @@
-// Version: 0.1.1.86
+// Version: 0.1.3.33
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -84,6 +84,6 @@ public class VideoTypeChecker
 
 	public override string ToString()
 	{
-		return "Video type: " + (IsAvi ? "AVI" : IsMp4 ? "MP4" : IsM3u8 ? "M3U8" : "Unknown");
+		return "VideoItem type: " + (IsAvi ? "AVI" : IsMp4 ? "MP4" : IsM3u8 ? "M3U8" : "Unknown");
 	}
 }

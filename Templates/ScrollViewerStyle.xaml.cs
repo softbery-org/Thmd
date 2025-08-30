@@ -4,6 +4,6 @@ using System.Windows.Markup;
 
 namespace Thmd.Templates;
 
-public partial class RepeatButton : ResourceDictionary
+public partial class ScrollViewerStyle : ResourceDictionary
 {
 }

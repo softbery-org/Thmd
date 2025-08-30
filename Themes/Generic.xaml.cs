@@ -2,8 +2,8 @@
 using System.Windows;
 using System.Windows.Markup;
 
-namespace Thmd.Templates;
+namespace Thmd.Themes;
 
-public partial class Buttons : ResourceDictionary
+public partial class Generic : ResourceDictionary
 {
 }

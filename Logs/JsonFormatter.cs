@@ -1,4 +1,4 @@
-// Version: 0.1.1.86
+// Version: 0.1.3.33
 using Newtonsoft.Json;
 
 namespace Thmd.Logs;

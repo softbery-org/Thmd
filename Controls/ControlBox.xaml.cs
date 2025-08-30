@@ -1,5 +1,5 @@
 // ControlBox.xaml.cs
-// Version: 0.1.1.85
+// Version: 0.1.1.92
 // A custom UserControl that provides a control bar for media playback, including buttons for
 // play, stop, next, previous, volume control, subtitles, fullscreen, and playlist management.
 // It also includes repeat mode controls and displays video name and playback time.
@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+
 using Thmd.Configuration;
 using Thmd.Media;
 using Thmd.Repeats;
@@ -164,6 +165,11 @@ public partial class ControlBox : UserControl
         _repeatIndex = 0;
 
         RepeatControl.RepeatType = _repeatTypes[_repeatIndex];
+    }
+
+    public ControlBox(IPlayer player) : this()
+    {
+        _player = player;
     }
 
     private void RepeatControl_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
