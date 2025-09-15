@@ -1,4 +1,4 @@
-// Version: 0.1.9.1
+// Version: 0.1.9.4
 namespace Thmd.Media;
 
 public enum MediaType

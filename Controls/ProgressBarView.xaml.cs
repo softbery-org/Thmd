@@ -1,4 +1,4 @@
-// Version: 0.1.2.33
+// Version: 0.1.2.36
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -120,6 +120,26 @@ namespace Thmd.Controls
                     //_rectangleBufferMedia.Width = (_progressBar.ActualWidth > 0) ? (value / _progressBar.Maximum) * _progressBar.ActualWidth : 0;
                     OnPropertyChanged(nameof(BufforBarValue));
                 }
+            }
+        }
+
+        public double Maximum
+        {
+            get => _progressBar.Maximum;
+            set
+            {
+                _progressBar.Maximum = value;
+                OnPropertyChanged(nameof(Maximum));
+            }
+        }
+
+        public double Minimum
+        {
+            get => _progressBar.Minimum;
+            set
+            {
+                _progressBar.Minimum = value;
+                OnPropertyChanged(nameof(Minimum));
             }
         }
 

@@ -1,4 +1,4 @@
-// Version: 0.1.2.24
+// Version: 0.1.2.27
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -223,7 +223,27 @@ namespace Thmd.Controls
                 UpdateVolumePopupText();
             };
 
-            // Subscribe to VlcControl events
+            UpdateRepeatButtonContent();
+            UpdateMuteButtonContent();
+        }
+
+        public ControlBar(IPlayer player) : this()
+        {
+            _player = player;
+
+            SubscribePlayerEvents();
+        }
+
+        public void SetPlayer(IPlayer player)
+        {
+            _player = player;
+
+            SubscribePlayerEvents();
+        }
+
+        private void SubscribePlayerEvents()
+        {
+            // Subscribe player events
             if (_player != null)
             {
 
@@ -237,14 +257,6 @@ namespace Thmd.Controls
                 _player.TimeChanged += (s, e) => UpdateCurrentTime(e.NewTime);
                 _player.LengthChanged += (s, e) => UpdateMediaDuration(e.NewLength);
             }
-
-            UpdateRepeatButtonContent();
-            UpdateMuteButtonContent();
-        }
-
-        public void SetPlayer(IPlayer player)
-        {
-            _player = player;
         }
 
         private static void OnVolumeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -375,21 +387,6 @@ namespace Thmd.Controls
                 return $"{(int)time.TotalHours:D2}:{time.Minutes:D2}:{time.Seconds:D2}";
             return $"{time.Minutes:D2}:{time.Seconds:D2}";
         }
-
-        /*protected async override void OnMouseEnter(MouseEventArgs e)
-        {
-            await this.StopOpacityStoryboard();
-
-            base.OnMouseEnter(e);
-        }
-
-        protected override void OnMouseLeave(MouseEventArgs e)
-        {
-            /*var fadeOut = (Storyboard)FindResource("fadeOut");
-            fadeOut.Begin();*/
-        /*
-            base.OnMouseLeave(e);
-        }*/
 
         protected void OnPropertyChanged(string propertyName)
         {
