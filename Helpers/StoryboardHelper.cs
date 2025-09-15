@@ -1,14 +1,19 @@
-// Version: 0.1.3.78
+// Version: 0.1.9.0
 // StoryboardHelper.cs
 // A static helper class that provides extension methods for animating the visibility of WPF controls
 // using storyboards. It supports asynchronous hiding and showing of controls with error handling
 // and logging for animation operations.
 
 using System;
+using System.ComponentModel;
+using System.IO.Ports;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
+using System.Windows.Threading;
+
 using Thmd.Logs;
 
 namespace Thmd.Helpers;
@@ -47,6 +52,33 @@ public static class StoryboardHelper
         {
             await sender.Show(storyboard);
         }
+    }
+
+    public static async Task RunStoryboad(this  Control sender, Storyboard storyboard)
+    {
+        if (storyboard != null)
+        {
+            await sender.Run(storyboard);
+        }
+    }
+
+    private static async Task Run(this Control sender, Storyboard storyboard)
+    {
+        Task task = Task.Run(delegate
+        {
+            try
+            {
+                sender.Dispatcher.InvokeAsync(delegate
+                {
+                    storyboard.Begin(sender, HandoffBehavior.Compose, isControllable: false);
+                });
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Log(LogLevel.Error, new string[] { "Console", "File" }, ex.Message ?? "");
+            }
+        });
+        await Task.FromResult(task).Result;
     }
 
     /// <summary>
@@ -106,4 +138,80 @@ public static class StoryboardHelper
         });
         await Task.FromResult(task).Result;
     }
+    /*
+    public static async Task ShowWithOpacity(this Control element)
+    {
+        if (DesignerProperties.GetIsInDesignMode(element))
+            return;
+
+        await element.Dispatcher.InvokeAsync(() =>
+        {
+            // Create a Storyboard
+            Storyboard storyboard = new Storyboard();
+
+            // Create a DoubleAnimation for opacity
+            DoubleAnimation opacityAnimation = new DoubleAnimation
+            {
+                From = 1.0, // Start at full transparent
+                To = 0.0,   // End at fully opacity
+                AutoReverse = false,
+                FillBehavior = FillBehavior.HoldEnd,
+                Duration = TimeSpan.FromSeconds(4), // Animation duration (1 second)
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseInOut } // Optional easing
+            };
+
+            // Set the target property to Opacity
+            Storyboard.SetTarget(opacityAnimation, element); // Replace 'targetElement' with your UI element
+            Storyboard.SetTargetProperty(opacityAnimation, new PropertyPath(UIElement.OpacityProperty));
+            Storyboard.SetTargetName(element, "fadeIn");
+            // Add the animation to the Storyboard
+            storyboard.Children.Add(opacityAnimation);
+            // Start the Storyboard
+            storyboard.Begin();
+        });
+    }
+
+    public static async Task StopOpacityStoryboard(this Control element)
+    {
+        if (DesignerProperties.GetIsInDesignMode(element))
+            return;
+
+        await element.Dispatcher.InvokeAsync(() =>
+        {
+            
+        });
+    }
+
+    public static async Task HideWithOpacity(this Control element)
+    {
+        if (DesignerProperties.GetIsInDesignMode(element))
+            return;
+
+        await element.Dispatcher.InvokeAsync(() =>
+        {
+            // Create a Storyboard
+            Storyboard storyboard = new Storyboard();
+
+            // Create a DoubleAnimation for opacity
+            DoubleAnimation opacityAnimation = new DoubleAnimation
+            {
+                From = 0.0, // Start at full opacity
+                To = 1.0,   // End at fully transparent
+                Duration = TimeSpan.FromSeconds(2), // Animation duration (1 second)
+                FillBehavior = FillBehavior.HoldEnd,
+                AutoReverse = false,
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseInOut } // Optional easing
+            };
+
+            // Set the target property to Opacity
+            Storyboard.SetTarget(opacityAnimation, element); // Replace 'targetElement' with your UI element
+            Storyboard.SetTargetName(element, "fadeOut");
+            Storyboard.SetTargetProperty(opacityAnimation, new PropertyPath(UIElement.OpacityProperty));
+
+            // Add the animation to the Storyboard
+            storyboard.Children.Add(opacityAnimation);
+            // Start the Storyboard
+            storyboard.Begin();
+        });
+    }*/
 }

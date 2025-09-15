@@ -1,49 +1,45 @@
-// Version: 0.1.3.78
+// Version: 0.1.9.0
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 using MediaToolkit;
 using MediaToolkit.Model;
+
+using Thmd.Controls;
 using Thmd.Logs;
 
 namespace Thmd.Media;
 
 [Serializable]
-public class VideoItem : INotifyPropertyChanged
+public class VideoItem : UIElement, INotifyPropertyChanged
 {
 	private Uri _uri;
-
 	private string _name;
-
 	private double _position = 0.0;
-
 	private double _volume = 1.0;
-
 	private double _duration;
-
 	private IPlayer _player;
-
 	private double _fps;
-
 	private Metadata _metadataMediaToolkit;
-
 	private string _format;
-
 	private string _frameSize;
-
 	private string _audioFormat;
-
 	private string _audioSampleRate;
-
 	private int _audioBitRate;
-
 	private string _audioChanelOutput;
 
-	public object MediaType { get; private set; }
-
-	public string Name
+    /// <summary>
+    /// MediaType property representing the type of media (e.g., video, audio, etc.).
+    /// </summary>
+    public object MediaType { get; private set; }
+    /// <summary>
+    /// Name property representing the media name.
+    /// </summary>
+    public string Name
 	{
 		get
 		{
@@ -55,10 +51,14 @@ public class VideoItem : INotifyPropertyChanged
 			OnPropertyChanged("Name");
 		}
 	}
-
-	public Uri Uri => _uri;
-
-	public TimeSpan Duration
+    /// <summary>
+    /// URI property representing the media file path.
+    /// </summary>
+    public Uri Uri => _uri;
+    /// <summary>
+    /// Duration property in TimeSpan format.
+    /// </summary>
+    public TimeSpan Duration
 	{
 		get
 		{
@@ -66,26 +66,50 @@ public class VideoItem : INotifyPropertyChanged
 			return TimeSpan.Parse(stringTime);
 		}
 	}
-
-	public IPlayer Player => _player;
-
-	public double Fps => GetFPS();
-
-	public string Format => GetFormat();
-
-	public string FrameSize => GetFrameSize();
-
-	public string AudioFormat => GetAudioFormat();
-
-	public string AudioSampleRate => GetAudioSampleRate();
-
-	public int AudioBitRate => GetAudioBitRate();
-
-	public string AudioChanelOutput => GetAudioChanelOutput();
-
-	public IMediaStream MediaStream { get; private set; }
-
-	public double Position
+    /// <summary>
+    /// Player instance associated with this media item.
+    /// </summary>
+    public IPlayer Player => _player;
+    /// <summary>
+    /// Frames per second (FPS) of the video, e.g., 24.0, 30.0, 60.0, etc.
+    /// </summary>
+    public double Fps => GetFPS();
+    /// <summary>
+    /// Video format, e.g., "mp4", "mkv", "avi", etc.
+    /// </summary>
+    public string Format => GetFormat();
+    /// <summary>
+    /// Frame size, e.g., "1920x1080", "1280x720", etc.
+    /// </summary>
+    public string FrameSize => GetFrameSize();
+    /// <summary>
+    /// Audio format, e.g., "mp3", "aac", "ac3", etc.
+    /// </summary>
+    public string AudioFormat => GetAudioFormat();
+    /// <summary>
+    /// Audio sample rate in Hz, e.g., "44100 Hz", "48000 Hz", etc.
+    /// </summary>
+    public string AudioSampleRate => GetAudioSampleRate();
+    /// <summary>
+    /// Audio bit rate in kbps, e.g., 128, 256, etc.
+    /// </summary>
+    public int AudioBitRate => GetAudioBitRate();
+    /// <summary>
+    /// Audio channel output, e.g., "stereo", "5.1", etc.
+    /// </summary>
+    public string AudioChanelOutput => GetAudioChanelOutput();
+	/// <summary>
+    /// Media stream information, if no media stream is found, it will be null.
+    /// </summary>
+    public IMediaStream MediaStream { get; private set; }
+    /// <summary>
+    /// Subtitle file path, if no subtitle is found, it will be an empty string.
+    /// </summary>
+    public string SubtitlePath { get; set; }
+    /// <summary>
+    /// Position property in milliseconds, range from 0.0 to Duration.
+    /// </summary>
+    public double Position
 	{
 		get
 		{
@@ -102,10 +126,14 @@ public class VideoItem : INotifyPropertyChanged
 			}
 		}
 	}
-
-	public string PositionFormatted => TimeSpan.FromMilliseconds(_position).ToString("hh\\:mm\\:ss");
-
-	public double Volume
+    /// <summary>
+    /// Get the formatted position as a string in "hh:mm:ss" format.
+    /// </summary>
+    public string PositionFormatted => TimeSpan.FromMilliseconds(_position).ToString("hh\\:mm\\:ss");
+    /// <summary>
+    /// Volume property, range from 0.0 (mute) to 1.0 (max volume).
+    /// </summary>
+    public double Volume
 	{
 		get
 		{
@@ -122,38 +150,70 @@ public class VideoItem : INotifyPropertyChanged
 		}
 	}
 
-	public event PropertyChangedEventHandler PropertyChanged;
+    /// <summary>
+    /// Invoke when a property is changed.
+    /// </summary>
+    public event PropertyChangedEventHandler PropertyChanged;
 
-	public event EventHandler<double> PositionChanged;
+    /// <summary>
+    /// Invoke when the position is changed.
+    /// </summary>
+    public event EventHandler<double> PositionChanged;
 
-	public event EventHandler<double> VolumeChanged;
+    /// <summary>
+    /// Invoke when the volume is changed.
+    /// </summary>
+    public event EventHandler<double> VolumeChanged;
 
-	public event EventHandler<IPlayer> PlayerChanged;
+    /// <summary>
+    /// Invoke when the player instance is changed.
+    /// </summary>
+    public event EventHandler<IPlayer> PlayerChanged;
 
-	protected virtual void OnPropertyChanged(string propertyName)
+    /// <summary>
+    /// Invoke when a property is changed.
+    /// </summary>
+    /// <param name="propertyName">property name in string</param>
+    protected virtual void OnPropertyChanged(string propertyName)
 	{
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 	}
 
-	protected virtual void OnPositionChanged(double newPosition)
+    /// <summary>
+    /// Invoke when the position is changed.
+    /// </summary>
+    /// <param name="newPosition">New position</param>
+    protected virtual void OnPositionChanged(double newPosition)
 	{
-		Logger.Log.Log(LogLevel.Info, new string[2] { "File", "Console" }, $"CurrentTime change event: {newPosition}");
+		Logger.Log.Log(LogLevel.Info, new string[2] { "File", "Console" }, $"Position change event: {newPosition}");
         PositionChanged?.Invoke(this, newPosition);
 	}
 
-	protected virtual void OnVolumeChanged(double newVolume)
+    /// <summary>
+    /// Invoke when the volume is changed.
+    /// </summary>
+    /// <param name="newVolume">double volume value</param>
+    protected virtual void OnVolumeChanged(double newVolume)
 	{
 		Logger.Log.Log(LogLevel.Info, new string[2] { "File", "Console" }, $"Volume change: {newVolume}");
         VolumeChanged?.Invoke(this, newVolume);
 	}
 
-	protected virtual void OnPlayerChanged(IPlayer player)
+    /// <summary>
+    /// Invoke when the player instance is changed.
+    /// </summary>
+    /// <param name="player">IPlayer interface</param>
+    protected virtual void OnPlayerChanged(IPlayer player)
 	{
 		Logger.Log.Log(LogLevel.Info, new string[2] { "File", "Console" }, $"Player change event: {player}");
         PlayerChanged?.Invoke(this, player);
 	}
 
-	public VideoItem(string path)
+    /// <summary>
+    /// Initialize a new instance of the VideoItem class with a specified file path.
+    /// </summary>
+    /// <param name="path">Media path</param>
+    public VideoItem(string path)
 	{
 		_uri = new Uri(path);
 		_name = new FileInfo(_uri.LocalPath).Name;
@@ -179,21 +239,34 @@ public class VideoItem : INotifyPropertyChanged
 			_audioBitRate = 0;
 			_audioChanelOutput = string.Empty;
 		}
-	}
+		AutoSetSubtitle(path);
+    }
 
-	public VideoItem(string path, IPlayer player)
+    /// <summary>
+    /// Initialize a new instance of the VideoItem class with a specified media player.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="player"></param>
+    public VideoItem(string path, IPlayer player)
 		: this(path)
 	{
 		_player = player;
 	}
 
-	public void Dispose()
+    /// <summary>
+    /// Dispose the media item and release resources.
+    /// </summary>
+    public void Dispose()
 	{
 		_player.Dispose();
 		Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "[" + GetType().Name + "]: Disposing: " + Name);
 	}
 
-	public void SetPlayer(IPlayer player)
+    /// <summary>
+    /// Set the media player instance for this media item.
+    /// </summary>
+    /// <param name="player"></param>
+    public void SetPlayer(IPlayer player)
 	{
 		try
 		{
@@ -206,32 +279,82 @@ public class VideoItem : INotifyPropertyChanged
 		}
 	}
 
-	public void Play()
+    private void AutoSetSubtitle(string path)
+    {
+        FileInfo file = new FileInfo(path);
+        var tmp = ReturnNameWithoutExtension(file);
+        var subtitle = String.Empty;
+
+        if (File.Exists($"{tmp}.{Subtitles.SubtitleExtensions.txt}"))
+        {
+            SubtitlePath = $"{tmp}.{Subtitles.SubtitleExtensions.txt}";
+            Console.WriteLine($"Auto set subtitle {SubtitlePath}");
+        }
+        else if (File.Exists($"{tmp}.{Subtitles.SubtitleExtensions.sub}"))
+        {
+            SubtitlePath = $"{tmp}.{Subtitles.SubtitleExtensions.sub}";
+            Console.WriteLine($"Auto set subtitle {SubtitlePath}");
+        }
+        else if (File.Exists($"{tmp}.{Subtitles.SubtitleExtensions.srt}"))
+        {
+            SubtitlePath = $"{tmp}.{Subtitles.SubtitleExtensions.srt}";
+            Console.WriteLine($"Auto set subtitle {SubtitlePath}");
+        }
+        else
+        {
+            SubtitlePath = String.Empty;
+            Console.WriteLine("No auto subtitle.");
+        }
+    }
+	
+	private string ReturnNameWithoutExtension(FileInfo item)
+    {
+        return item.FullName.Remove(item.FullName.Length - item.Extension.Length, item.Extension.Length);
+    }
+
+    /// <summary>
+    /// Start or resume media playback.
+    /// </summary>
+    public void Play()
 	{
 		_player.Play(this);
 		Logger.Log.Log(LogLevel.Info, new string[]{"Console", "File"}, "[" + GetType().Name + "]: Playing media " + Name);
 	}
 
-	public void Pause()
+    /// <summary>
+    /// Pause the media playback.
+    /// </summary>
+    public void Pause()
 	{
 		_player.Pause();
         Logger.Log.Log(LogLevel.Info, new string[] { "Console", "File" }, "[" + GetType().Name + "]: Pause media " + Name);
     }
 
-	public void Stop()
+    /// <summary>
+    /// Stop the media playback and reset the position to the beginning.
+    /// </summary>
+    public void Stop()
 	{
 		_player.Stop();
 		Position = 0.0;
         Logger.Log.Log(LogLevel.Info, new string[] { "Console", "File" }, "[" + GetType().Name + "]: Stopped media " + Name);
 	}
 
-	public void Forward(double seconds)
+    /// <summary>
+    /// Move the media position forward by a specified number of seconds.
+    /// </summary>
+    /// <param name="seconds">In seconds</param>
+    public void Forward(double seconds)
 	{
 		Position += seconds;
 		Logger.Log.Log(LogLevel.Info, new string[] { "Console", "File" }, $"[{GetType().Name}]: Change position to forward with +{seconds} second(s)");
 	}
 
-	public void Rewind(double seconds)
+    /// <summary>
+    /// Rewind the media position by a specified number of seconds.
+    /// </summary>
+    /// <param name="seconds">in seconds</param>
+    public void Rewind(double seconds)
 	{
 		Position -= seconds;
 		Logger.Log.Log(LogLevel.Info, new string[] { "Console", "File" }, $"[{GetType().Name}]: Rewind position by -{seconds} second(s)");
@@ -266,61 +389,156 @@ public class VideoItem : INotifyPropertyChanged
 
 	private double GetDuration()
 	{
-		double duration = _metadataMediaToolkit.Duration.TotalMilliseconds;
-		Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: Get media {TimeSpan.FromMilliseconds(duration)} duration");
-		return duration;
+		try
+		{
+			double duration = _metadataMediaToolkit.Duration.TotalMilliseconds;
+			Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: Get media {TimeSpan.FromMilliseconds(duration)} duration");
+            return duration;
+        }
+		catch (Exception ex)
+		{
+            Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: {ex.Message}");
+            return 0;
+		}
 	}
 
 	private double GetFPS()
 	{
-		double fps = _metadataMediaToolkit.VideoData.Fps;
-		Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: Get media {fps} frame_size");
-		return fps;
+        try
+        {
+			if (_metadataMediaToolkit != null)
+			{
+
+				double fps = _metadataMediaToolkit.VideoData.Fps;
+				Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: Get media {fps} frame_size");
+				return fps;
+			}
+			return 0;
+		}
+		catch (Exception ex)
+		{
+            Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: {ex.Message}");
+            return 0;
+		}
 	}
 
 	private string GetFormat()
 	{
-		string format = _metadataMediaToolkit.VideoData.Format;
-		Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "[" + GetType().Name + "]: Get media " + format + " format");
-		return format;
+		try
+		{
+			if (_metadataMediaToolkit != null)
+			{
+				string format = _metadataMediaToolkit.VideoData.Format;
+				Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "[" + GetType().Name + "]: Get media " + format + " format");
+				return format;
+			}
+			return String.Empty;
+		}
+		catch (Exception ex)
+		{
+            Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: {ex.Message}");
+			return String.Empty;
+		}
 	}
 
 	private string GetFrameSize()
 	{
-		string frame_size = _metadataMediaToolkit.VideoData.FrameSize;
-		Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "[" + GetType().Name + "]: Get media " + frame_size + " frame_size");
-		return frame_size;
+    try
+    {
+			if (_metadataMediaToolkit != null)
+			{
+				string frame_size = _metadataMediaToolkit.VideoData.FrameSize;
+				Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "[" + GetType().Name + "]: Get media " + frame_size + " frame_size");
+				return frame_size;
+			}
+			return String.Empty;
+	}
+		catch (Exception ex)
+		{
+            Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: {ex.Message}");
+			return String.Empty;
+		}
 	}
 
 	private string GetAudioFormat()
 	{
-		string format = _metadataMediaToolkit.AudioData.Format;
-		Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "[" + GetType().Name + "]: Get media " + format + " audio_format");
-		return format;
+    try
+    {
+			if (_metadataMediaToolkit != null)
+			{
+				string format = _metadataMediaToolkit.AudioData.Format;
+				Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "[" + GetType().Name + "]: Get media " + format + " audio_format");
+				return format;
+			}
+			return String.Empty;
+}
+		catch (Exception ex)
+		{
+            Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: {ex.Message}");
+			return String.Empty;
+		}
 	}
 
 	private string GetAudioSampleRate()
 	{
-		string rate = _metadataMediaToolkit.AudioData.SampleRate;
-		Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "[" + GetType().Name + "]: Get media " + rate + " audio_sample_rate");
-		return rate;
+    try
+    {
+			if (_metadataMediaToolkit != null)
+			{
+				string rate = _metadataMediaToolkit.AudioData.SampleRate;
+				Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "[" + GetType().Name + "]: Get media " + rate + " audio_sample_rate");
+				return rate;
+			}
+			return String.Empty;
+}
+		catch (Exception ex)
+		{
+            Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: {ex.Message}");
+			return String.Empty;
+		}
 	}
 
 	private int GetAudioBitRate()
 	{
-		int rate = _metadataMediaToolkit.AudioData.BitRateKbs;
-		Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: Get media {rate} audio_bit_rate");
-		return rate;
+    try
+    {
+			if (_metadataMediaToolkit != null)
+			{
+				int rate = _metadataMediaToolkit.AudioData.BitRateKbs;
+				Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: Get media {rate} audio_bit_rate");
+				return rate;
+			}
+			return 0;
+	}
+		catch (Exception ex)
+		{
+            Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: {ex.Message}");
+			return 0;
+		}
 	}
 
 	private string GetAudioChanelOutput()
 	{
-		string chanel_output = _metadataMediaToolkit.AudioData.ChannelOutput;
-		Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "[" + GetType().Name + "]: Get media " + chanel_output + " audio_channel_output");
-		return chanel_output;
+	try {
+			if (_metadataMediaToolkit != null)
+			{
+				string chanel_output = _metadataMediaToolkit.AudioData.ChannelOutput;
+				Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "[" + GetType().Name + "]: Get media " + chanel_output + " audio_channel_output");
+				return chanel_output;
+			}
+			return String.Empty;
+}
+		catch (Exception ex)
+		{
+            Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: {ex.Message}");
+			return String.Empty;
+		}
 	}
-
-	public override string ToString()
+    /// <summary>
+    /// Override ToString method to provide a string representation of the VideoItem.
+    /// </summary>
+    /// <returns>string</returns>
+    public override string ToString()
 	{
 		return $"Name: {Name}, Duration: {Duration}, Format: {Format}";
 	}

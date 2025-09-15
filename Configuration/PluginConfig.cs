@@ -1,5 +1,5 @@
 // PluginConfig.cs
-// Version: 0.1.3.78
+// Version: 0.1.9.1
 // A class representing the configuration settings for a plugin in the application.
 // Stores properties such as the plugin's name, file path, enabled status, version, and description.
 

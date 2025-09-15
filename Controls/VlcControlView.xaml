@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="Thmd.Controls.VlcControlView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Thmd.Controls"
+             xmlns:vlc="clr-namespace:Vlc.DotNet.Wpf;assembly=Vlc.DotNet.Wpf"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <vlc:VlcControl x:Name="_vlcControl" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        <local:SubtitleControl x:Name="_subtitleControl" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,50"/>
+        <local:PlaylistView x:Name="_playlist" Width="400" Height="250"/>
+        <local:ControlBar x:Name="_controlBar" Width="620" Height="60" Margin="0,0"/>
+        <local:ProgressBarView x:Name="_progressBar" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" ProgressText="00:00:00"/>
+    </Grid>
+</UserControl>

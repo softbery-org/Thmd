@@ -1,4 +1,4 @@
-// Version: 0.1.3.78
+// Version: 0.1.9.1
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -86,7 +86,7 @@ public class SubtitleManager
 		FileInfo file = new FileInfo(path);
 		if (!file.Exists)
 		{
-			throw new FileNotFoundException("Subtitle file not found.", path);
+			throw new FileNotFoundException("SetSubtitle file not found.", path);
 		}
 		try
 		{

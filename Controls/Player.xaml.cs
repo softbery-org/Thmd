@@ -1,5 +1,5 @@
 // Player.xaml.cs
-// Version: 0.1.3.48
+// Version: 0.1.8.63
 // A custom UserControl for media playback using VLC, integrated with a playlist, progress bar,
 // control bar, and subtitle functionality. It supports play, pause, stop, seek, volume control,
 // fullscreen toggling, and repeat modes including random playback, with event handling for
@@ -55,9 +55,6 @@ public partial class Player : UserControl, IPlayer
     // Flag indicating if the mouse is moving.
     private bool _isMouseMove;
 
-    // Helper for resizing control elements.
-    private readonly ResizeControlHelper _resizeHelper;
-
     // One volume level of the media player.
     private double _volume;
 
@@ -83,6 +80,12 @@ public partial class Player : UserControl, IPlayer
     private SubtitleControl _subtitleControl;
 
     private TimerBox _timerBox;
+
+    private bool _timerVisibility = true;
+
+    private Visibility _subtitleVisibility = Visibility.Hidden;
+
+    private InfoBox _infoBox;
 
     // Flags indicating the current playback state.
     private bool _playing = false;
@@ -113,7 +116,7 @@ public partial class Player : UserControl, IPlayer
     /// <summary>
     /// Gets or sets the progress bar control for displaying playback progress.
     /// </summary>
-    public ProgressBarControl ProgressBar { get; set; }
+    public ProgressBarBox ProgressBar { get; set; }
 
     /// <summary>
     /// Gets or sets the control bar for media playback controls.
@@ -148,10 +151,10 @@ public partial class Player : UserControl, IPlayer
     /// <summary>
     /// Gets or sets the current playback position of the media.
     /// </summary>
-    public TimeSpan CurrentTime
+    public TimeSpan Position
     {
         get => _currentTime;
-        set => OnPropertyChanged("CurrentTime", ref _currentTime, value);
+        set => OnPropertyChanged("Position", ref _currentTime, value);
     }
 
     /// <summary>
@@ -170,7 +173,8 @@ public partial class Player : UserControl, IPlayer
     public bool isPlaying
     {
         get => _playing;
-        set {
+        set
+        {
             if (value)
             {
                 _playing = true;
@@ -211,17 +215,19 @@ public partial class Player : UserControl, IPlayer
     /// </summary>
     public Visibility SubtitleVisibility
     {
-        get => _subtitleControl.Visibility;
+        get => _subtitleVisibility;
         set
         {
             if (value == Visibility.Visible && string.IsNullOrEmpty(_subtitleControl.FilePath))
             {
-                MessageBox.Show("No subtitle file selected.", "Subtitle Error", MessageBoxButton.OK, MessageBoxImage.Hand);
+                MessageBox.Show("No subtitle file selected.", "SetSubtitle Error", MessageBoxButton.OK, MessageBoxImage.Hand);
             }
             else
             {
-                _subtitleControl.Visibility = value;
+                _subtitleVisibility = value;
+                _subtitleControl.Visibility = _subtitleVisibility;
             }
+            OnPropertyChanged(nameof(SubtitleVisibility), ref _subtitleVisibility, value);
         }
     }
 
@@ -278,24 +284,41 @@ public partial class Player : UserControl, IPlayer
         {
             this.Fullscreen();
             _fullscreen = FullscreenHelper.IsFullscreen;
+            if (!_fullscreen)
+                ControlBox.BtnFullscreen.Style = FindResource("FullscreenOn") as Style;
+            else
+                ControlBox.BtnFullscreen.Style = FindResource("FullscreenOff") as Style;
             OnPropertyChanged("Fullscreen", ref _fullscreen, value);
         }
     }
 
-    public TimerBox TimerBox
+    public bool TimerVisibility
     {
-        get => _timerBox;
+        get => _timerVisibility;
         set
         {
-            _timerBox = value;
-            OnPropertyChanged(nameof(TimerBox), ref _timerBox, value);
+            if (value)
+                _timerBox.Visibility = Visibility.Visible;
+            else
+                _timerBox.Visibility = Visibility.Hidden;
+
+            _timerVisibility = value;
+            OnPropertyChanged(nameof(TimerVisibility), ref _timerVisibility, value);
         }
     }
+
+    public ControlBar ControlBar => throw new NotImplementedException();
+
+    public Visibility PlaylistVisibility { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     /// <summary>
     /// Occurs when a property value changes, used for data binding.
     /// </summary>
     public event PropertyChangedEventHandler PropertyChanged;
+    public event EventHandler<VlcMediaPlayerPlayingEventArgs> Playing;
+    public event EventHandler<VlcMediaPlayerStoppedEventArgs> Stopped;
+    public event EventHandler<VlcMediaPlayerLengthChangedEventArgs> LengthChanged;
+    public event EventHandler<VlcMediaPlayerTimeChangedEventArgs> TimeChanged;
 
     /// <summary>
     /// Sets the system execution state to prevent sleep during playback.
@@ -326,7 +349,7 @@ public partial class Player : UserControl, IPlayer
     {
         InitializeComponent();
 
-        Core.Initialize(Path.Combine(Logger.Config.LibVlcPath, (IntPtr.Size == 4) ? "win-x86" : "win-x64"));
+        //Core.Initialize(Path.Combine(Logger.Config.LibVlcPath, (IntPtr.Size == 4) ? "win-x86" : "win-x64"));
 
         // Optymalizacja renderowania WPF
         RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.HighQuality);
@@ -340,7 +363,7 @@ public partial class Player : UserControl, IPlayer
         //InitializeVsrOptimization();
 
         ControlBox = new ControlBox(this);
-        _resizeHelper = new ResizeControlHelper(ControlBox);
+        var resizer = new ResizeControlHelper(ControlBox);
         ControlBox.VerticalAlignment = VerticalAlignment.Top;
         ControlBox.HorizontalAlignment = HorizontalAlignment.Left;
         ControlBarButtonEvent();
@@ -349,9 +372,13 @@ public partial class Player : UserControl, IPlayer
         Playlist.Width = 600.0;
         Playlist.Height = 350.0;
         Playlist.Visibility = Visibility.Hidden;
-        _resizeHelper = new ResizeControlHelper(Playlist);
 
-        string[] mediaOptions = new string[2] { "--no-video-title-show", "--no-xlib" };
+        //_playlistBox = new PlaylistBox();
+        //_playlistBox._playlist = Playlist;
+
+        resizer = new ResizeControlHelper(Playlist);
+
+        string[] mediaOptions = new string[] { "--no-video-title-show", /*"--no-xlib",*/ "--no-sub-autodetect-file" };
         _vlcControl = new VlcControl();
         _vlcControl.SourceProvider.CreatePlayer(new DirectoryInfo(Path.Combine(Logger.Config.LibVlcPath, (IntPtr.Size == 4) ? "win-x86" : "win-x64")), mediaOptions);
         _vlcControl.SourceProvider.MediaPlayer.Playing += OnPlaying;
@@ -359,7 +386,7 @@ public partial class Player : UserControl, IPlayer
         _vlcControl.SourceProvider.MediaPlayer.Paused += OnPaused;
         _vlcControl.SourceProvider.MediaPlayer.EndReached += OnEndReached;
         _vlcControl.SourceProvider.MediaPlayer.Buffering += OnBuffering;
-        _vlcControl.SourceProvider.MediaPlayer.TimeChanged += MediaPlayer_TimeChanged;
+        _vlcControl.SourceProvider.MediaPlayer.TimeChanged += OnTimeChanged;
         _volume = _vlcControl.SourceProvider.MediaPlayer.Audio.Volume;
         ControlBox._playerBtnVolume._volumeProgressBar.ProgressText = $"Volume: {(int)_volume}";
         ControlBox._playerBtnVolume._volumeProgressBar._progressBar.Value = _volume;
@@ -370,9 +397,9 @@ public partial class Player : UserControl, IPlayer
         _subtitleControl.VerticalAlignment = VerticalAlignment.Bottom;
         _subtitleControl.HorizontalAlignment = HorizontalAlignment.Stretch;
         _subtitleControl.Margin = new Thickness(0.0, 0.0, 0.0, 30.0);
-        _subtitleControl.Visibility = Visibility.Collapsed;
+        _subtitleVisibility = Visibility.Hidden;
 
-        ProgressBar = new ProgressBarControl(this);
+        ProgressBar = new ProgressBarBox(this);
         ProgressBar.VerticalAlignment = VerticalAlignment.Bottom;
         ProgressBar.HorizontalAlignment = HorizontalAlignment.Stretch;
         ProgressBar.MouseDown += ProgressBar_MouseDown;
@@ -381,17 +408,22 @@ public partial class Player : UserControl, IPlayer
         _timerBox = new TimerBox(this);
         _timerBox.HorizontalAlignment = HorizontalAlignment.Right;
         _timerBox.VerticalAlignment = VerticalAlignment.Top;
+        _timerVisibility = true;
+
+        _infoBox = new InfoBox(this);
+        _infoBox.DrawInfoText(String.Empty);
 
         base.Content = _grid;
         _grid.Children.Add(_vlcControl);
         _grid.Children.Add(_timerBox);
+        _grid.Children.Add(_infoBox);
         _grid.Children.Add(_subtitleControl);
         _grid.Children.Add(ProgressBar);
         _grid.Children.Add(ControlBox);
         _grid.Children.Add(Playlist);
 
         _mouseNotMoveWorker = new BackgroundWorker();
-        _mouseNotMoveWorker.DoWork += _mouseNotMoveWorker_DoWork;
+        _mouseNotMoveWorker.DoWork += MouseNotMoveWorker_DoWork;
         _mouseNotMoveWorker.RunWorkerAsync();
 
         base.MouseMove += OnMouseMove;
@@ -408,23 +440,29 @@ public partial class Player : UserControl, IPlayer
             if (_playerStatus == MediaPlayerStatus.Play)
             {
                 Pause();
+                _infoBox.DrawInfoText($"Pause");
             }
             else if (_playerStatus == MediaPlayerStatus.Pause)
             {
                 Play();
+                _infoBox.DrawInfoText($"Play");
             }
         };
         ControlBox.BtnStop.Click += delegate
         {
             Stop();
+            _infoBox.DrawInfoText($"Stop");
         };
         ControlBox.BtnNext.Click += delegate
         {
             Next();
+            _infoBox.DrawInfoText($"Next");
         };
         ControlBox.BtnPrevious.Click += delegate
         {
             Preview();
+            _infoBox.DrawInfoText($"Preview");
+
         };
         ControlBox.BtnClose.Click += async delegate
         {
@@ -440,6 +478,7 @@ public partial class Player : UserControl, IPlayer
                 ControlBox._playerBtnVolume._volumeProgressBar._progressBar.Value = (int)_volume;
                 ControlBox._playerBtnVolume._volumeProgressBar.ProgressText = $"Volume: {(int)_volume}";
             }
+            _infoBox.DrawInfoText($"Volume up: {_volume}");
         };
         ControlBox.BtnVolumeDown.Click += delegate
         {
@@ -449,42 +488,34 @@ public partial class Player : UserControl, IPlayer
                 ControlBox._playerBtnVolume._volumeProgressBar._progressBar.Value = (int)_volume;
                 ControlBox._playerBtnVolume._volumeProgressBar.ProgressText = $"Volume: {(int)_volume}";
             }
+            _infoBox.DrawInfoText($"Volume down: {_volume}");
         };
         ControlBox.BtnMute.Click += delegate
         {
+            var mute = String.Empty;
             if (_vlcControl.SourceProvider.MediaPlayer.Audio.IsMute)
             {
-                _vlcControl.SourceProvider.MediaPlayer.Audio.IsMute = false;
-                ControlBox.BtnMute.Content = "isMute";
-                ControlBox.BtnMute.Style = FindResource("isMute") as Style;
+                _vlcControl.SourceProvider.MediaPlayer.Audio.ToggleMute();
+                ControlBox.BtnMute.Style = FindResource("Mute") as Style;
                 ControlBox._playerBtnVolume._volumeProgressBar._progressBar.Value = _vlcControl.SourceProvider.MediaPlayer.Audio.Volume;
                 ControlBox._playerBtnVolume._volumeProgressBar.ProgressText = $"Volume: {(int)_volume}";
                 _volume = _vlcControl.SourceProvider.MediaPlayer.Audio.Volume;
+                mute = "On";
             }
             else
             {
-                _vlcControl.SourceProvider.MediaPlayer.Audio.IsMute = true;
+                _vlcControl.SourceProvider.MediaPlayer.Audio.ToggleMute();
                 ControlBox.BtnMute.Style = FindResource("Unmute") as Style;
                 ControlBox._playerBtnVolume._volumeProgressBar._progressBar.Value = 0.0;
                 _volume = _vlcControl.SourceProvider.MediaPlayer.Audio.Volume;
                 ControlBox._playerBtnVolume._volumeProgressBar.ProgressText = $"Volume: {(int)_volume}";
+                mute = "Off";
             }
+            _infoBox.DrawInfoText($"Audio mute: {mute}");
         };
         ControlBox.BtnOpen.Click += delegate
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog
-            {
-                Filter = "VideoItem files|*.mp4;*.mkv;*.avi;*.mov;*.flv;*.wmv|All files|*.*",
-                Multiselect = true
-            };
-            if (openFileDialog.ShowDialog() == true)
-            {
-                string[] fileNames = openFileDialog.FileNames;
-                foreach (string path in fileNames)
-                {
-                    Playlist.Add(new VideoItem(path));
-                }
-            }
+            OpenMediaFile();
         };
         ControlBox.BtnPlaylist.Click += delegate
         {
@@ -496,38 +527,95 @@ public partial class Player : UserControl, IPlayer
             {
                 Playlist.Visibility = Visibility.Visible;
             }
+            _infoBox.DrawInfoText($"Playlist box: {Playlist.Visibility.ToString()}");
         };
         ControlBox.BtnFullscreen.Click += delegate
         {
             if (_vlcControl.SourceProvider.MediaPlayer.Video.FullScreen)
             {
                 _vlcControl.SourceProvider.MediaPlayer.Video.FullScreen = false;
-                ControlBox.BtnFullscreen.Style = FindResource("FullscreenOn") as Style;
                 Fullscreen = false;
             }
             else
             {
                 _vlcControl.SourceProvider.MediaPlayer.Video.FullScreen = true;
-                ControlBox.BtnFullscreen.Style = FindResource("FullscreenOff") as Style;
                 Fullscreen = true;
             }
+            var result = Fullscreen ? "On":"Off";
+            _infoBox.DrawInfoText($"Fullscreen: {result}");
         };
         ControlBox.BtnSubtitle.Click += delegate
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog
-            {
-                Filter = "Subtitle files|*.txt;*.sub;*.srt|All files|*.*",
-                Multiselect = true
-            };
-            if (openFileDialog.ShowDialog() == true)
-            {
-                string[] fileNames = openFileDialog.FileNames;
-                foreach (string path in fileNames)
-                {
-                    Subtitle(path);
-                }
-            }
+            OpenSubtitleFile();
+            _subtitleVisibility = Visibility.Visible;
         };
+    }
+
+    private void OpenMediaFile()
+    {
+        OpenFileDialog openFileDialog = new OpenFileDialog
+        {
+            Filter = "VideoItem files|*.mp4;*.mkv;*.avi;*.mov;*.flv;*.wmv|All files|*.*",
+            Multiselect = true
+        };
+        if (openFileDialog.ShowDialog() == true)
+        {
+            string[] fileNames = openFileDialog.FileNames;
+            foreach (string path in fileNames)
+            {
+                Playlist.AddAsync(new VideoItem(path));
+            }
+        }
+    }
+
+    private void OpenSubtitleFile()
+    {
+        OpenFileDialog openFileDialog = new OpenFileDialog
+        {
+            Filter = "SetSubtitle files|*.txt;*.sub;*.srt|All files|*.*",
+            Multiselect = true
+        };
+        if (openFileDialog.ShowDialog() == true)
+        {
+            string[] fileNames = openFileDialog.FileNames;
+            foreach (string path in fileNames)
+            {
+                SetSubtitle(path);
+                _subtitleVisibility = Visibility.Visible;
+            }
+        }
+    }
+
+    private void AutoOpenSubtitle(string path)
+    {
+        FileInfo file = new FileInfo(path);
+        var tmp = ReturnNameWithoutExtension(file);
+        var subtitle = String.Empty;
+
+        if (File.Exists($"{tmp}.{Subtitles.SubtitleExtensions.txt}"))
+        {
+            SetSubtitle($"{tmp}.{Subtitles.SubtitleExtensions.txt}");
+            Console.WriteLine(_subtitleControl.FilePath);
+        }
+        else if (File.Exists($"{tmp}.{Subtitles.SubtitleExtensions.sub}"))
+        {
+            SetSubtitle($"{tmp}.{Subtitles.SubtitleExtensions.sub}");
+            Console.WriteLine(_subtitleControl.FilePath);
+        }
+        else if (File.Exists($"{tmp}.{Subtitles.SubtitleExtensions.srt}"))
+        {
+            SetSubtitle($"{tmp}.{Subtitles.SubtitleExtensions.srt}");
+            Console.WriteLine(_subtitleControl.FilePath);
+
+        }
+        else
+            Console.WriteLine("No auto subtitle.");
+
+    }
+
+    private string ReturnNameWithoutExtension(FileInfo item)
+    {
+        return item.FullName.Remove(item.FullName.Length - item.Extension.Length, item.Extension.Length);
     }
 
     /// <summary>
@@ -582,14 +670,14 @@ public partial class Player : UserControl, IPlayer
     /// <param name="e">The mouse event arguments.</param>
     private void VolumeProgressBar_MouseMove(object sender, MouseEventArgs e)
     {
-        double position = e.GetPosition(sender as ProgressBarControl).X;
-        double width = (sender as ProgressBarControl).ActualWidth;
-        double result = position / width * (sender as ProgressBarControl).Maximum;
-        (sender as ProgressBarControl).PopupText = $"Volume: {(int)result}";
+        double position = e.GetPosition(sender as ProgressBarBox).X;
+        double width = (sender as ProgressBarBox).ActualWidth;
+        double result = position / width * (sender as ProgressBarBox).Maximum;
+        (sender as ProgressBarBox).PopupText = $"Volume: {(int)result}";
         if (e.LeftButton == MouseButtonState.Pressed)
         {
-            (sender as ProgressBarControl)._progressBar.Value = result;
-            (sender as ProgressBarControl).ProgressText = $"Volume: {(int)result}";
+            (sender as ProgressBarBox)._progressBar.Value = result;
+            (sender as ProgressBarBox).ProgressText = $"Volume: {(int)result}";
             int num = (_vlcControl.SourceProvider.MediaPlayer.Audio.Volume = (int)result);
             _volume = num;
         }
@@ -602,11 +690,11 @@ public partial class Player : UserControl, IPlayer
     /// <param name="e">The mouse event arguments.</param>
     private void VolumeProgressBar_MouseDown(object sender, MouseButtonEventArgs e)
     {
-        double position = e.GetPosition(sender as ProgressBarControl).X;
-        double width = (sender as ProgressBarControl).ActualWidth;
-        double result = position / width * (sender as ProgressBarControl).Maximum;
-        (sender as ProgressBarControl)._progressBar.Value = result;
-        (sender as ProgressBarControl).ProgressText = $"Volume: {(int)result}";
+        double position = e.GetPosition(sender as ProgressBarBox).X;
+        double width = (sender as ProgressBarBox).ActualWidth;
+        double result = position / width * (sender as ProgressBarBox).Maximum;
+        (sender as ProgressBarBox)._progressBar.Value = result;
+        (sender as ProgressBarBox).ProgressText = $"Volume: {(int)result}";
         Console.WriteLine($"Volume: {result}");
         int num = (_vlcControl.SourceProvider.MediaPlayer.Audio.Volume = (int)result);
         _volume = num;
@@ -619,10 +707,10 @@ public partial class Player : UserControl, IPlayer
     /// <param name="e">The mouse event arguments.</param>
     private void ProgressBarMouseEventHandler(object sender, MouseEventArgs e)
     {
-        double position = e.GetPosition(sender as ProgressBarControl).X;
-        double width = (sender as ProgressBarControl).ActualWidth;
-        double result = ((sender as ProgressBarControl).Value = position / width * (sender as ProgressBarControl).Maximum);
-        double jump_to_time = (double)_vlcControl.SourceProvider.MediaPlayer.Length * result / (sender as ProgressBarControl).Maximum;
+        double position = e.GetPosition(sender as ProgressBarBox).X;
+        double width = (sender as ProgressBarBox).ActualWidth;
+        double result = ((sender as ProgressBarBox).Value = position / width * (sender as ProgressBarBox).Maximum);
+        double jump_to_time = (double)_vlcControl.SourceProvider.MediaPlayer.Length * result / (sender as ProgressBarBox).Maximum;
         _vlcControl.SourceProvider.MediaPlayer.Time = (long)jump_to_time;
     }
 
@@ -631,7 +719,7 @@ public partial class Player : UserControl, IPlayer
     /// </summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The time changed event arguments.</param>
-    private void MediaPlayer_TimeChanged(object sender, VlcMediaPlayerTimeChangedEventArgs e)
+    private void OnTimeChanged(object sender, VlcMediaPlayerTimeChangedEventArgs e)
     {
         base.Dispatcher.InvokeAsync(delegate
         {
@@ -688,7 +776,7 @@ public partial class Player : UserControl, IPlayer
     /// </summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The event arguments.</param>
-    private async void _mouseNotMoveWorker_DoWork(object sender, DoWorkEventArgs e)
+    private async void MouseNotMoveWorker_DoWork(object sender, DoWorkEventArgs e)
     {
         bool val = true;
         while (val)
@@ -772,7 +860,7 @@ public partial class Player : UserControl, IPlayer
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The event arguments.</param>
     private void OnStopped(object sender, VlcMediaPlayerStoppedEventArgs e)
-    {       
+    {
         _playing = false;
         _paused = false;
         _stoped = true;
@@ -972,17 +1060,19 @@ public partial class Player : UserControl, IPlayer
     /// Loads and displays subtitles from a specified file path.
     /// </summary>
     /// <param name="path">The path to the subtitle file.</param>
-    public void Subtitle(string path)
+    public void SetSubtitle(string path)
     {
-        _subtitleControl.FilePath = path;
-        _subtitleControl.Visibility = Visibility.Visible;
-        _subtitleControl.TimeChanged += delegate (object sender, TimeSpan time)
+        this.Dispatcher.InvokeAsync(() =>
         {
-            if (_vlcControl.SourceProvider.MediaPlayer != null)
+            _subtitleControl.FilePath = path;
+            _subtitleControl.TimeChanged += delegate (object sender, TimeSpan time)
             {
-                _subtitleControl.PositionTime = time;
-            }
-        };
+                if (_vlcControl.SourceProvider.MediaPlayer != null)
+                {
+                    _subtitleControl.PositionTime = time;
+                }
+            };
+        });
     }
 
     /// <summary>
@@ -1013,6 +1103,7 @@ public partial class Player : UserControl, IPlayer
                 else
                     _vlcControl.SourceProvider.MediaPlayer?.Play(media.Uri);
                 _playerStatus = MediaPlayerStatus.Play;
+                AutoOpenSubtitle(media.Uri.LocalPath);
             });
         }
         catch (Exception ex)
@@ -1057,21 +1148,11 @@ public partial class Player : UserControl, IPlayer
         {
             _vlcControl.SourceProvider.MediaPlayer.Stopped -= OnStopped;
             _vlcControl.SourceProvider.MediaPlayer.Paused -= OnPaused;
-            _vlcControl.SourceProvider.MediaPlayer.TimeChanged -= MediaPlayer_TimeChanged;
+            _vlcControl.SourceProvider.MediaPlayer.TimeChanged -= OnTimeChanged;
         }
         _vlcControl.SourceProvider.Dispose();
         _vlcControl.Dispose();
         base.MouseMove -= OnMouseMove;
         base.Loaded -= UserControl_Loaded;
-    }
-
-    private void Grid_MouseLeave(object sender, MouseEventArgs e)
-    {
-
-    }
-
-    private void Grid_MouseMove(object sender, MouseEventArgs e)
-    {
-
     }
 }

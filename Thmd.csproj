@@ -3,7 +3,7 @@
     <AssemblyName>Thmd</AssemblyName>
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
     <UseWPF>True</UseWPF>
-    <TargetFramework>net481</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <UserSecretsId>771edeb9-cfdd-42c5-8fa0-87dc8923a9ef</UserSecretsId>
   </PropertyGroup>
   <PropertyGroup>

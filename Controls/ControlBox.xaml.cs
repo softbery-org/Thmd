@@ -1,4 +1,4 @@
-// Version: 0.1.0.25
+// Version: 0.1.5.48
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,6 +14,7 @@ using Thmd.Logs;
 using Thmd.Media;
 using Thmd.Repeats;
 using Thmd.Helpers;
+using System.Threading.Tasks;
 
 namespace Thmd.Controls
 {
@@ -36,7 +37,7 @@ namespace Thmd.Controls
             {
                 _videoName = value;
                 OnPropertyChanged(nameof(VideoName));
-                StartTextAnimation();
+                //StartTextAnimation();
             }
         }
         
@@ -130,7 +131,7 @@ namespace Thmd.Controls
             EnableShuffle = false;
             Videos = new ObservableCollection<VideoItem>();
 
-            StartTextAnimation();
+            //StartTextAnimation();
         }
 
         public ControlBox(IPlayer player) : this()
@@ -180,6 +181,7 @@ namespace Thmd.Controls
                 else
                 {
                     // Po wy�wietleniu ca�ego tekstu resetujemy i powtarzamy
+                    Task.Delay(3000).Wait();
                     _scrollTextIndex = 0;
                     _videoNameTextBlock.Text = string.Empty;
                 }

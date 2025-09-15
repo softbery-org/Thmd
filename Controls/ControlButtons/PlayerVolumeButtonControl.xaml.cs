@@ -1,4 +1,4 @@
-// Version: 0.1.3.78
+// Version: 0.1.9.1
 using System;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -10,7 +10,7 @@ namespace Thmd.Controls.ControlButtons;
 
 public partial class PlayerVolumeButtonControl : UserControl
 {
-	public ProgressBarControl VolumeProgressBar
+	public ProgressBarBox VolumeProgressBar
 	{
 		get
 		{
@@ -36,10 +36,10 @@ public partial class PlayerVolumeButtonControl : UserControl
     /// <param name="e">The mouse event arguments.</param>
     private void VolumeProgressBar_MouseMove(object sender, MouseEventArgs e)
     {
-        double position = e.GetPosition(sender as ProgressBarControl).X;
-        double width = (sender as ProgressBarControl).ActualWidth;
-        double result = position / width * (sender as ProgressBarControl).Maximum;
-            (sender as ProgressBarControl).PopupText = $"Volume: {(int)result}";
+        double position = e.GetPosition(sender as ProgressBarBox).X;
+        double width = (sender as ProgressBarBox).ActualWidth;
+        double result = position / width * (sender as ProgressBarBox).Maximum;
+            (sender as ProgressBarBox).PopupText = $"Volume: {(int)result}";
        
     }
 }

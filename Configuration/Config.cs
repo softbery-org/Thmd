@@ -1,5 +1,5 @@
 // Config.cs
-// Version: 0.1.3.69
+// Version: 0.1.8.92
 // A singleton class for managing application configuration settings, including database connections,
 // logging, VLC library settings, subtitles, updates, and plugins. Supports loading and saving
 // configuration data to a JSON file with thread-safe access.
@@ -29,8 +29,8 @@ public class Config
     // Singleton instance of the Config class.
     private static Config _instance;
 
-    // Static instance of PlaylistConfig for easy access.
-    private static PlaylistConfig _playlistConfig;
+    // Static instance of IPlaylistConfig for easy access.
+    private static IPlaylistConfig _playlistConfig;
     private static UpdateConfig _updateConfig;
 
     /// <summary>
@@ -94,13 +94,15 @@ public class Config
         }
     }
 
-    public PlaylistConfig PlaylistConfig
+    private IPlaylistConfig _playerConfig;
+
+    public IPlaylistConfig PlaylistConfig
     {
         get
         {
             lock (_lock)
             {
-                return _playlistConfig ?? (_playlistConfig = LoadFromJsonFile<PlaylistConfig>("playlist.json"));
+                return _playlistConfig ?? (_playlistConfig = LoadFromJsonFile<PlaylistConfig>("update.json"));
             }
         }
         set

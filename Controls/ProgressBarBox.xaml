@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Thmd.Controls.ProgressBarControl"
+﻿<UserControl x:Class="Thmd.Controls.ProgressBarBox"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:Thmd.Controls"
              Height="Auto"
              Width="Auto">
-    <FrameworkElement.Resources>
+    <UserControl.Resources>
         <ResourceDictionary>
             <!-- Animacje -->
             <Storyboard x:Key="fadeOutProgressBar" FillBehavior="HoldEnd">
@@ -66,7 +66,7 @@
                 </Setter>
             </Style>
         </ResourceDictionary>
-    </FrameworkElement.Resources>
+    </UserControl.Resources>
     <Grid Name="_grid" 
           Background="#2E2E2E" 
           Margin="0" 
@@ -95,7 +95,7 @@
         <ProgressBar Name="_progressBar" 
                      VerticalAlignment="Center" 
                      Height="8" 
-                     Value="0" 
+                     Value="70" 
                      SmallChange="0.01" 
                      BorderBrush="{x:Null}"/>
         <!-- Znacznik myszy -->

@@ -1,4 +1,4 @@
-// Version: 0.1.2.43
+// Version: 0.1.7.66
 using System;
 using System.ComponentModel;
 using System.Windows;
@@ -13,7 +13,7 @@ using Thmd.Media;
 
 namespace Thmd.Controls;
 
-public partial class ProgressBarControl : UserControl, INotifyPropertyChanged
+public partial class ProgressBarBox : UserControl, INotifyPropertyChanged
 {
     private IPlayer _player;
 
@@ -55,7 +55,15 @@ public partial class ProgressBarControl : UserControl, INotifyPropertyChanged
         }
     }
 
-    public double Time => (_player != null) ? _player.CurrentTime.Milliseconds : 0;
+    public double Time
+    {
+        get
+        {
+            if (DesignerProperties.GetIsInDesignMode(this) || _player == null)
+                return 0;
+            return _player.Position.Milliseconds;
+        }
+    }
 
     public double Maximum
     {
@@ -83,26 +91,46 @@ public partial class ProgressBarControl : UserControl, INotifyPropertyChanged
 
     public double Value
     {
-        get
-        {
-            return _value;
-        }
+        get => _value;
         set
         {
-            base.Dispatcher.InvokeAsync(delegate
+            if (DesignerProperties.GetIsInDesignMode(this))
             {
-                _value = value / ((_duration.TotalMilliseconds > 0.0) ? _duration.TotalMilliseconds : 1.0) * Maximum;
-                try
-                {
-                    _progressBar.Value = _value;
-                }
-                catch (Exception ex)
-                {
-                    _progressBar.Value = 0.0;
-                    Logger.Log.Log(LogLevel.Error, new string[2] { "Console", "File" }, ex.Message ?? "");
-                }
-                OnPropertyChanged("Value", ref _value, value);
-            });
+                _value = value;
+                return;
+            }
+
+            double max = Maximum > 0.0 ? Maximum : 1.0;
+            double durationMs = _duration.TotalMilliseconds > 0.0 ? _duration.TotalMilliseconds : 1.0;
+            _value = value / durationMs * max;
+
+            try
+            {
+                _progressBar.Value = _value;
+            }
+            catch (Exception ex)
+            {
+                _progressBar.Value = 0.0;
+                Logger.Log.Log(LogLevel.Error, new string[2] { "Console", "File" }, ex.Message ?? "");
+            }
+            OnPropertyChanged("Value", ref _value, value);
+        }
+    }
+
+    public double BufforBarValue
+    {
+        get => _buffor;
+        set
+        {
+            if (DesignerProperties.GetIsInDesignMode(this))
+            {
+                _buffor = value;
+                return;
+            }
+
+            double max = Maximum > 0.0 ? Maximum : 1.0;
+            _rectangleBufferMedia.Width = value * base.ActualWidth / max;
+            OnPropertyChanged("BufforBarValue", ref _buffor, value);
         }
     }
 
@@ -115,22 +143,6 @@ public partial class ProgressBarControl : UserControl, INotifyPropertyChanged
         set
         {
             _rectangleBufferMedia.Fill = new SolidColorBrush(value);
-        }
-    }
-
-    public double BufforBarValue
-    {
-        get
-        {
-            return _buffor;
-        }
-        set
-        {
-            base.Dispatcher.InvokeAsync(delegate
-            {
-                _rectangleBufferMedia.Width = value * base.ActualWidth / ((Maximum > 0.0) ? Maximum : 1.0);
-            });
-            OnPropertyChanged("BufforBarValue", ref _buffor, value);
         }
     }
 
@@ -195,7 +207,17 @@ public partial class ProgressBarControl : UserControl, INotifyPropertyChanged
 
     public event PropertyChangedEventHandler PropertyChanged;
 
-    public ProgressBarControl()
+    private void InitializeVisuals()
+    {
+        if (!DesignerProperties.GetIsInDesignMode(this))
+        {
+            _popuptext.Background = new DrawingBrush(DrawingBackground());
+            _popuptext.Effect = new DropShadowEffect();
+            BufforBarColor = Color.FromArgb(45, 138, 43, 226);
+        }
+    }
+
+    public ProgressBarBox()
     {
         InitializeComponent();
         _progressBarText = "00:00:00";
@@ -205,21 +227,36 @@ public partial class ProgressBarControl : UserControl, INotifyPropertyChanged
         _rectangleMouseOverPoint.Visibility = Visibility.Hidden;
         _popup.IsOpen = false;
         _popuptext.Width = 100.0;
-        _popuptext.Background = new DrawingBrush(DrawingBackground());
-        _popuptext.Effect = new DropShadowEffect();
-        _progressBar.ValueChanged += _progressBar_ValueChanged;
-        BufforBarColor = Color.FromArgb(45, 138, 43, 226);
+
+        if (!DesignerProperties.GetIsInDesignMode(this))
+        {
+            _popup.MouseLeave += _popup_MouseLeave;
+            _progressBar.ValueChanged += _progressBar_ValueChanged;
+            InitializeVisuals();
+        }
     }
 
-    public ProgressBarControl(IPlayer player)
-        : this()
+    private void _popup_MouseLeave(object sender, MouseEventArgs e)
     {
-        _player = player;
+        _rectangleMouseOverPoint.Visibility = Visibility.Hidden;
+        PopupVisibility = false;
+        _popup.IsOpen = false;
+    }
+
+    public ProgressBarBox(IPlayer player) : this()
+    {
+        if (!DesignerProperties.GetIsInDesignMode(this))
+        {
+            _player = player;
+        }
     }
 
     public void SetPlayer(IPlayer player)
     {
-        _player = player;
+        if (!DesignerProperties.GetIsInDesignMode(this))
+        {
+            _player = player;
+        }
     }
 
     private void _progressBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -255,10 +292,13 @@ public partial class ProgressBarControl : UserControl, INotifyPropertyChanged
 
     protected override void OnMouseMove(MouseEventArgs e)
     {
+        if (DesignerProperties.GetIsInDesignMode(this))
+            return;
+
         Point mouse_position = e.GetPosition(_progressBar);
         double width = _progressBar.ActualWidth;
         double position = mouse_position.X / width * _progressBar.Maximum;
-        double time_in_ms = _duration.TotalMilliseconds * position / ((_progressBar.Maximum > 0.0) ? _progressBar.Maximum : 1.0);
+        double time_in_ms = _duration.TotalMilliseconds * position / (_progressBar.Maximum > 0.0 ? _progressBar.Maximum : 1.0);
         TimeSpan time = TimeSpan.FromMilliseconds(time_in_ms);
         _rectangleMouseOverPoint.Visibility = Visibility.Visible;
         _rectangleMouseOverPoint.Stroke = Brushes.DarkOrange;
@@ -276,6 +316,9 @@ public partial class ProgressBarControl : UserControl, INotifyPropertyChanged
 
     protected override void OnMouseLeave(MouseEventArgs e)
     {
+        if (DesignerProperties.GetIsInDesignMode(this))
+            return;
+
         _rectangleMouseOverPoint.Visibility = Visibility.Hidden;
         PopupVisibility = false;
         _popup.IsOpen = false;
