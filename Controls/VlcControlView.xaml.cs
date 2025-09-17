@@ -1,5 +1,6 @@
-// Version: 0.1.2.37
+// Version: 0.1.2.66
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -269,12 +270,35 @@ namespace Thmd.Controls
 
         private void PlayerView_KeyUp(object sender, KeyEventArgs e)
         {
-            throw new NotImplementedException();
+            
         }
 
         private void PlayerView_KeyDown(object sender, KeyEventArgs e)
         {
-            throw new NotImplementedException();
+            var keyBindingList = new List<ShortcutKeyBinding>();
+            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Space,    SecondKey=null,                 Shortcut = "Space",         Description ="Pause and play media"});
+            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.F,            SecondKey = null,               Shortcut = "F",                 Description = "Toggle fullscreen" });
+            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.H,           SecondKey = null,               Shortcut = "H",                 Description = "Toggle help window" });
+            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.S,            SecondKey = null,               Shortcut = "S",                 Description = "Toggle subtitle" });
+            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Left,        SecondKey = null,               Shortcut = "Left",             Description = "Move media with +5 second" });
+            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Right,      SecondKey = null,              Shortcut = "Right",           Description = "Move media with -5 second" });
+            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Left,        SecondKey = Key.LeftCtrl,  Shortcut = "CTRL+Left",    Description = "Move media with +5 minutes" });
+            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Right,      SecondKey = Key.LeftCtrl,  Shortcut = "CTRL+Right", Description = "Move media with -5 minutes" });
+            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Up,          SecondKey = null,              Shortcut = "Up",                Description = "Up volume with +2" });
+            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Down,     SecondKey = null,              Shortcut = "Down",           Description = "Down volume with -2" });
+
+            if (true)
+            {
+
+            }
+        }
+
+        public class ShortcutKeyBinding
+        {
+            public Key MainKey { get; set; }
+            public Key? SecondKey { get; set; }
+            public string Shortcut { get; set; }
+            public string Description { get; set; }
         }
 
         private void ControlBar_SliderVolume_MouseMove(object sender, MouseEventArgs e)

@@ -10,16 +10,36 @@
     <LangVersion>12.0</LangVersion>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
+    <Copyright>Softbery by Paweł Tobis</Copyright>
+    <PackageProjectUrl>http://softbery.org/thmd</PackageProjectUrl>
+    <PackageIcon>icon.ico</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/softbery-org/Thmd.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Optimize>True</Optimize>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\icon.ico">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="LibVLCSharp" Version="3.9.4" />
     <PackageReference Include="MediaToolkit" Version="1.1.0.1" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="SharpCompress" Version="0.40.0" />
+    <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.21" />
     <PackageReference Include="Vlc.DotNet.Core" Version="3.1.0" />
     <PackageReference Include="Vlc.DotNet.Wpf" Version="3.1.0" />
   </ItemGroup>
@@ -55,6 +75,16 @@
     <Compile Update="Thmd.Templates\PlayerSecondButtons.cs">
       <Generator>MSBuild:Compile</Generator>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
   <Target Name="UpdateAssemblyVersion" BeforeTargets="BeforeBuild">
     <Message Importance="high" Text="PostBuild: $(TargetPath)" />

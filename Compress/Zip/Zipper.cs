@@ -1,16 +1,13 @@
-// Version: 0.1.5.40
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Thmd.Subtitles
+namespace Thmd.Compress.Zip
 {
-    public enum SubtitleExtensions
+    public class Zipper
     {
-        txt,
-        sub,
-        srt
     }
 }
+// Version: 0.1.0.8
