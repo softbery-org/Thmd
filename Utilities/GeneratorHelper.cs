@@ -1,10 +1,10 @@
-// Version: 0.1.9.33
+// Version: 0.1.9.90
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Thmd.Helpers;
+namespace Thmd.Utilities;
 
 public class GeneratorHelper
 {

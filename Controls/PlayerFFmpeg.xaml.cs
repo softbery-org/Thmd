@@ -22,7 +22,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
-using Thmd.Helpers;
+using Thmd.Utilities;
 using Thmd.Logs;
 using Thmd.Media;
 

@@ -1,5 +1,5 @@
 // CommandLineHandler.cs
-// Version: 0.1.3.97
+// Version: 0.1.4.54
 using System;
 using System.Linq;
 using System.Reflection;
@@ -7,7 +7,7 @@ using System.Windows;
 
 using Thmd.Logs; // Dla logowania, jeśli dostępne
 
-namespace Thmd.Helpers
+namespace Thmd.Utilities
 {
     public static class CommandLineHandler
     {

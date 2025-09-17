@@ -1,10 +1,10 @@
-// Version: 0.1.9.33
+// Version: 0.1.9.90
 using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Thmd.Helpers;
+namespace Thmd.Utilities;
 
 public class ShowHideControlsHelper
 {

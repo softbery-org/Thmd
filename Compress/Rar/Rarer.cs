@@ -40,4 +40,4 @@ namespace Thmd.Compress.Rar
         }
     }
 }
-// Version: 0.1.0.8
+// Version: 0.1.0.65

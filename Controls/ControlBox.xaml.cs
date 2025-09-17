@@ -1,4 +1,4 @@
-// Version: 0.1.5.80
+// Version: 0.1.6.37
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,7 +13,7 @@ using Thmd.Configuration;
 using Thmd.Logs;
 using Thmd.Media;
 using Thmd.Repeats;
-using Thmd.Helpers;
+using Thmd.Utilities;
 using System.Threading.Tasks;
 
 namespace Thmd.Controls

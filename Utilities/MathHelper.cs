@@ -1,7 +1,7 @@
-// Version: 0.1.6.46
+// Version: 0.1.7.3
 using System;
 
-namespace Thmd.Helpers
+namespace Thmd.Utilities
 {
     public static class MathHelper
     {

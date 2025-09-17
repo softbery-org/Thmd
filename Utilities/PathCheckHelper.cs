@@ -1,8 +1,8 @@
-// Version: 0.1.9.33
+// Version: 0.1.9.90
 using System;
 using System.Text.RegularExpressions;
 
-namespace Thmd.Helpers;
+namespace Thmd.Utilities;
 
 public class PathCheckHelper
 {

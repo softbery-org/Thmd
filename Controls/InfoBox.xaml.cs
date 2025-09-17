@@ -1,4 +1,4 @@
-// Version: 0.1.5.13
+// Version: 0.1.5.70
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,7 +44,7 @@ namespace Thmd.Controls
         {
                 var storyboard = this.FindResource("fadeInBox") as Storyboard; //.ShowByStoryboard(this, this.FindResource("fadeInBox") as Storyboard);
 
-                await Helpers.StoryboardHelper.RunStoryboad(this, storyboard);
+                await Utilities.StoryboardHelper.RunStoryboad(this, storyboard);
 
                 await this.Dispatcher.InvokeAsync(() =>
                 {
@@ -54,7 +54,7 @@ namespace Thmd.Controls
                 await Task.Delay(7000);
 
                 storyboard = this.FindResource("fadeOutBox") as Storyboard; //.ShowByStoryboard(this, this.FindResource("fadeInBox") as Storyboard);
-                await Helpers.StoryboardHelper.RunStoryboad(this, storyboard);
+                await Utilities.StoryboardHelper.RunStoryboad(this, storyboard);
         }
 
         private void Parent_SizeChanged(object sender, SizeChangedEventArgs e)

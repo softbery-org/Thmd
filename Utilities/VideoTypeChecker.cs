@@ -1,4 +1,4 @@
-// Version: 0.1.9.33
+// Version: 0.1.9.90
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Thmd.Media;
 
-namespace Thmd.Helpers;
+namespace Thmd.Utilities;
 
 public class VideoTypeChecker
 {

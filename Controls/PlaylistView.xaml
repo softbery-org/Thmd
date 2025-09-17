@@ -6,14 +6,8 @@
           xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
           mc:Ignorable="d" 
           xmlns:local="clr-namespace:Thmd.Controls"
+          xmlns:helper="clr-namespace:Thmd.Utilities"
           ItemsSource="{Binding Videos, RelativeSource={RelativeSource Self}}"
-          MouseMove="OnMouseMove"
-          DragEnter="OnDragEnter"
-          DragOver="OnDragOver"
-          DragLeave="OnDragLeave"
-          Drop="OnDrop"
-          MouseLeave="OnMouseLeave"
-          PreviewMouseLeftButtonDown="OnPreviewMouseLeftButtonDown"
           Margin="0,25,0,0"
           Background="#2E2E2E"
           AllowDrop="True"
@@ -273,10 +267,11 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ListViewItem}">
-                            <Border Background="{TemplateBinding Background}"
-                                        BorderBrush="{TemplateBinding BorderBrush}"
-                                        BorderThickness="{TemplateBinding BorderThickness}"
-                                        CornerRadius="4">
+                            <Border x:Name="Border"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="4">
                                 <Border.Effect>
                                     <DropShadowEffect ShadowDepth="2" BlurRadius="4" Opacity="0.2"/>
                                 </Border.Effect>
@@ -299,6 +294,12 @@
                                     <Setter Property="Background" Value="#FF4500"/>
                                     <Setter Property="BorderBrush" Value="#FF8C2F"/>
                                 </MultiTrigger>
+                                <!-- Nowy Trigger dla DragOver -->
+                                <Trigger Property="helper:DragDropHelper.IsDragOver" Value="True">
+                                    <Setter TargetName="Border" Property="BorderBrush" Value="#FFD700"/>
+                                    <Setter TargetName="Border" Property="BorderThickness" Value="2"/>
+                                    <Setter TargetName="Border" Property="Background" Value="#4A2E00"/>
+                                </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>

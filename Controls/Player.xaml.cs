@@ -1,5 +1,5 @@
 // Player.xaml.cs
-// Version: 0.1.8.95
+// Version: 0.1.9.52
 // A custom UserControl for media playback using VLC, integrated with a playlist, progress bar,
 // control bar, and subtitle functionality. It supports play, pause, stop, seek, volume control,
 // fullscreen toggling, and repeat modes including random playback, with event handling for
@@ -21,7 +21,7 @@ using LibVLCSharp.Shared;
 
 using Microsoft.Win32;
 
-using Thmd.Helpers;
+using Thmd.Utilities;
 using Thmd.Logs;
 using Thmd.Media;
 using Thmd.Media.Effects;

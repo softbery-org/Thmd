@@ -1,4 +1,4 @@
-// Version: 0.1.2.56
+// Version: 0.1.3.13
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 
-using Thmd.Helpers;
+using Thmd.Utilities;
 using Thmd.Media;
 
 using Vlc.DotNet.Core.Interops.Signatures;

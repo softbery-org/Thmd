@@ -1,4 +1,4 @@
-// Version: 0.1.2.66
+// Version: 0.1.3.23
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,12 +14,13 @@ using System.Windows.Media.Animation;
 
 using Microsoft.Win32;
 
-using Thmd.Helpers;
+using Thmd.Utilities;
 using Thmd.Media;
 using Thmd.Repeats;
 
 using Vlc.DotNet.Core;
 using Vlc.DotNet.Wpf;
+using System.Linq;
 
 namespace Thmd.Controls
 {
@@ -51,6 +52,10 @@ namespace Thmd.Controls
         /// </summary>
         public PlaylistView Playlist { get => _playlist; }
         /// <summary>
+        /// Count items i Videos
+        /// </summary>
+        public int Count { get => _playlist.Videos.Count(); }
+        /// <summary>
         /// Gets or sets the visibility of the playlist.
         /// </summary>
         public Visibility PlaylistVisibility { get => _playlist.Visibility; set => _playlist.Visibility = value; }
@@ -58,6 +63,7 @@ namespace Thmd.Controls
         /// Gets or sets the progress bar control for displaying playback progress.
         /// </summary>
         public ProgressBarView ProgressBar { get => _progressBar; set => _progressBar = value; }
+
         public ControlBox ControlBox => throw new NotImplementedException(); // FOR REFATORING
         /// <summary>
         /// Gets or sets the control bar for playback controls (play, pause, stop, etc.).

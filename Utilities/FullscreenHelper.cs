@@ -1,8 +1,8 @@
-// Version: 0.1.9.33
+// Version: 0.1.9.90
 using System.Windows;
 using Thmd.Logs;
 
-namespace Thmd.Helpers;
+namespace Thmd.Utilities;
 
 public static class FullscreenHelper
 {

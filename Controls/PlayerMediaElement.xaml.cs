@@ -1,5 +1,5 @@
 // PlayerMediaElement.xaml.cs
-// Version: 0.1.3.70
+// Version: 0.1.4.27
 // A custom UserControl for media playback using WPF MediaElement, integrated with a playlist, progress bar,
 // control bar, and subtitle functionality. It supports play, pause, stop, seek, volume control,
 // fullscreen toggling, and repeat modes including random playback, with event handling for
@@ -19,7 +19,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
-using Thmd.Helpers;
+using Thmd.Utilities;
 using Thmd.Logs;
 using Thmd.Media;
 using Thmd.Media.Effects;

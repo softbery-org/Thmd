@@ -1,4 +1,4 @@
-// Version: 0.1.9.32
+// Version: 0.1.9.89
 // StoryboardHelper.cs
 // A static helper class that provides extension methods for animating the visibility of WPF controls
 // using storyboards. It supports asynchronous hiding and showing of controls with error handling
@@ -16,7 +16,7 @@ using System.Windows.Threading;
 
 using Thmd.Logs;
 
-namespace Thmd.Helpers;
+namespace Thmd.Utilities;
 
 /// <summary>
 /// A static helper class that provides extension methods for animating the visibility of WPF controls
