@@ -1,4 +1,4 @@
-// Version: 0.1.4.46
+// Version: 0.1.4.61
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -256,6 +256,7 @@ namespace Thmd.Controls
             _vlcControl.SourceProvider.MediaPlayer.Playing += OnPlaying;
             _vlcControl.SourceProvider.MediaPlayer.Stopped += OnStopped;
             _vlcControl.SourceProvider.MediaPlayer.Paused += OnPaused;
+            _vlcControl.SourceProvider.MediaPlayer.Buffering += OnBuffering;
 
             // Resize helpers for control bar and playlist
             var resizer1 = new ResizeControlHelper(_controlBar);
@@ -522,16 +523,6 @@ namespace Thmd.Controls
 
                 _subtitleControl.PositionTime = TimeSpan.FromMilliseconds(e.NewTime);
             });
-        }
-
-        private async void ProgressBar_MouseEnter(object sender, MouseEventArgs e)
-        {
-            
-        }
-
-        private async void ProgressBar_MouseLeave(object sender, MouseEventArgs e)
-        {
-            
         }
 
         private void ProgressBar_MouseMove(object sender, MouseEventArgs e)
@@ -995,7 +986,10 @@ namespace Thmd.Controls
         /// <param name="e">The buffering event arguments.</param>
         private void OnBuffering(object sender, VlcMediaPlayerBufferingEventArgs e)
         {
-            ProgressBar.BufforBarValue = e.NewCache;
+            this.Dispatcher.InvokeAsync(() =>
+            {
+                ProgressBar.BufforBarValue = e.NewCache;
+            });
         }
 
         /// <summary>

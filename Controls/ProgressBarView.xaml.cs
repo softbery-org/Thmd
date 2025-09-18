@@ -1,4 +1,4 @@
-// Version: 0.1.4.45
+// Version: 0.1.4.60
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -30,11 +30,18 @@ namespace Thmd.Controls
             _progressBar.MouseDown += ProgressBar_MouseDown;*/
             _progressBar.ValueChanged += ProgressBar_ValueChanged;
             _popup.IsOpen = false;
+            _popup.MouseLeave += Popup_MouseLeave;
+        }
+
+        private void Popup_MouseLeave(object sender, MouseEventArgs e)
+        {
+            _popup.IsOpen = false;
         }
 
         private void ProgressBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             _progressBar.Value = e.NewValue;
+            _rectangleBufforBar.Margin= new Thickness(_progressBar.ActualWidth / Value,0,0,0);
         }
 
         public ProgressBarView(IPlayer player) : this()
@@ -97,6 +104,7 @@ namespace Thmd.Controls
                 {
                     _value = value;
                     _progressBar.Value = value;
+                    _rectangleBufforBar.Margin = new Thickness(_progressBar.ActualWidth/Value, 0, 0, 0);
                     UpdateProgressText();
                     SeekRequested?.Invoke(this, TimeSpan.FromMilliseconds(value));
                     OnPropertyChanged(nameof(Value));
@@ -117,7 +125,8 @@ namespace Thmd.Controls
                 if (_bufforBarValue != value)
                 {
                     _bufforBarValue = value;
-                    //_rectangleBufferMedia.Width = (_progressBar.ActualWidth > 0) ? (value / _progressBar.Maximum) * _progressBar.ActualWidth : 0;
+                    _rectangleBufforBar.Width = (_progressBar.ActualWidth > 0) ? (value / _progressBar.Maximum) * _progressBar.ActualWidth : 0;
+                    _rectangleBufforBar.Width -= _value;
                     OnPropertyChanged(nameof(BufforBarValue));
                 }
             }
@@ -175,10 +184,18 @@ namespace Thmd.Controls
             ProgressText = $"{currentTime.Hours:00}:{currentTime.Minutes:00}:{currentTime.Seconds:00}/{_duration:hh\\:mm\\:ss}";
         }
 
+        protected override void OnMouseEnter(MouseEventArgs e)
+        {
+            base.OnMouseEnter(e);
+            _popup.IsOpen = false;
+            _rectangleMouseOverPoint.Visibility = Visibility.Visible;
+        }
+
         protected override void OnMouseLeave(MouseEventArgs e)
         {
             base.OnMouseLeave(e);
             _popup.IsOpen = false;
+            _rectangleMouseOverPoint.Visibility = Visibility.Hidden;
         }
     }
 }
