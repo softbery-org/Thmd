@@ -1,5 +1,5 @@
 // Player.xaml.cs
-// Version: 0.1.9.52
+// Version: 0.1.10.75
 // A custom UserControl for media playback using VLC, integrated with a playlist, progress bar,
 // control bar, and subtitle functionality. It supports play, pause, stop, seek, volume control,
 // fullscreen toggling, and repeat modes including random playback, with event handling for
@@ -283,7 +283,7 @@ public partial class Player : UserControl, IPlayer
         set
         {
             this.Fullscreen();
-            _fullscreen = FullscreenHelper.IsFullscreen;
+            _fullscreen = ScreenHelper.IsFullscreen;
             if (!_fullscreen)
                 ControlBox.BtnFullscreen.Style = FindResource("FullscreenOn") as Style;
             else

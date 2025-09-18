@@ -1,10 +1,12 @@
-// Version: 0.1.9.90
+// Version: 0.1.11.13
 using System.Windows;
+using System.Windows.Controls;
+
 using Thmd.Logs;
 
 namespace Thmd.Utilities;
 
-public static class FullscreenHelper
+public static class ScreenHelper
 {
 	private static WindowLastStance _lastWindowStance;
 
@@ -13,6 +15,18 @@ public static class FullscreenHelper
 	public static bool IsFullscreen => _fullscreen;
 
 	public static WindowLastStance LastWindowStance => _lastWindowStance;
+
+	public static Size GetWindowSize(this object element)
+	{
+		Window window = Window.GetWindow(element as DependencyObject);
+		var windowSize = new Size();
+        if (window != null)
+		{
+			windowSize.Width = window.ActualWidth;
+			windowSize.Height = window.ActualHeight;
+		}
+		return windowSize;
+	}
 
 	public static void Fullscreen(this object sender)
 	{

@@ -1,4 +1,4 @@
-// Version: 0.1.7.26
+// Version: 0.1.8.49
 using System;
 using System.Drawing;
 using System.Windows;

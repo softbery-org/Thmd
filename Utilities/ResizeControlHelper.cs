@@ -1,8 +1,11 @@
-// Version: 0.1.3.1
+// Version: 0.1.4.24
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+
+using Thmd.Utilities;
 
 public class ResizeControlHelper
 {
@@ -162,11 +165,28 @@ public class ResizeControlHelper
         if (parent != null)
         {
             Point currentPosition = e.GetPosition(parent);
+            //Size size = parent.GetWindowSize();
             double dx = currentPosition.X - _lastMousePosition.X;
             double dy = currentPosition.Y - _lastMousePosition.Y;
-            Thickness newMargin = _element.Margin;
+            Thickness newMargin = _element.Margin;            
             newMargin.Left += dx*2;
             newMargin.Top += dy*2;
+            /*if (newMargin.Left <= -size.Width / 2)
+            {
+                newMargin.Left = -size.Width / 2;
+            }
+            if (newMargin.Top <= -size.Height/2)
+            {
+                newMargin.Top = -size.Height/2;
+            }
+            if (newMargin.Left > size.Width/2)
+            {
+                newMargin.Left = size.Width / 2;
+            }
+            if (newMargin.Top > size.Height / 2 + _element.ActualHeight)
+            {
+                newMargin.Left = size.Height /2 - _element.ActualHeight;
+            }*/
             _element.Margin = newMargin;
             _lastMousePosition = currentPosition;
             e.Handled = true;

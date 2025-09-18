@@ -1,4 +1,4 @@
-// Version: 0.1.6.83
+// Version: 0.1.8.6
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -233,8 +233,6 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         }
     }
 
-    bool IsDragOver {  get; set; }
-
     /// <summary>
     /// Occurs when a property value changes, used for data binding.
     /// </summary>
@@ -279,7 +277,23 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
 
         // Subscribe to mouse events
         this.MouseDoubleClick += ListView_MouseDoubleClick;
-        //this.MouseLeave += OnMouseLeave;
+        this.KeyDown += PlaylistView_KeyDown;
+        //KeyboardNavigation.SetIsTabStop(this, true);
+        /*var focusScope = FocusManager.GetFocusScope(this);
+        FocusManager.SetFocusedElement(focusScope, null);*/
+    }
+
+    private void PlaylistView_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Escape)
+        {
+            //var parent = VisualTreeHelper.GetParent(sender as Window);
+            //FocusManager.SetFocusedElement(FocusManager.GetFocusScope(this), null);
+            //Keyboard.ClearFocus();
+            //FocusManager.SetFocusedElement(this, null);
+            //Window.GetWindow(Application.Current.MainWindow).Focus();
+            //Keyboard.Focus(_player as Control);
+        }
     }
 
     public PlaylistView(IPlayer player) : this()
@@ -290,13 +304,6 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     public void SetPlayer(IPlayer player)
     {
         _player = player;
-        /*if (Videos != null)
-        {
-            foreach (var video in Videos)
-            {
-                video.SetPlayer(_player);
-            }
-        }*/
     }
 
     /// <summary>

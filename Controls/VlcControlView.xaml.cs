@@ -1,4 +1,4 @@
-// Version: 0.1.3.23
+// Version: 0.1.4.46
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,6 +21,7 @@ using Thmd.Repeats;
 using Vlc.DotNet.Core;
 using Vlc.DotNet.Wpf;
 using System.Linq;
+using Thmd.Consolas;
 
 namespace Thmd.Controls
 {
@@ -194,7 +195,7 @@ namespace Thmd.Controls
             set
             {
                 this.Fullscreen();
-                _fullscreen = FullscreenHelper.IsFullscreen;
+                _fullscreen = ScreenHelper.IsFullscreen;
                 /*if (!_fullscreen)
                     ControlBox.BtnFullscreen.Style = FindResource("FullscreenOn") as Style;
                 else
@@ -282,29 +283,132 @@ namespace Thmd.Controls
         private void PlayerView_KeyDown(object sender, KeyEventArgs e)
         {
             var keyBindingList = new List<ShortcutKeyBinding>();
-            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Space,    SecondKey=null,                 Shortcut = "Space",         Description ="Pause and play media"});
-            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.F,            SecondKey = null,               Shortcut = "F",                 Description = "Toggle fullscreen" });
-            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.H,           SecondKey = null,               Shortcut = "H",                 Description = "Toggle help window" });
-            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.S,            SecondKey = null,               Shortcut = "S",                 Description = "Toggle subtitle" });
-            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Left,        SecondKey = null,               Shortcut = "Left",             Description = "Move media with +5 second" });
-            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Right,      SecondKey = null,              Shortcut = "Right",           Description = "Move media with -5 second" });
-            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Left,        SecondKey = Key.LeftCtrl,  Shortcut = "CTRL+Left",    Description = "Move media with +5 minutes" });
-            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Right,      SecondKey = Key.LeftCtrl,  Shortcut = "CTRL+Right", Description = "Move media with -5 minutes" });
-            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Up,          SecondKey = null,              Shortcut = "Up",                Description = "Up volume with +2" });
-            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Down,     SecondKey = null,              Shortcut = "Down",           Description = "Down volume with -2" });
+            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Space, SecondKey = null, Shortcut = "Space", Description = "Pause and play media", RunAction = PausePlay() });
+            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.F, SecondKey = null, Shortcut = "F", Description = "Toggle fullscreen", RunAction = ToggleFullscreen() });
+            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.H, SecondKey = null, Shortcut = "H", Description = "Toggle help window", RunAction = ToggleHelpWindow() });
+            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.P, SecondKey = null, Shortcut = "P", Description = "Toggle playlist", RunAction = TogglePlaylist() });
+            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.N, SecondKey = null, Shortcut = "N", Description = "Toggle subtitle" });
+            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Left, SecondKey = null, Shortcut = "Left", Description = "Move media with +5 second" });
+            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Right, SecondKey = null, Shortcut = "Right", Description = "Move media with -5 second" });
+            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Left, SecondKey = ModifierKeys.Control, Shortcut = "Ctrl+Left", Description = "Move media with -5 minutes", RunAction = MoveBackwardMinutes() });
+            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Right, SecondKey = ModifierKeys.Control, Shortcut = "Ctrl+Right", Description = "Move media with +5 minutes", RunAction = MoveForwardMinutes() });
+            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Up, SecondKey = null, Shortcut = "Up", Description = "Up volume with +2" });
+            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Down, SecondKey = null, Shortcut = "Down", Description = "Down volume with -2" });
+            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.L, SecondKey = null, Shortcut = "L", Description = "On and off lector if you had a subtitles" });
+            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Escape, SecondKey = null, Shortcut = "Esc", Description = "Clear all focus", RunAction = ClearFocus() });
 
-            if (true)
+            if (e.IsDown && Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Left)
+            {
+                //MoveBackwardMinutes();
+                Seek(TimeSpan.FromMinutes(5), SeekDirection.Backward);
+                this.WriteLine($"Wci�ni�to: {Keyboard.Modifiers}+{e.Key}");
+            }
+            if (e.IsDown && Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Right)
+            {
+                //MoveForwardMinutes();
+                Seek(TimeSpan.FromMinutes(5), SeekDirection.Forward);
+                this.WriteLine($"Wci�ni�to: {Keyboard.Modifiers}+{e.Key}");
+            }
+
+            /*foreach (var key in keyBindingList)
+            {
+                if (e.Key == key.MainKey && key.SecondKey == null)
+                {
+                    key.RunAction();
+                }
+                
+                if (e.Key == key.MainKey && key.SecondKey == Keyboard.Modifiers)
+                {
+                    key.RunAction();
+                }
+            }*/
+        }
+
+        private Action ClearFocus()
+        {
+            var a = new Action(() =>
+            {
+                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(this), null);
+            });
+            return a;
+        }
+
+        private Action PausePlay()
+        {
+            var a = new Action(() =>
+            {
+                if (isPlaying)
+                {
+                    Pause();
+                }
+                else if (isPaused)
+                {
+                    Play();
+                }
+            });
+            return a;
+        }
+
+        private Action ToggleFullscreen()
+        {
+            var a = new Action(() => 
+            {
+                this.Fullscreen();
+                _fullscreen = ScreenHelper.IsFullscreen;
+            });
+            return a;
+        }
+
+        private Action ToggleHelpWindow()
+        {
+            var a = new Action(() =>
             {
 
-            }
+            });
+            return a;
+        }
+
+        private Action TogglePlaylist()
+        {
+            var a = new Action(() =>
+            {
+                if (Playlist.Visibility == Visibility.Visible)
+                {
+                    Playlist.Visibility = Visibility.Hidden;
+                }
+                else
+                {
+                    Playlist.Visibility = Visibility.Visible;
+                }
+            });
+            return a;
+        }
+
+        private Action MoveForwardMinutes()
+        {
+            var a = new Action(() =>
+            {
+                Seek(TimeSpan.FromMinutes(5), SeekDirection.Forward);
+            });
+            return a;
+        }
+
+        private Action MoveBackwardMinutes()
+        {
+            var a = new Action(() =>
+            {
+                Seek(TimeSpan.FromMinutes(5), SeekDirection.Backward);
+            });
+            return a;
         }
 
         public class ShortcutKeyBinding
         {
             public Key MainKey { get; set; }
-            public Key? SecondKey { get; set; }
+            public ModifierKeys? SecondKey { get; set; }
             public string Shortcut { get; set; }
             public string Description { get; set; }
+            public Action RunAction { get; set; }
         }
 
         private void ControlBar_SliderVolume_MouseMove(object sender, MouseEventArgs e)
@@ -684,10 +788,12 @@ namespace Thmd.Controls
                 switch (direction)
                 {
                     case SeekDirection.Forward:
-                        _vlcControl.SourceProvider.MediaPlayer.Time += (long)time.TotalMilliseconds;
+                        //_vlcControl.SourceProvider.MediaPlayer.Time += (long)time.TotalMilliseconds;
+                        this.Position += time;
                         break;
                     case SeekDirection.Backward:
-                        _vlcControl.SourceProvider.MediaPlayer.Time -= (long)time.TotalMilliseconds;
+                        //_vlcControl.SourceProvider.MediaPlayer.Time -= (long)time.TotalMilliseconds;
+                        this.Position -= time;
                         break;
                 }
             }

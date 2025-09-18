@@ -264,6 +264,9 @@
             <DoubleAnimation Storyboard.TargetName="_grid" Storyboard.TargetProperty="Opacity" To="1.0" Duration="0:0:4" />
         </Storyboard>
     </UserControl.Resources>
+    <UserControl.FocusVisualStyle>
+        <Style/>
+    </UserControl.FocusVisualStyle>
 
     <Grid x:Name="_grid"  Background="{StaticResource DarkBackgroundBrush}" Margin="0,0,0,55">
         <Grid.RowDefinitions>

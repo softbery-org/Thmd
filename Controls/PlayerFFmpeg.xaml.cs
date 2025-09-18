@@ -260,7 +260,7 @@ namespace Thmd.Controls
                 if (_fullscreen != value)
                 {
                     ToggleFullscreen();
-                    _fullscreen = FullscreenHelper.IsFullscreen;
+                    _fullscreen = ScreenHelper.IsFullscreen;
                     ControlBox.BtnFullscreen.Style = _fullscreen
                         ? FindResource("FullscreenOff") as Style
                         : FindResource("FullscreenOn") as Style;
