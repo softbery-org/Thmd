@@ -1,4 +1,4 @@
-// Version: 0.1.8.21
+// Version: 0.1.9.43
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -66,24 +66,10 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
 
     // Point where the mouse was pressed down
     private Point _startPoint;
+
     /// <summary>
     /// Gets or sets the collection of videos in the playlist and updates the UI.
     /// </summary>
-    /*public ObservableCollection<VideoItem> Videos
-    {
-        get => _videos;
-        set
-        {
-            _videos = value;
-            Dispatcher.Invoke(() =>
-            {
-                base.ItemsSource = _videos;
-                SetValue(VideosProperty, value);                
-                OnPropertyChanged("Videos");
-            });
-        }
-    }*/
-
     public ObservableCollection<VideoItem> Videos
     {
         get => _videos;

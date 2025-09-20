@@ -1,17 +1,17 @@
 // Config.cs
-// Version: 0.1.11.19
+// Version: 0.1.12.41
 // A singleton class for managing application configuration settings, including database connections,
 // logging, VLC library settings, subtitles, updates, and plugins. Supports loading and saving
 // configuration data to a JSON file with thread-safe access.
 
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Windows.Media;
+
+using Newtonsoft.Json;
+
+using Thmd.Consolas;
 using Thmd.Logs;
-using Thmd.Media;
-using Thmd.Repeats;
 
 namespace Thmd.Configuration;
 
@@ -32,11 +32,14 @@ public class Config
     // Static instance of IPlaylistConfig for easy access.
     private static IPlaylistConfig _playlistConfig;
     private static UpdateConfig _updateConfig;
+    private static PerformanceMonitorConfig _performanceMonitor;
 
     /// <summary>
     /// Gets or sets the database connection string.
     /// </summary>
     public string DatabaseConnectionString { get; set; }
+
+    public string Language { get; set; }
 
     /// <summary>
     /// Gets or sets the maximum number of database connections allowed.
@@ -61,7 +64,7 @@ public class Config
     /// <summary>
     /// Gets or sets the path to the VLC library.
     /// </summary>
-    public string LibVlcPath { get; set; }
+    public string LibVlcPath { get; set; } = "libvlc";
 
     /// <summary>
     /// Gets or sets a value indicating whether the VLC library is enabled.
@@ -126,13 +129,29 @@ public class Config
         }
     }
 
+    public UpdateConfig PerhormanceMonitor
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return _updateConfig ?? (_updateConfig = LoadFromJsonFile<UpdateConfig>("update.json"));
+            }
+        }
+        set
+        {
+            _updateConfig = value;
+        }
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Config"/> class with default values.
     /// </summary>
     public Config()
     {
-        //Logger.Log.Log(LogLevel.Info, new string[] {"Console", "File"} , "Inicjalizacja domy�lnych ustawie� konfiguracji.");
+        this.WriteLine("Inicjalizacja domyślnych ustawień konfiguracji.");
         DatabaseConnectionString = "server=localhost;connection=default";
+        Language = "pl_PL";
         MaxConnections = 10;
         EnableLogging = true;
         LogsDirectoryPath = "logs";

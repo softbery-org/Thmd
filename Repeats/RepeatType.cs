@@ -1,8 +1,8 @@
-// RepeatType.cs
-// Version: 0.1.11.28
+// Repeat.cs
+// Version: 0.1.12.50
 namespace Thmd.Repeats;
 
-// Placeholder for RepeatType enum (assumed to be in Thmd.Repeats)
+// Placeholder for Repeat enum (assumed to be in Thmd.Repeats)
 // Update this enum in the actual Thmd.Repeats namespace to include Random
 /// <summary>
 /// Defines the repeat modes for media playback.

@@ -1,8 +1,8 @@
-// Version: 0.1.4.61
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,16 +12,15 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 
+using LibVLCSharp.Shared;
+using LibVLCSharp.WPF;
+
 using Microsoft.Win32;
 
-using Thmd.Utilities;
+using Thmd.Consolas;
 using Thmd.Media;
 using Thmd.Repeats;
-
-using Vlc.DotNet.Core;
-using Vlc.DotNet.Wpf;
-using System.Linq;
-using Thmd.Consolas;
+using Thmd.Utilities;
 
 namespace Thmd.Controls
 {
@@ -53,7 +52,7 @@ namespace Thmd.Controls
         /// </summary>
         public PlaylistView Playlist { get => _playlist; }
         /// <summary>
-        /// Count items i Videos
+        /// Count items in Videos
         /// </summary>
         public int Count { get => _playlist.Videos.Count(); }
         /// <summary>
@@ -64,8 +63,6 @@ namespace Thmd.Controls
         /// Gets or sets the progress bar control for displaying playback progress.
         /// </summary>
         public ProgressBarView ProgressBar { get => _progressBar; set => _progressBar = value; }
-
-        public ControlBox ControlBox => throw new NotImplementedException(); // FOR REFATORING
         /// <summary>
         /// Gets or sets the control bar for playback controls (play, pause, stop, etc.).
         /// </summary>
@@ -73,7 +70,9 @@ namespace Thmd.Controls
         /// <summary>
         /// Gets or sets the current playback position of the media.
         /// </summary>
-        public TimeSpan Position { get => _position;
+        public TimeSpan Position
+        {
+            get => _position;
             set
             {
                 _position = value;
@@ -84,8 +83,8 @@ namespace Thmd.Controls
         /// <summary>
         /// Indicates whether media is currently playing.
         /// </summary>
-        public bool isPlaying 
-        { 
+        public bool isPlaying
+        {
             get => _playing;
             set
             {
@@ -101,7 +100,7 @@ namespace Thmd.Controls
         /// <summary>
         /// Indicates whether media playback is currently paused.
         /// </summary>
-        public bool isPaused 
+        public bool isPaused
         {
             get => _paused;
             set
@@ -118,7 +117,7 @@ namespace Thmd.Controls
         /// <summary>
         /// Indicates whether media playback is currently stopped.
         /// </summary>
-        public bool isStoped 
+        public bool isStoped
         {
             get => _stopped;
             set
@@ -135,7 +134,7 @@ namespace Thmd.Controls
         /// <summary>
         /// Gets or sets the subtitle control for managing subtitles.
         /// </summary>
-        public SubtitleControl SubtitleControl 
+        public SubtitleControl SubtitleControl
         {
             get => _subtitleControl;
             set => _subtitleControl = value;
@@ -161,7 +160,7 @@ namespace Thmd.Controls
                     value = 100.0;
                 }
                 _volume = value;
-                _vlcControl.SourceProvider.MediaPlayer.Audio.Volume = (int)value;
+                _mediaPlayer.Volume = (int)value;
                 OnPropertyChanged("Volume", ref _volume, value);
             }
         }
@@ -176,12 +175,12 @@ namespace Thmd.Controls
                 if (value)
                 {
                     _muted = true;
-                    _vlcControl.SourceProvider.MediaPlayer.Audio.Volume = 0;
+                    _mediaPlayer.Mute = true;
                 }
                 else
                 {
                     _muted = false;
-                    _vlcControl.SourceProvider.MediaPlayer.Audio.Volume = (int)_volume;
+                    _mediaPlayer.Mute = false;
                 }
                 OnPropertyChanged("isMute", ref _muted, value);
             }
@@ -196,10 +195,6 @@ namespace Thmd.Controls
             {
                 this.Fullscreen();
                 _fullscreen = ScreenHelper.IsFullscreen;
-                /*if (!_fullscreen)
-                    ControlBox.BtnFullscreen.Style = FindResource("FullscreenOn") as Style;
-                else
-                    ControlBox.BtnFullscreen.Style = FindResource("FullscreenOff") as Style;*/
                 OnPropertyChanged("Fullscreen", ref _fullscreen, value);
             }
         }
@@ -213,11 +208,13 @@ namespace Thmd.Controls
         /// Occurs when a property value changes, used for data binding.
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
-        public event EventHandler<VlcMediaPlayerPlayingEventArgs> Playing;
-        public event EventHandler<VlcMediaPlayerStoppedEventArgs> Stopped;
-        public event EventHandler<VlcMediaPlayerLengthChangedEventArgs> LengthChanged;
-        public event EventHandler<VlcMediaPlayerTimeChangedEventArgs> TimeChanged;
+        public event EventHandler<EventArgs> Playing;
+        public event EventHandler<EventArgs> Stopped;
+        public event EventHandler<EventArgs> LengthChanged;
+        public event EventHandler<MediaPlayerTimeChangedEventArgs> TimeChanged;
 
+        private LibVLC _libVLC;
+        private MediaPlayer _mediaPlayer;
         private double _volume = 100.0;
         private bool _muted;
         private bool _playing;
@@ -233,7 +230,7 @@ namespace Thmd.Controls
         private BackgroundWorker _mouseNotMoveWorker;
 
         public VlcControlView()
-        {            
+        {
             InitializeComponent();
 
             // Set player references for controls
@@ -248,15 +245,21 @@ namespace Thmd.Controls
             _progressBar.MouseDown += ProgressBar_MouseDown;
             _progressBar.MouseMove += ProgressBar_MouseMove;
 
-            // VlcConstrol events and values
+            // VlcControl events and values
             string[] mediaOptions = new string[] { "--no-video-title-show", "--no-sub-autodetect-file" };
-            _vlcControl.SourceProvider.CreatePlayer(new DirectoryInfo(Path.Combine("libvlc", (IntPtr.Size == 4) ? "win-x86" : "win-x64")), mediaOptions);
-            _vlcControl.SourceProvider.MediaPlayer.TimeChanged += OnTimeChanged;
-            _vlcControl.SourceProvider.MediaPlayer.EndReached += OnEndReached;
-            _vlcControl.SourceProvider.MediaPlayer.Playing += OnPlaying;
-            _vlcControl.SourceProvider.MediaPlayer.Stopped += OnStopped;
-            _vlcControl.SourceProvider.MediaPlayer.Paused += OnPaused;
-            _vlcControl.SourceProvider.MediaPlayer.Buffering += OnBuffering;
+            _libVLC = new LibVLC(mediaOptions);
+            _mediaPlayer = new MediaPlayer(_libVLC);
+            _mediaPlayer.EnableHardwareDecoding = false;
+            _mediaPlayer.EnableKeyInput = false;
+            _mediaPlayer.EnableMouseInput = false;
+            _mediaPlayer.TimeChanged += OnTimeChanged;
+            _mediaPlayer.EndReached += OnEndReached;
+            _mediaPlayer.Playing += OnPlaying;
+            _mediaPlayer.Stopped += OnStopped;
+            _mediaPlayer.Paused += OnPaused;
+            _mediaPlayer.Buffering += OnBuffering;
+
+            _videoView.MediaPlayer = _mediaPlayer;
 
             // Resize helpers for control bar and playlist
             var resizer1 = new ResizeControlHelper(_controlBar);
@@ -265,78 +268,146 @@ namespace Thmd.Controls
             // Buttons event handlers
             ControlBarButtonEvent();
 
+            // Mouse and keyboard events
+            //this.MouseMove += OnMouseMove;
+            this.MouseDown += OnMouseDown;
+            this.MouseDoubleClick += OnMouseDoubleClick;
+            this.MouseWheel += OnMouseWheel;
+            this.KeyDown += PlayerView_KeyDown;
+            this.KeyUp += PlayerView_KeyUp;
+
             // Mouse not moving worker
             _mouseNotMoveWorker = new BackgroundWorker();
             _mouseNotMoveWorker.DoWork += MouseNotMoveWorker_DoWork;
             _mouseNotMoveWorker.RunWorkerAsync();
+        }
 
-            // Mouse and keyborad events
-            this.MouseMove += OnMouseMove;
-            this.KeyDown += PlayerView_KeyDown;
-            this.KeyUp += PlayerView_KeyUp;
+        private void OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left && e.ClickCount == 1)
+            {
+                // Single left-click to toggle play/pause
+                if (isPlaying)
+                {
+                    Pause();
+                }
+                else if (isPaused)
+                {
+                    Play();
+                }
+            }
+            else if (e.ChangedButton == MouseButton.Right)
+            {
+                // Right-click to toggle playlist visibility
+                TogglePlaylist()();
+            }
+        }
+
+        private void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                // Double-click to toggle fullscreen
+                ToggleFullscreen()();
+            }
+        }
+
+        private void OnMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            // Adjust volume with mouse wheel
+            double volumeChange = e.Delta > 0 ? 5.0 : -5.0;
+            Volume += volumeChange;
+            _controlBar.SliderVolume.Value = Volume;
+            _progressBar.PopupText = $"Volume: {(int)Volume}";
+            _progressBar._popup.IsOpen = true;
+            // Show popup briefly
+            Task.Delay(1000).ContinueWith(_ => Dispatcher.Invoke(() => _progressBar._popup.IsOpen = false));
         }
 
         private void PlayerView_KeyUp(object sender, KeyEventArgs e)
         {
-            
+            // Handle key release if needed
         }
 
         private void PlayerView_KeyDown(object sender, KeyEventArgs e)
         {
-            var keyBindingList = new List<ShortcutKeyBinding>();
-            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Space, SecondKey = null, Shortcut = "Space", Description = "Pause and play media", RunAction = PausePlay() });
-            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.F, SecondKey = null, Shortcut = "F", Description = "Toggle fullscreen", RunAction = ToggleFullscreen() });
-            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.H, SecondKey = null, Shortcut = "H", Description = "Toggle help window", RunAction = ToggleHelpWindow() });
-            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.P, SecondKey = null, Shortcut = "P", Description = "Toggle playlist", RunAction = TogglePlaylist() });
-            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.N, SecondKey = null, Shortcut = "N", Description = "Toggle subtitle" });
-            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Left, SecondKey = null, Shortcut = "Left", Description = "Move media with +5 second" });
-            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Right, SecondKey = null, Shortcut = "Right", Description = "Move media with -5 second" });
-            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Left, SecondKey = ModifierKeys.Control, Shortcut = "Ctrl+Left", Description = "Move media with -5 minutes", RunAction = MoveBackwardMinutes() });
-            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Right, SecondKey = ModifierKeys.Control, Shortcut = "Ctrl+Right", Description = "Move media with +5 minutes", RunAction = MoveForwardMinutes() });
-            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Up, SecondKey = null, Shortcut = "Up", Description = "Up volume with +2" });
-            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Down, SecondKey = null, Shortcut = "Down", Description = "Down volume with -2" });
-            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.L, SecondKey = null, Shortcut = "L", Description = "On and off lector if you had a subtitles" });
-            keyBindingList.Add(new ShortcutKeyBinding { MainKey = Key.Escape, SecondKey = null, Shortcut = "Esc", Description = "Clear all focus", RunAction = ClearFocus() });
+            var keyBindingList = new List<ShortcutKeyBinding>
+            {
+                new ShortcutKeyBinding { MainKey = Key.Space, SecondKey = null, Shortcut = "Space", Description = "Pause and play media", RunAction = PausePlay() },
+                new ShortcutKeyBinding { MainKey = Key.F, SecondKey = null, Shortcut = "F", Description = "Toggle fullscreen", RunAction = ToggleFullscreen() },
+                new ShortcutKeyBinding { MainKey = Key.H, SecondKey = null, Shortcut = "H", Description = "Toggle help window", RunAction = ToggleHelpWindow() },
+                new ShortcutKeyBinding { MainKey = Key.P, SecondKey = null, Shortcut = "P", Description = "Toggle playlist", RunAction = TogglePlaylist() },
+                new ShortcutKeyBinding { MainKey = Key.S, SecondKey = null, Shortcut = "S", Description = "Toggle subtitle", RunAction = ToggleSubtitle() },
+                new ShortcutKeyBinding { MainKey = Key.Left, SecondKey = null, Shortcut = "Left", Description = "Move media backward 5 seconds", RunAction = () => Seek(TimeSpan.FromSeconds(5), SeekDirection.Backward) },
+                new ShortcutKeyBinding { MainKey = Key.Right, SecondKey = null, Shortcut = "Right", Description = "Move media forward 5 seconds", RunAction = () => Seek(TimeSpan.FromSeconds(5), SeekDirection.Forward) },
+                new ShortcutKeyBinding { MainKey = Key.Left, SecondKey = ModifierKeys.Control, Shortcut = "Ctrl+Left", Description = "Move media backward 5 minutes", RunAction = MoveBackwardMinutes() },
+                new ShortcutKeyBinding { MainKey = Key.Right, SecondKey = ModifierKeys.Control, Shortcut = "Ctrl+Right", Description = "Move media forward 5 minutes", RunAction = MoveForwardMinutes() },
+                new ShortcutKeyBinding { MainKey = Key.Up, SecondKey = null, Shortcut = "Up", Description = "Increase volume by 2", RunAction = () => Volume += 2 },
+                new ShortcutKeyBinding { MainKey = Key.Down, SecondKey = null, Shortcut = "Down", Description = "Decrease volume by 2", RunAction = () => Volume -= 2 },
+                new ShortcutKeyBinding { MainKey = Key.M, SecondKey = null, Shortcut = "M", Description = "Toggle mute", RunAction = () => isMute = !isMute },
+                new ShortcutKeyBinding { MainKey = Key.L, SecondKey = null, Shortcut = "L", Description = "Toggle lector if subtitles are available", RunAction = ToggleLector() },
+                new ShortcutKeyBinding { MainKey = Key.Escape, SecondKey = null, Shortcut = "Esc", Description = "Clear focus, minimize fullscreen", RunAction = ClearFocus() },
+                new ShortcutKeyBinding { MainKey = Key.N, SecondKey = null, Shortcut = "N", Description = "Play next video", RunAction = () => Next() },
+                new ShortcutKeyBinding { MainKey = Key.P, SecondKey = ModifierKeys.Control, Shortcut = "Ctrl+P", Description = "Play previous video", RunAction = () => Preview() },
+            };
 
-            if (e.IsDown && Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Left)
+            foreach (var key in keyBindingList)
             {
-                //MoveBackwardMinutes();
-                Seek(TimeSpan.FromMinutes(5), SeekDirection.Backward);
-                this.WriteLine($"Wci�ni�to: {Keyboard.Modifiers}+{e.Key}");
-            }
-            if (e.IsDown && Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Right)
-            {
-                //MoveForwardMinutes();
-                Seek(TimeSpan.FromMinutes(5), SeekDirection.Forward);
-                this.WriteLine($"Wci�ni�to: {Keyboard.Modifiers}+{e.Key}");
-            }
-
-            /*foreach (var key in keyBindingList)
-            {
-                if (e.Key == key.MainKey && key.SecondKey == null)
+                if (e.Key == key.MainKey && key.SecondKey == null && e.IsDown)
                 {
                     key.RunAction();
                 }
-                
-                if (e.Key == key.MainKey && key.SecondKey == Keyboard.Modifiers)
+                else if (e.Key == key.MainKey && key.SecondKey == Keyboard.Modifiers && e.IsDown)
                 {
                     key.RunAction();
                 }
-            }*/
+            }
+
+            if (e.IsDown)
+            {
+                this.WriteLine($"Pressed: {Keyboard.Modifiers}+{e.Key}");
+            }
+        }
+
+        private Action ToggleSubtitle()
+        {
+            return new Action(() =>
+            {
+                if (SubtitleVisibility == Visibility.Visible)
+                {
+                    SubtitleVisibility = Visibility.Hidden;
+                }
+                else
+                {
+                    OpenSubtitleFile();
+                }
+            });
+        }
+
+        private Action ToggleLector()
+        {
+            return new Action(() =>
+            {
+                // Placeholder for lector toggle functionality
+                Console.WriteLine("[VlcControlView]: Toggling lector (not implemented)");
+            });
         }
 
         private Action ClearFocus()
         {
-            var a = new Action(() =>
+            return new Action(() =>
             {
-                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(this), null);
+                if (ScreenHelper.IsFullscreen)
+                {
+                    this.Fullscreen();
+                    _fullscreen = ScreenHelper.IsFullscreen;
+                }
             });
-            return a;
         }
 
         private Action PausePlay()
         {
-            var a = new Action(() =>
+            return new Action(() =>
             {
                 if (isPlaying)
                 {
@@ -347,31 +418,29 @@ namespace Thmd.Controls
                     Play();
                 }
             });
-            return a;
         }
 
         private Action ToggleFullscreen()
         {
-            var a = new Action(() => 
+            return new Action(() =>
             {
                 this.Fullscreen();
                 _fullscreen = ScreenHelper.IsFullscreen;
             });
-            return a;
         }
 
         private Action ToggleHelpWindow()
         {
-            var a = new Action(() =>
+            return new Action(() =>
             {
-
+                // Placeholder for help window toggle
+                Console.WriteLine("[VlcControlView]: Toggling help window (not implemented)");
             });
-            return a;
         }
 
         private Action TogglePlaylist()
         {
-            var a = new Action(() =>
+            return new Action(() =>
             {
                 if (Playlist.Visibility == Visibility.Visible)
                 {
@@ -382,25 +451,22 @@ namespace Thmd.Controls
                     Playlist.Visibility = Visibility.Visible;
                 }
             });
-            return a;
         }
 
         private Action MoveForwardMinutes()
         {
-            var a = new Action(() =>
+            return new Action(() =>
             {
                 Seek(TimeSpan.FromMinutes(5), SeekDirection.Forward);
             });
-            return a;
         }
 
         private Action MoveBackwardMinutes()
         {
-            var a = new Action(() =>
+            return new Action(() =>
             {
                 Seek(TimeSpan.FromMinutes(5), SeekDirection.Backward);
             });
-            return a;
         }
 
         public class ShortcutKeyBinding
@@ -414,7 +480,7 @@ namespace Thmd.Controls
 
         private void ControlBar_SliderVolume_MouseMove(object sender, MouseEventArgs e)
         {
-            if(DesignerProperties.GetIsInDesignMode(this))
+            if (DesignerProperties.GetIsInDesignMode(this))
                 return;
 
             Point mousePosition = e.GetPosition(_controlBar.SliderVolume);
@@ -422,7 +488,7 @@ namespace Thmd.Controls
             if (width <= 0) return;
 
             double position = mousePosition.X / width * _controlBar.SliderVolume.Maximum;
-            
+
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 _volume = position;
@@ -450,53 +516,53 @@ namespace Thmd.Controls
             _controlBar.SliderVolume.Value = position;
         }
 
-        private void MediaPlayer_Playing(object sender, VlcMediaPlayerPlayingEventArgs e)
+        private void MediaPlayer_Playing(object sender, EventArgs e)
         {
-            if (Playing!=null)
+            if (Playing != null)
             {
-                _vlcControl.SourceProvider.MediaPlayer.Playing += (sender, e) =>
+                _mediaPlayer.Playing += (sender, e) =>
                 {
                     Playing?.Invoke(sender, e);
-                };                
+                };
             }
         }
 
-        private void MediaPlayer_Stopped(object sender, VlcMediaPlayerStoppedEventArgs e)
+        private void MediaPlayer_Stopped(object sender, EventArgs e)
         {
             if (Stopped != null)
             {
-                _vlcControl.SourceProvider.MediaPlayer.Stopped += (sender, e) =>
+                _mediaPlayer.Stopped += (sender, e) =>
                 {
                     Stopped?.Invoke(sender, e);
                 };
             }
         }
 
-        private void MediaPlayer_TimeChanged(object sender, VlcMediaPlayerTimeChangedEventArgs e)
+        private void MediaPlayer_TimeChanged(object sender, MediaPlayerMediaChangedEventArgs e)
         {
             if (TimeChanged != null)
             {
-                _vlcControl.SourceProvider.MediaPlayer.TimeChanged += (sender, e) =>
+                _mediaPlayer.TimeChanged += (sender, e) =>
                 {
                     TimeChanged?.Invoke(sender, e);
                 };
             }
         }
 
-        private void MediaPlayer_LenghtChanges(object sender, VlcMediaPlayerLengthChangedEventArgs e)
+        private void MediaPlayer_LenghtChanges(object sender, MediaPlayerLengthChangedEventArgs e)
         {
             if (LengthChanged != null)
             {
-                _vlcControl.SourceProvider.MediaPlayer.LengthChanged += (sender, e) =>
+                _mediaPlayer.LengthChanged += (sender, e) =>
                 {
                     LengthChanged?.Invoke(sender, e);
                 };
             }
         }
 
-        private void OnEndReached(object sender, VlcMediaPlayerEndReachedEventArgs e)
+        private void OnEndReached(object sender, EventArgs e)
         {
-            _vlcControl.Dispatcher.InvokeAsync(() =>
+            _videoView.Dispatcher.InvokeAsync(() =>
             {
                 ThreadPool.QueueUserWorkItem(delegate
                 {
@@ -505,23 +571,23 @@ namespace Thmd.Controls
                 var repeat = ControlBar.RepeatMode;
                 HandleRepeat(repeat);
             });
-         }
+        }
 
-        private void OnTimeChanged(object sender, VlcMediaPlayerTimeChangedEventArgs e)
+        private void OnTimeChanged(object sender, MediaPlayerTimeChangedEventArgs e)
         {
-            _vlcControl.Dispatcher.InvokeAsync(() =>
+            _videoView.Dispatcher.InvokeAsync(() =>
             {
-                _playlist.Current.Position = e.NewTime;
-             
-                _progressBar.Value = e.NewTime;
+                _playlist.Current.Position = e.Time;
+
+                _progressBar.Value = e.Time;
                 _progressBar.Duration = _playlist.Current.Duration;
-                _progressBar.ProgressText = string.Format("{0:00} : {1:00} : {2:00} / {3}", TimeSpan.FromMilliseconds(e.NewTime).Hours, TimeSpan.FromMilliseconds(e.NewTime).Minutes, TimeSpan.FromMilliseconds(e.NewTime).Seconds, ProgressBar.Duration.ToString("hh\\:mm\\:ss"));
+                _progressBar.ProgressText = string.Format("{0:00} : {1:00} : {2:00} / {3}", TimeSpan.FromMilliseconds(e.Time).Hours, TimeSpan.FromMilliseconds(e.Time).Minutes, TimeSpan.FromMilliseconds(e.Time).Seconds, ProgressBar.Duration.ToString("hh\\:mm\\:ss"));
 
                 _controlBar.MediaTitle = _playlist.Current.Name;
-                _controlBar.Position =TimeSpan.FromMilliseconds(e.NewTime).ToString("hh\\:mm\\:ss");
+                _controlBar.Position = TimeSpan.FromMilliseconds(e.Time).ToString("hh\\:mm\\:ss");
                 _controlBar.Duration = _playlist.Current.Duration.ToString("hh\\:mm\\:ss");
 
-                _subtitleControl.PositionTime = TimeSpan.FromMilliseconds(e.NewTime);
+                _subtitleControl.PositionTime = TimeSpan.FromMilliseconds(e.Time);
             });
         }
 
@@ -569,14 +635,6 @@ namespace Thmd.Controls
             _progressBar._rectangleMouseOverPoint.Margin = new Thickness(mousePosition.X - (_progressBar._rectangleMouseOverPoint.Width / 2), 0, 0, 0);
         }
 
-        private void KeyboardButtonEvent()
-        {
-
-        }
-
-        /// <summary>
-        /// Sets up event handlers for control bar buttons (play, stop, next, previous, volume, etc.).
-        /// </summary>
         private void ControlBarButtonEvent()
         {
             ControlBar.BtnPlay.Click += delegate
@@ -601,23 +659,21 @@ namespace Thmd.Controls
             ControlBar.BtnPrevious.Click += delegate
             {
                 Preview();
-
             };
             ControlBar.BtnMute.Click += delegate
             {
                 var mute = String.Empty;
-                if (_vlcControl.SourceProvider.MediaPlayer.Audio.IsMute)
+                if (_mediaPlayer.Mute)
                 {
-                   // ControlBar.BtnMute.Style = FindResource("Mute") as Style;
-                    _volume = _vlcControl.SourceProvider.MediaPlayer.Audio.Volume;
+                    _volume = _mediaPlayer.Volume;
                     mute = "On";
                 }
                 else
                 {
-                   // ControlBar.BtnMute.Style = FindResource("Unmute") as Style;
-                    _volume = _vlcControl.SourceProvider.MediaPlayer.Audio.Volume;
+                    _volume = _mediaPlayer.Volume;
                     mute = "Off";
                 }
+                isMute = !isMute;
             };
             ControlBar.BtnOpen.Click += delegate
             {
@@ -674,18 +730,14 @@ namespace Thmd.Controls
             }
         }
 
-        /// <summary>
-        /// Loads and displays subtitles from a specified file path.
-        /// </summary>
-        /// <param name="path">The path to the subtitle file.</param>
         public void SetSubtitle(string path)
         {
-            _vlcControl.Dispatcher.InvokeAsync(() =>
+            _videoView.Dispatcher.InvokeAsync(() =>
             {
                 _subtitleControl.FilePath = path;
                 _subtitleControl.TimeChanged += delegate (object sender, TimeSpan time)
                 {
-                    if (_vlcControl.SourceProvider.MediaPlayer != null)
+                    if (_videoView.MediaPlayer != null)
                     {
                         _subtitleControl.PositionTime = time;
                     }
@@ -693,9 +745,6 @@ namespace Thmd.Controls
             });
         }
 
-        /// <summary>
-        /// Pauses the current media playback.
-        /// </summary>
         public void Pause()
         {
             try
@@ -705,7 +754,10 @@ namespace Thmd.Controls
                     _playing = false;
                     _paused = true;
                     _stopped = false;
-                    _vlcControl.SourceProvider.MediaPlayer?.SetPause(true);
+                    if (_mediaPlayer.IsPlaying)
+                    {
+                        _mediaPlayer.Pause();
+                    }
                     SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
                 });
             }
@@ -715,9 +767,6 @@ namespace Thmd.Controls
             }
         }
 
-        /// <summary>
-        /// Stops the current media playback.
-        /// </summary>
         public void Stop()
         {
             try
@@ -727,7 +776,7 @@ namespace Thmd.Controls
                     _playing = false;
                     _paused = false;
                     _stopped = true;
-                    _vlcControl.SourceProvider.MediaPlayer?.Stop();
+                    _mediaPlayer.Stop();
                     SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
                 });
             }
@@ -737,63 +786,42 @@ namespace Thmd.Controls
             }
         }
 
-        /// <summary>
-        /// Plays the next video in the playlist.
-        /// </summary>
         public void Next()
         {
             Stop();
             Playlist.MoveNext.Play();
         }
 
-        /// <summary>
-        /// Plays the previous video in the playlist.
-        /// </summary>
         public void Preview()
         {
             Stop();
             Playlist.MovePrevious.Play();
         }
 
-        /// <summary>
-        /// Seeks to a specific time in the current media.
-        /// </summary>
-        /// <param name="time">The time to seek to.</param>
         public void Seek(TimeSpan time)
         {
-            if (_vlcControl != null)
+            if (_mediaPlayer != null)
             {
-                _vlcControl.SourceProvider.MediaPlayer.Time = (long)time.TotalMilliseconds;
+                _mediaPlayer.Time = (long)time.TotalMilliseconds;
             }
         }
 
-        /// <summary>
-        /// Seeks forward or backward by a specified duration.
-        /// </summary>
-        /// <param name="time">The duration to seek by.</param>
-        /// <param name="direction">The direction to seek (Forward or Backward).</param>
         public void Seek(TimeSpan time, SeekDirection direction)
         {
-            if (_vlcControl != null)
+            if (_mediaPlayer != null)
             {
                 switch (direction)
                 {
                     case SeekDirection.Forward:
-                        //_vlcControl.SourceProvider.MediaPlayer.Time += (long)time.TotalMilliseconds;
                         this.Position += time;
                         break;
                     case SeekDirection.Backward:
-                        //_vlcControl.SourceProvider.MediaPlayer.Time -= (long)time.TotalMilliseconds;
                         this.Position -= time;
                         break;
                 }
             }
         }
 
-        /// <summary>
-        /// Plays the specified media or the current playlist item.
-        /// </summary>
-        /// <param name="media">The video to play, or null to play the current playlist item.</param>
         private void _Play(VideoItem media = null)
         {
             if (Playlist.Current == null)
@@ -801,6 +829,7 @@ namespace Thmd.Controls
                 Console.WriteLine($"[VlcControlView]: Playlist is empty or current media is not set.");
                 return;
             }
+
             try
             {
                 ThreadPool.QueueUserWorkItem(delegate
@@ -808,35 +837,44 @@ namespace Thmd.Controls
                     _playing = true;
                     _paused = false;
                     _stopped = false;
-                    
-                    if (_paused)
-                        _vlcControl.SourceProvider.MediaPlayer?.SetPause(false);
-                    else if(media==null)
-                        _vlcControl.SourceProvider.MediaPlayer?.Play();
-                    else
-                        _vlcControl.SourceProvider.MediaPlayer?.Play(media.Uri);
 
-                    SetThreadExecutionState(BLOCK_SLEEP_MODE);
+                    Dispatcher.Invoke(() =>
+                    {
+                        if (_paused && _mediaPlayer.CanPause && _position>TimeSpan.Zero)
+                        {
+                            _mediaPlayer.Play();
+                        }
+                        else if(media != null) 
+                        {
+                            using var vlcMedia = new LibVLCSharp.Shared.Media(_libVLC, media.Uri);
+
+                            if (IsLowResolution(media))
+                            {
+                                ConfigureRealTimeUpscale(vlcMedia);
+                            }
+
+                            _mediaPlayer.Play(vlcMedia);
+                        }
+                        else
+                        {
+                            _mediaPlayer.Play();
+                        }
+
+                            SetThreadExecutionState(BLOCK_SLEEP_MODE);
+                    });
                 });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[VlcControlView]: {ex.Message}");
+                Console.WriteLine($"[VlcControlView]: Error while playing media: {ex.Message}");
             }
         }
 
-        /// <summary>
-        /// Plays the specified video.
-        /// </summary>
-        /// <param name="media">The video to play.</param>
         public void Play(VideoItem media)
         {
             _Play(media);
         }
 
-        /// <summary>
-        /// Plays the current video in the playlist.
-        /// </summary>
         public void Play()
         {
             if (Playlist.Current == null)
@@ -847,9 +885,40 @@ namespace Thmd.Controls
             _Play();
         }
 
-        /// <summary>
-        /// Handles repeat logic based on the current repeat mode.
-        /// </summary>
+        private void ConfigureRealTimeUpscale(LibVLCSharp.Shared.Media media, int targetWidth = 1920, int targetHeight = 1080)
+        {
+            try
+            {
+                media.AddOption(":video-filter=scale");
+                media.AddOption($":scale-width={targetWidth}");
+                media.AddOption($":scale-height={targetHeight}");
+                media.AddOption(":video-filter=hqdn3d");
+                Console.WriteLine($"[VlcControlView]: Applied real-time upscale to {targetWidth}x{targetHeight} with hqdn3d");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[VlcControlView]: Failed to apply upscale: {ex.Message}");
+            }
+        }
+
+        private bool IsLowResolution(VideoItem media)
+        {
+            try
+            {
+                if (media != null && int.TryParse(media.FrameSize.Split('x')[0], out int width))
+                {
+                    this.WriteLine($"Resolution: {media.FrameSize}, try to upscale.");
+                    return width < 1280;
+                }
+                return true;
+            }
+            catch
+            {
+                Console.WriteLine($"[VlcControlView]: Failed to check resolution with mediatoolkit, upscale off");
+                return false;
+            }
+        }
+
         private void HandleRepeat(string repeat)
         {
             switch (repeat)
@@ -874,7 +943,7 @@ namespace Thmd.Controls
                             int randomIndex = _random.Next(0, Playlist.Items.Count);
                             if (randomIndex == Playlist.CurrentIndex)
                             {
-                                randomIndex = (randomIndex + 1) % Playlist.Items.Count; // Ensure we don't repeat the current video
+                                randomIndex = (randomIndex + 1) % Playlist.Items.Count;
                             }
                             Playlist.CurrentIndex = randomIndex;
                             Playlist.Current.Play();
@@ -888,11 +957,6 @@ namespace Thmd.Controls
             }
         }
 
-        /// <summary>
-        /// Background worker to hide the control bar and progress bar after mouse inactivity.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The event arguments.</param>
         private async void MouseNotMoveWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             bool val = true;
@@ -906,13 +970,9 @@ namespace Thmd.Controls
             }
         }
 
-        /// <summary>
-        /// Checks for mouse movement and hides controls after a period of inactivity.
-        /// </summary>
-        /// <returns>A task that returns true if the mouse moved, false otherwise.</returns>
         private async Task<bool> IfMouseMoved()
         {
-            base.MouseMove += MouseMovedCallback;
+            _videoView.MouseMove += MouseMovedCallback;
             bool isMouseMove;
             try
             {
@@ -921,12 +981,12 @@ namespace Thmd.Controls
             }
             finally
             {
-                base.MouseMove -= MouseMovedCallback;
-                await base.Dispatcher.InvokeAsync((Func<Task>)async delegate
+                _videoView.MouseMove -= MouseMovedCallback;
+                await _videoView.Dispatcher.InvokeAsync((Func<Task>)async delegate
                 {
                     await ControlBar.HideByStoryboard((Storyboard)ControlBar.FindResource("fadeOutControlBar"));
                     await ProgressBar.HideByStoryboard((Storyboard)ProgressBar.FindResource("fadeOutProgressBar"));
-                    base.Cursor = Cursors.None;
+                    _videoView.Cursor = Cursors.None;
                 });
                 _isMouseMove = false;
             }
@@ -934,69 +994,42 @@ namespace Thmd.Controls
             void MouseMovedCallback(object sender, MouseEventArgs e)
             {
                 _isMouseMove = true;
+                ControlBar.ShowByStoryboard((Storyboard)ControlBar.FindResource("fadeInControlBar")).GetAwaiter();
+                ProgressBar.ShowByStoryboard((Storyboard)ProgressBar.FindResource("fadeInProgressBar")).GetAwaiter();
+                _videoView.Cursor = Cursors.Arrow;
             }
         }
 
-        /// <summary>
-        /// Shows the control bar and progress bar when the mouse moves.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The mouse event arguments.</param>
         private async void OnMouseMove(object sender, MouseEventArgs e)
         {
             await ControlBar.ShowByStoryboard((Storyboard)ControlBar.FindResource("fadeInControlBar"));
             await ProgressBar.ShowByStoryboard((Storyboard)ProgressBar.FindResource("fadeInProgressBar"));
-            base.Cursor = Cursors.Arrow;
+            _videoView.Cursor = Cursors.Arrow;
         }
 
-        /// <summary>
-        /// Handles the Playing event of the media player, updating the UI and system state.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The event arguments.</param>
-        private void OnPlaying(object sender, VlcMediaPlayerPlayingEventArgs e)
+        private void OnPlaying(object sender, EventArgs e)
         {
             SetThreadExecutionState(BLOCK_SLEEP_MODE);
         }
 
-        /// <summary>
-        /// Handles the Stopped event of the media player, stopping playback and updating the system state.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The event arguments.</param>
-        private void OnStopped(object sender, VlcMediaPlayerStoppedEventArgs e)
+        private void OnStopped(object sender, EventArgs e)
         {
             SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
         }
 
-        /// <summary>
-        /// Handles the Paused event of the media player, updating the system state.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The event arguments.</param>
-        private void OnPaused(object sender, VlcMediaPlayerPausedEventArgs e)
+        private void OnPaused(object sender, EventArgs e)
         {
             SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
         }
 
-        /// <summary>
-        /// Handles the Buffering event of the media player, updating the progress bar's buffer value.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The buffering event arguments.</param>
-        private void OnBuffering(object sender, VlcMediaPlayerBufferingEventArgs e)
+        private void OnBuffering(object sender, MediaPlayerBufferingEventArgs e)
         {
             this.Dispatcher.InvokeAsync(() =>
             {
-                ProgressBar.BufforBarValue = e.NewCache;
+                ProgressBar.BufforBarValue = e.Cache;
             });
         }
 
-        /// <summary>
-        /// Handles the Loaded event to initialize the progress bar and control bar with the current video's information.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The event arguments.</param>
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             ProgressBar.Duration = Playlist.Current?.Duration ?? TimeSpan.Zero;
@@ -1006,13 +1039,6 @@ namespace Thmd.Controls
             ControlBar.MediaTitle = Playlist.Current?.Name ?? "No video loaded";
         }
 
-        /// <summary>
-        /// Raises the <see cref="PropertyChanged"/> event for a specific field and updates its value.
-        /// </summary>
-        /// <typeparam name="T">The type of the field.</typeparam>
-        /// <param name="propertyName">The name of the property that changed.</param>
-        /// <param name="field">The field to update.</param>
-        /// <param name="value">The new value for the field.</param>
         private void OnPropertyChanged<T>(string propertyName, ref T field, T value)
         {
             if (field != null || value == null)
@@ -1031,10 +1057,6 @@ namespace Thmd.Controls
             PropertyChanged?.Invoke(field, new PropertyChangedEventArgs(propertyName));
         }
 
-        /// <summary>
-        /// Raises the <see cref="PropertyChanged"/> event to notify the UI of property changes.
-        /// </summary>
-        /// <param name="propertyName">The name of the property that changed.</param>
         protected void OnPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
@@ -1045,10 +1067,10 @@ namespace Thmd.Controls
 
         public void Dispose()
         {
-            _vlcControl.SourceProvider.MediaPlayer?.Dispose();
-            _vlcControl.SourceProvider.Dispose();
-            _vlcControl.Dispose();
+            _mediaPlayer?.Dispose();
+            _libVLC?.Dispose();
             SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
         }
     }
 }
+// Version: 0.1.0.14

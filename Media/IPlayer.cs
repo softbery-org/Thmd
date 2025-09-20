@@ -1,4 +1,4 @@
-// Version: 0.1.11.23
+// Version: 0.1.12.45
 using System;
 using System.ComponentModel;
 using System.Windows;
@@ -6,7 +6,7 @@ using System.Windows;
 using Thmd.Controls;
 using Thmd.Repeats;
 
-using Vlc.DotNet.Core;
+using LibVLCSharp.Shared;
 
 namespace Thmd.Media;
 
@@ -14,7 +14,6 @@ public interface IPlayer
 {
 	PlaylistView Playlist { get; }
 	Visibility PlaylistVisibility { get; set; }
-    ControlBox ControlBox { get; }
 	ControlBar ControlBar { get; }
     TimeSpan Position { get; set; }
 	bool isPlaying { get; set; }
@@ -34,8 +33,8 @@ public interface IPlayer
 	void SetSubtitle(string path);
 	void Dispose();
 	event PropertyChangedEventHandler PropertyChanged;
-    event EventHandler<VlcMediaPlayerPlayingEventArgs> Playing;
-    event EventHandler<VlcMediaPlayerStoppedEventArgs> Stopped;
-    event EventHandler<VlcMediaPlayerLengthChangedEventArgs> LengthChanged;
-    event EventHandler<VlcMediaPlayerTimeChangedEventArgs> TimeChanged;
+    event EventHandler<EventArgs> Playing;
+    event EventHandler<EventArgs> Stopped;
+    event EventHandler<EventArgs> LengthChanged;
+    event EventHandler<MediaPlayerTimeChangedEventArgs> TimeChanged;
 }

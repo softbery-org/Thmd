@@ -1,4 +1,4 @@
-// Version: 0.1.11.28
+// Version: 0.1.12.50
 using System.Windows;
 using System.Windows.Controls;
 
@@ -33,7 +33,15 @@ public static class ScreenHelper
 		FullscreenOnOff(sender);
 	}
 
-	private static void FullscreenOnOff(object sender)
+	public static void Fullscreen(this object sender, bool fullscreen)
+	{
+		if (fullscreen == IsFullscreen)
+		{
+            FullscreenOnOff(sender);
+        }
+    }
+
+    private static void FullscreenOnOff(object sender)
 	{
 		Window window = Window.GetWindow(sender as DependencyObject);
 		if (window != null)

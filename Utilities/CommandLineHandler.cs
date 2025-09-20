@@ -1,6 +1,7 @@
 // CommandLineHandler.cs
-// Version: 0.1.5.92
+// Version: 0.1.7.14
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -20,6 +21,7 @@ namespace Thmd.Utilities
             ("-h", "Display this help message and exit."),
             ("--help", "Display this help message and exit."),
             ("-f <file>", "Open and play the specified media file (e.g., thmdplayer.exe -f \"C:\\video.mp4\")."),
+            ("--debug", "run program and run performance monitor for applikation"),
             ("--fullscreen", "Start the player in fullscreen mode."),
             ("--playlist <file>", "Load the specified playlist file (e.g., thmdplayer.exe --playlist \"C:\\playlist.m3u\")."),
             ("--volume <level>", "Set initial volume level (0-100, e.g., thmdplayer.exe --volume 50).")
@@ -67,6 +69,11 @@ namespace Thmd.Utilities
                         {
                             ShowError("File path expected after -f or --file flag.");
                         }
+                        break;
+                    case "-d":
+                    case "--debug":
+                        Console.WriteLine(Process.GetCurrentProcess().ProcessName);
+                        Process.Start("PerformanceMonitorApp.exe", "--process " + Process.GetCurrentProcess().ProcessName);
                         break;
 
                     case "--fullscreen":

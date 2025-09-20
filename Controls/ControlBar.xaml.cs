@@ -1,4 +1,4 @@
-// Version: 0.1.4.51
+// Version: 0.1.5.73
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -10,9 +10,6 @@ using System.Windows.Media.Animation;
 
 using Thmd.Utilities;
 using Thmd.Media;
-
-using Vlc.DotNet.Core.Interops.Signatures;
-using Vlc.DotNet.Wpf;
 
 namespace Thmd.Controls
 {
@@ -254,8 +251,8 @@ namespace Thmd.Controls
                     CurrentTime = "00:00";
                     MediaDuration = "00:00";
                 };
-                _player.TimeChanged += (s, e) => UpdateCurrentTime(e.NewTime);
-                _player.LengthChanged += (s, e) => UpdateMediaDuration(e.NewLength);
+                _player.TimeChanged += (s, e) => UpdateCurrentTime(e.Time);
+                _player.LengthChanged += (s, e) => UpdateMediaDuration((long)_player.Playlist.Current.Duration.TotalMilliseconds);
             }
         }
 

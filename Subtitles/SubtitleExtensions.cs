@@ -1,16 +1,22 @@
-// Version: 0.1.7.35
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+// Version: 0.1.0.67
 namespace Thmd.Subtitles
 {
+    /// <summary>
+    /// Supported subtitle file extensions.
+    /// </summary>
     public enum SubtitleExtensions
     {
+        /// <summary>
+        /// SRT is the most common subtitle format.
+        /// </summary>
+        srt,
+        /// <summary>
+        /// TXT is a plain text format, sometimes used for subtitles.
+        /// </summary>
         txt,
-        sub,
-        srt
+        /// <summary>
+        ///  SUB is a subtitle format used by MicroDVD and other players.
+        /// </summary>
+        sub
     }
 }

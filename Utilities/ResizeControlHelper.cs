@@ -1,11 +1,11 @@
-// Version: 0.1.4.39
+// Version: 0.1.5.61
 using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-using Thmd.Utilities;
+namespace Thmd.Utilities;
 
 public class ResizeControlHelper
 {

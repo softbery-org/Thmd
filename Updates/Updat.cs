@@ -1,5 +1,5 @@
 // Updater.cs
-// Version: 0.1.12.17
+// Version: 0.1.13.39
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -21,7 +21,7 @@ namespace Thmd.Updates;
 /// Uses configuration settings from the Config class and supports asynchronous operations
 /// with progress reporting and error handling.
 /// </summary>
-public class Updater : IDisposable
+public class Updat : IDisposable
 {
     private readonly HttpClient _httpClient;
     private readonly AsyncLogger _logger;
@@ -69,9 +69,9 @@ public class Updater : IDisposable
     public event EventHandler<UpdateErrorEventArgs> UpdateFailed;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Updater"/> class using settings from the <see cref="Config"/> class.
+    /// Initializes a new instance of the <see cref="Updat"/> class using settings from the <see cref="Config"/> class.
     /// </summary>
-    public Updater()
+    public Updat()
     {
         _httpClient = new HttpClient
         {
@@ -83,7 +83,7 @@ public class Updater : IDisposable
     }
 
     /// <summary>
-    /// Disposes the resources used by the <see cref="Updater"/>.
+    /// Disposes the resources used by the <see cref="Updat"/>.
     /// </summary>
     public void Dispose()
     {
@@ -92,7 +92,7 @@ public class Updater : IDisposable
     }
 
     /// <summary>
-    /// Disposes the resources used by the <see cref="Updater"/>.
+    /// Disposes the resources used by the <see cref="Updat"/>.
     /// </summary>
     /// <param name="disposing">True to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
     protected virtual void Dispose(bool disposing)
