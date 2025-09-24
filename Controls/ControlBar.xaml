@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             mc:Ignorable="d" d:DesignWidth="620" MaxWidth="620" MinWidth="620" MaxHeight="165" MinHeight="165" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="120">
+             mc:Ignorable="d" d:DesignWidth="620" MaxWidth="620" MaxHeight="165"  HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Height="105">
     <UserControl.Resources>
         <!-- Define colors -->
         <SolidColorBrush x:Key="DarkOrangeBrush" Color="#D35400"/>
@@ -268,16 +268,16 @@
         <Style/>
     </UserControl.FocusVisualStyle>
 
-    <Grid x:Name="_grid"  Background="{StaticResource DarkBackgroundBrush}" Margin="0,0,0,55">
+    <Grid x:Name="_grid"  Background="{StaticResource DarkBackgroundBrush}" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="0.5*"/>
         </Grid.ColumnDefinitions>
-            <!-- Media Title -->
+        <!-- Media Title -->
         <TextBlock x:Name="_mediaTitleTextBlock" 
                    Grid.Row="0"
                    Grid.Column="0"

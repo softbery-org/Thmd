@@ -1,4 +1,4 @@
-// Version: 0.1.5.73
+// Version: 0.1.6.21
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -10,6 +10,7 @@ using System.Windows.Media.Animation;
 
 using Thmd.Utilities;
 using Thmd.Media;
+using LibVLCSharp.Shared;
 
 namespace Thmd.Controls
 {
@@ -172,7 +173,15 @@ namespace Thmd.Controls
         }
         public static readonly DependencyProperty IsMutedProperty =
             DependencyProperty.Register(nameof(IsMuted), typeof(bool), typeof(ControlBar), new PropertyMetadata(false, OnIsMutedChanged));
-                        
+
+        public VLCState PlayerState
+        {
+            get => (VLCState)GetValue(IsPlayingProperty);
+            set => SetValue(IsPlayingProperty, value);
+        }
+        public static readonly DependencyProperty IsPlayingProperty =
+            DependencyProperty.Register(nameof(PlayerState), typeof(bool), typeof(ControlBar), new PropertyMetadata(false, OnPlayerStateChanged));
+
         public string Position
         {
             get => _position;
@@ -256,6 +265,39 @@ namespace Thmd.Controls
             }
         }
 
+        private static void OnPlayerStateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var control = (ControlBar)d;
+            if (control._player != null)
+            {
+                switch (control._player.State)
+                {
+                    case VLCState.NothingSpecial:
+                        break;
+                    case VLCState.Opening:
+                        break;
+                    case VLCState.Buffering:
+                        break;
+                    case VLCState.Playing:
+                        control.UpdatePlayButtonContent();
+                        break;
+                    case VLCState.Paused:
+                        control.UpdatePlayButtonContent();
+                        break;
+                    case VLCState.Stopped:
+                        break;
+                    case VLCState.Ended:
+                        break;
+                    case VLCState.Error:
+                        break;
+                    default:
+                        break;
+                }
+            }
+            
+            control.OnPropertyChanged(nameof(PlayerState));
+        }
+
         private static void OnVolumeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = (ControlBar)d;
@@ -332,6 +374,12 @@ namespace Thmd.Controls
         {
             _muteButton.Content = IsMuted ? "🔇" : "🔊";
             _muteButton.ToolTip = IsMuted ? "Unmute" : "Mute";
+        }
+
+        private void UpdatePlayButtonContent()
+        {
+            _playPauseButton.Content = _player.State == LibVLCSharp.Shared.VLCState.Playing ? "▶" : "⏸️";
+            _playPauseButton.ToolTip = _player.State == LibVLCSharp.Shared.VLCState.Playing ? "Play" : "Pause";
         }
 
         private void ToggleMute()

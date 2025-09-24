@@ -1,4 +1,4 @@
-// Version: 0.1.12.45
+// Version: 0.1.12.94
 using System;
 using System.ComponentModel;
 using System.Windows;
@@ -16,6 +16,7 @@ public interface IPlayer
 	Visibility PlaylistVisibility { get; set; }
 	ControlBar ControlBar { get; }
     TimeSpan Position { get; set; }
+	VLCState State { get; set; }
 	bool isPlaying { get; set; }
 	bool isPaused { get; set; }
 	bool isStoped { get; set; }

@@ -46,12 +46,6 @@
     <Reference Include="PresentationCore" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
-    <Reference Include="Vlc.DotNet.Wpf">
-      <HintPath>bin\Debug\Vlc.DotNet.Wpf.dll</HintPath>
-    </Reference>
-    <Reference Include="Vlc.DotNet.Core">
-      <HintPath>bin\Debug\Vlc.DotNet.Core.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>bin\Debug\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -78,6 +72,9 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Devices\Mouses\" />
   </ItemGroup>
   <Target Name="UpdateAssemblyVersion" BeforeTargets="BeforeBuild">
     <Message Importance="high" Text="PostBuild: $(TargetPath)" />

@@ -1,4 +1,4 @@
-// Version: 0.1.9.43
+// Version: 0.1.9.92
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -6,20 +6,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Markup;
 using System.Windows.Media;
-using System.Windows.Media.Effects;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 
 using Thmd.Consolas;
-using Thmd.Utilities;
-using Thmd.Logs;
 using Thmd.Media;
+using Thmd.Utilities;
 
 namespace Thmd.Controls;
 
@@ -66,6 +59,26 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
 
     // Point where the mouse was pressed down
     private Point _startPoint;
+
+    /// <summary>
+    /// Add command
+    /// </summary>
+    public ICommand AddCommand { get; private set; }
+    
+    /// <summary>
+    /// Remove command
+    /// </summary>
+    public ICommand RemoveCommand { get; private set; }
+
+    /// <summary>
+    /// Edit command
+    /// </summary>
+    public ICommand EditCommand { get; private set; }
+
+    /// <summary>
+    /// Close command
+    /// </summary>
+    public ICommand CloseCommand { get; private set; }
 
     /// <summary>
     /// Gets or sets the collection of videos in the playlist and updates the UI.
@@ -238,6 +251,12 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         // Enable drag-and-drop
         AllowDrop = true;
 
+        // Initialize commands
+        AddCommand = new RelayCommand(Add);
+        RemoveCommand = new RelayCommand(Remove);
+        EditCommand = new RelayCommand(Edit);
+        CloseCommand = new RelayCommand(Close);
+
         // Initialize the context menu
         _rightClickMenu = new ContextMenu();
         MenuItem playItem = new MenuItem { Header = "Play" };
@@ -263,23 +282,42 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
 
         // Subscribe to mouse events
         this.MouseDoubleClick += ListView_MouseDoubleClick;
-        this.KeyDown += PlaylistView_KeyDown;
         //KeyboardNavigation.SetIsTabStop(this, true);
         /*var focusScope = FocusManager.GetFocusScope(this);
         FocusManager.SetFocusedElement(focusScope, null);*/
     }
 
-    private void PlaylistView_KeyDown(object sender, KeyEventArgs e)
+    // Metoda dla przycisku "Dodaj"
+    private void Add(object parameter)
     {
-        if (e.Key == Key.Escape)
-        {
-            //var parent = VisualTreeHelper.GetParent(sender as Window);
-            //FocusManager.SetFocusedElement(FocusManager.GetFocusScope(this), null);
-            //Keyboard.ClearFocus();
-            //FocusManager.SetFocusedElement(this, null);
-            //Window.GetWindow(Application.Current.MainWindow).Focus();
-            //Keyboard.Focus(_player as Control);
-        }
+        // Logika dla dodawania elementu do playlisty
+        MessageBox.Show("Dodawanie nowego elementu do playlisty.");
+    }
+
+    // Metoda dla przycisku "Usuń"
+    private void Remove(object parameter)
+    {
+        // Logika dla usuwania elementu z playlisty
+        MessageBox.Show("Usuwanie elementu z playlisty.");
+    }
+
+    // Metoda dla przycisku "Edytuj"
+    private void Edit(object parameter)
+    {
+        // Logika dla edycji elementu playlisty
+        MessageBox.Show("Edycja wybranego elementu playlisty.");
+    }
+
+    // Metoda dla przycisku "Zamknij"
+    private void Close(object parameter)
+    {
+        // Logic for hide playlist
+        this.Visibility = Visibility.Collapsed;
+    }
+
+    protected override void OnKeyDown(KeyEventArgs e)
+    {
+        base.OnKeyDown(e);
     }
 
     public PlaylistView(IPlayer player) : this()
@@ -723,6 +761,35 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
                 Dispatcher.Invoke(() => Videos.Move(currentIndex, currentIndex + 1));
                 Logger.Log.Log(Thmd.Logs.LogLevel.Info, new string[2] { "Console", "File" }, $"PlaylistView: Moved video {video.Name} lower");
             }
+        }
+    }
+
+    // Helper RelayCommand class, implement ICommand
+    public class RelayCommand : ICommand
+    {
+        private readonly Action<object> _execute;
+        private readonly Func<object, bool> _canExecute;
+
+        public RelayCommand(Action<object> execute, Func<object, bool> canExecute = null)
+        {
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            _canExecute = canExecute;
+        }
+
+        public bool CanExecute(object parameter)
+        {
+            return _canExecute == null || _canExecute(parameter);
+        }
+
+        public void Execute(object parameter)
+        {
+            _execute(parameter);
+        }
+
+        public event EventHandler CanExecuteChanged
+        {
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
         }
     }
 }
