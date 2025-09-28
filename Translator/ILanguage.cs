@@ -26,4 +26,4 @@ namespace Thmd.Translator
         #endregion
     }
 }
-// Version: 0.1.3.21
+// Version: 0.1.3.34

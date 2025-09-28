@@ -143,4 +143,4 @@ namespace Thmd.Translator;
         }
     }
 }
-// Version: 0.1.3.21
+// Version: 0.1.3.34

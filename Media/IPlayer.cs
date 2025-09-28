@@ -1,4 +1,4 @@
-// Version: 0.1.14.99
+// Version: 0.1.15.12
 using System;
 using System.ComponentModel;
 using System.Windows;
@@ -7,6 +7,7 @@ using Thmd.Controls;
 using Thmd.Repeats;
 
 using LibVLCSharp.Shared;
+using System.Windows.Media.Imaging;
 
 namespace Thmd.Media;
 
@@ -34,6 +35,7 @@ public interface IPlayer
 	void SetSubtitle(string path);
 	void SavePlaylistConfig();
     void LoadPlaylistConfig();
+	BitmapSource GetCurrentFrame();
     void Dispose();
 	event PropertyChangedEventHandler PropertyChanged;
     event EventHandler<EventArgs> Playing;

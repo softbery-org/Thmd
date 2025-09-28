@@ -1,4 +1,4 @@
-// Version: 0.1.7.32
+// Version: 0.1.7.44
  using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -298,7 +298,7 @@ namespace Thmd.Controls
             _mediaPlayer.Paused += OnPaused;
             _mediaPlayer.Buffering += OnBuffering;
             _mediaPlayer.MediaChanged += OnMediaChanged;
-            _mediaPlayer.VolumeChanged += MediaPlayer_VolumeChanged;
+            _mediaPlayer.VolumeChanged += OnVolumeChanged;
 
             _mediaPlayer.Volume = (int)_volume;
 
@@ -419,12 +419,12 @@ namespace Thmd.Controls
             bitmap.Unlock();
 
             // Przypisanie do kontrolki Image w XAML
-            _image.Source = bitmap;
+            image.Source = bitmap;
         }
 
         public BitmapSource GetCurrentFrame()
         {
-            if (_mediaPlayer == null || !_mediaPlayer.IsPlaying)
+            /*if (_mediaPlayer == null || !_mediaPlayer.IsPlaying)
             {
                 return null; // Brak danych, jeśli nie odtwarza
             }
@@ -447,7 +447,7 @@ namespace Thmd.Controls
 
                     // Pobranie snapshotu do strumienia
                     var result = _mediaPlayer.TakeSnapshot(
-                        _videoView.MediaPlayer.FileCaching,          // Strumień do zapisu
+                        (uint)_mediaPlayer.Hwnd,          // Strumień do zapisu
                         null,
                         (uint)width,       // Szerokość w pikselach
                         (uint)height       // Wysokość w pikselach
@@ -470,13 +470,31 @@ namespace Thmd.Controls
                     );
                     _image.Source = bitmapFrame;
                     return bitmapFrame;
-                }
-            }
-            catch (Exception ex)
+                }*/
+            if (_mediaPlayer.IsPlaying)
             {
-                System.Diagnostics.Debug.WriteLine($"Błąd pobierania klatki: {ex.Message}");
-                return null;
+                // Opcje: szerokość, wysokość, ścieżka (domyślnie bieżący katalog), format (png/jpg)
+                var result = _playlist.Current.FrameSize.Split('x');
+                var width = uint.Parse(result[0]);
+                var height = uint.Parse(result[1]);
+                bool success = _mediaPlayer.TakeSnapshot(0, "screenshot.png",width, height);
+
+                if (success)
+                {
+                    MessageBox.Show("Klatka zapisana jako screenshot.png");
+                }
+                else
+                {
+                    MessageBox.Show("Błąd przechwytywania – sprawdź, czy wideo jest odtwarzane.");
+                }
+                /*
             }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Błąd pobierania klatki: {ex.Message}");
+                    return null;
+                }*/
+            }return null;
         }
 
         #region Mouse events
@@ -807,7 +825,7 @@ namespace Thmd.Controls
         #endregion
 
         #region MediaPlayer Events
-        private void MediaPlayer_VolumeChanged(object sender, MediaPlayerVolumeChangedEventArgs e)
+        private void OnVolumeChanged(object sender, MediaPlayerVolumeChangedEventArgs e)
         {
 
         }
@@ -887,7 +905,6 @@ namespace Thmd.Controls
                 _controlBar.MediaTitle = _playlist.Current.Name;
                 _controlBar.Position = TimeSpan.FromMilliseconds(e.Time).ToString("hh\\:mm\\:ss");
                 _controlBar.Duration = _playlist.Current.Duration.ToString("hh\\:mm\\:ss");
-
                 _subtitleControl.PositionTime = TimeSpan.FromMilliseconds(e.Time);
             });
         }

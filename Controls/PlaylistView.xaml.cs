@@ -1,4 +1,4 @@
-// Version: 0.1.11.64
+// Version: 0.1.11.77
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -299,7 +299,9 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     private void Add(object parameter)
     {
         // Logika dla dodawania elementu do playlisty
-        MessageBox.Show("Dodawanie nowego elementu do playlisty.");
+        //MessageBox.Show("Dodawanie nowego elementu do playlisty.");
+        _player.GetCurrentFrame();
+        
     }
 
     // Metoda dla przycisku "Usuń"
