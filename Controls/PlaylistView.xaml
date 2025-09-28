@@ -326,6 +326,8 @@
                     <Button Content="Dodaj" Command="{Binding AddCommand, RelativeSource={RelativeSource AncestorType={x:Type local:PlaylistView}}}" Style="{StaticResource ToolBarButtonStyle}"/>
                     <Button Content="Usuń" Command="{Binding RemoveCommand, RelativeSource={RelativeSource AncestorType={x:Type local:PlaylistView}}}" Style="{StaticResource ToolBarButtonStyle}"/>
                     <Button Content="Edytuj" Command="{Binding EditCommand, RelativeSource={RelativeSource AncestorType={x:Type local:PlaylistView}}}" Style="{StaticResource ToolBarButtonStyle}"/>
+                    <Button Content="Save Playlist" Command="{Binding SavePlaylistCommand, RelativeSource={RelativeSource AncestorType={x:Type local:PlaylistView}}}" Style="{StaticResource ToolBarButtonStyle}"/>
+                    <Button Content="Load Playlist" Command="{Binding LoadPlaylistCommand, RelativeSource={RelativeSource AncestorType={x:Type local:PlaylistView}}}" Style="{StaticResource ToolBarButtonStyle}"/>
                     <StackPanel/>
                     <Button Content="X" Command="{Binding CloseCommand, RelativeSource={RelativeSource AncestorType={x:Type local:PlaylistView}}}" Style="{StaticResource ToolBarButtonStyle}" HorizontalAlignment="Right"/>
                 </DockPanel>

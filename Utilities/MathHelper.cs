@@ -1,4 +1,4 @@
-// Version: 0.1.10.12
+// Version: 0.1.12.17
 using System;
 
 namespace Thmd.Utilities

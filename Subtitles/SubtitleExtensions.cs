@@ -1,4 +1,4 @@
-// Version: 0.1.1.16
+// Version: 0.1.3.21
 namespace Thmd.Subtitles
 {
     /// <summary>

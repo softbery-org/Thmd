@@ -10,4 +10,4 @@ namespace Thmd.Compress.Zip
     {
     }
 }
-// Version: 0.1.3.74
+// Version: 0.1.5.79

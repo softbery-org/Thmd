@@ -1,4 +1,4 @@
-// Version: 0.1.12.94
+// Version: 0.1.14.99
 using System;
 using System.ComponentModel;
 using System.Windows;
@@ -32,7 +32,9 @@ public interface IPlayer
 	void Preview();
 	void Seek(TimeSpan time);
 	void SetSubtitle(string path);
-	void Dispose();
+	void SavePlaylistConfig();
+    void LoadPlaylistConfig();
+    void Dispose();
 	event PropertyChangedEventHandler PropertyChanged;
     event EventHandler<EventArgs> Playing;
     event EventHandler<EventArgs> Stopped;

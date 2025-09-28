@@ -1,24 +1,29 @@
-// Version: 0.1.5.36
+// Version: 0.1.7.32
  using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
 
 using LibVLCSharp.Shared;
 
 using Microsoft.Win32;
 
+using Thmd.Configuration;
 using Thmd.Consolas;
+using Thmd.Devices.Keyboards;
 using Thmd.Media;
 using Thmd.Utilities;
-using Thmd.Devices.Keyboards;
 
 namespace Thmd.Controls
 {
@@ -50,7 +55,17 @@ namespace Thmd.Controls
         /// <summary>
         /// Gets or sets the current status of the media player.
         /// </summary>
-        public PlaylistView Playlist { get => _playlist; }
+        public PlaylistView Playlist {
+            get => _playlist;
+            private set
+            {
+                if (_playlist == null)
+                {
+                    _playlist = new PlaylistView(this);
+                }
+                _playlist = value;
+            }
+        }
         /// <summary>
         /// Count items in Videos
         /// </summary>
@@ -233,13 +248,13 @@ namespace Thmd.Controls
         public event EventHandler<MediaPlayerTimeChangedEventArgs> TimeChanged;
 
         private LibVLC _libVLC;
-        private MediaPlayer _mediaPlayer;
+        private LibVLCSharp.Shared.MediaPlayer _mediaPlayer;
         private double _volume = 100.0;
         private bool _muted;
         private bool _playing;
         private bool _paused;
         private bool _stopped;
-        private bool _fullscreen;
+        private bool _fullscreen = false;
         private TimeSpan _position;
         private readonly Random _random = new Random();
         private VideoItem _media;
@@ -255,6 +270,7 @@ namespace Thmd.Controls
         public VlcPlayerView()
         {
             InitializeComponent();
+            Core.Initialize();
 
             // Set player references for controls
             _controlBar.SetPlayer(this);
@@ -271,7 +287,7 @@ namespace Thmd.Controls
             // VlcControl events and values
             string[] mediaOptions = new string[] { "--no-video-title-show", "--no-sub-autodetect-file" };//,"--verbose=2","--aout=any" };
             _libVLC = new LibVLC(mediaOptions);
-            _mediaPlayer = new MediaPlayer(_libVLC);
+            _mediaPlayer = new LibVLCSharp.Shared.MediaPlayer(_libVLC);
             _mediaPlayer.EnableHardwareDecoding = false;
             _mediaPlayer.EnableKeyInput = false;
             _mediaPlayer.EnableMouseInput = false;
@@ -287,7 +303,7 @@ namespace Thmd.Controls
             _mediaPlayer.Volume = (int)_volume;
 
             _videoView.MediaPlayer = _mediaPlayer;
-            
+            _videoView.Background = Brushes.Black;
 
             // Resize helpers for control bar and playlist
             var resizer1 = new ResizeControlHelper(_controlBar);
@@ -300,6 +316,167 @@ namespace Thmd.Controls
             _mouseNotMoveWorker = new BackgroundWorker();
             _mouseNotMoveWorker.DoWork += MouseNotMoveWorker_DoWork;
             _mouseNotMoveWorker.RunWorkerAsync();
+
+            LoadPlaylistConfig();
+            SaveUpdateConfig();
+            LoadUpdateConfig();
+        }
+
+        public void LoadUpdateConfig()
+        {
+            var up = Configuration.Config.LoadFromJsonFile<UpdateConfig>("config/update.json");
+            Config.Instance.UpdateConfig = up;
+        }
+
+        public void SaveUpdateConfig()
+        {
+            var up = new UpdateConfig();
+            up.CheckForUpdates = true;
+            up.UpdateUrl = "http://thmdplayer.softbery.org/themedit.zip";
+            up.UpdatePath = "update";
+            up.UpdateFileName = "themedit.zip";
+            up.Version = "4.0.0";
+            up.VersionUrl = "http://thmdplayer.softbery.org/version.txt";
+            up.UpdateInterval = 86400;
+            up.UpdateTimeout = 30;
+
+            Configuration.Config.SaveToFile("config/update.json", up);
+        }
+
+        public void LoadPlaylistConfig()
+        {
+            try
+            {
+                var pl = Configuration.Config.LoadFromJsonFile<PlaylistConfig>("config/playlist.json");
+                
+                _controlBar.RepeatMode = pl.Repeat;
+
+                for (int i = 0; i < pl.MediaList.Count; i++)
+                {
+                    var media = new VideoItem(pl.MediaList[i]);
+                    media.SubtitlePath = pl.Subtitles[i];
+                    
+                    _playlist.AddAsync(media);
+                }
+                _playlist.Width = pl.Size.Width;
+                _playlist.Height = pl.Size.Height;
+                _playlist.CurrentIndex = pl.Current;
+                _playlist.SelectedIndex = pl.Current;
+                _playlist.Margin = new Thickness(pl.Position.X, pl.Position.Y, 0, 0);
+                _playlist.Visibility = pl.SubtitleVisible ? Visibility.Visible : Visibility.Hidden;
+
+                this.WriteLine($"Playlist config was read succesfull");
+            }
+            catch (Exception ex)
+            {
+                this.WriteLine($"{ex.Message}");
+            }
+        }
+
+        public void SavePlaylistConfig()
+        {
+            var pl = new Configuration.PlaylistConfig();
+            pl.Repeat = (string)_controlBar._repeatComboBox.SelectedItem;
+            pl.AutoPlay = true;
+            pl.EnableShuffle = true;
+            foreach (var item in this.Playlist.Videos)
+            {
+                pl.MediaList.Add(item.Uri.LocalPath);
+                pl.Subtitles.Add((item.SubtitlePath != null) ? item.SubtitlePath : null);
+            }
+            pl.Size = new Size(Playlist.Width, Playlist.Height);
+            pl.Current = _playlist.CurrentIndex;
+            pl.Position = new Point(Playlist.Margin.Left, Playlist.Margin.Top);
+            Configuration.Config.SaveToFile("config/playlist.json", pl);
+
+            this.WriteLine($"Save playlist in config/playlist.json");
+        }
+
+        public void ApplyGrayscaleEffect(Image image)
+        {
+            // Tworzenie bitmapy na podstawie wymiar�w odtwarzacza
+            WriteableBitmap bitmap = new WriteableBitmap((int)image.Width, (int)image.Height, 96, 96, PixelFormats.Bgra32, BitmapPalettes.Gray256Transparent);
+
+            // Przyk�adowa modyfikacja pikseli (np. konwersja do szaro�ci)
+            bitmap.Lock();
+            unsafe
+            {
+                byte* pixels = (byte*)bitmap.BackBuffer;
+                for (int y = 0; y < bitmap.PixelHeight; y++)
+                {
+                    for (int x = 0; x < bitmap.PixelWidth; x++)
+                    {
+                        int index = (y * bitmap.BackBufferStride) + (x * 4); // BGRA: 4 bajty na piksel
+                        byte gray = (byte)((pixels[index + 2] + pixels[index + 1] + pixels[index]) / 3); // �rednia RGB -> szary
+                        pixels[index] = gray;     // B
+                        pixels[index + 1] = gray; // G
+                        pixels[index + 2] = gray; // R
+                                                  // pixels[index + 3] = alfa (pozostawiamy bez zmian)
+                    }
+                }
+            }
+            bitmap.AddDirtyRect(new Int32Rect(0, 0, bitmap.PixelWidth, bitmap.PixelHeight));
+            bitmap.Unlock();
+
+            // Przypisanie do kontrolki Image w XAML
+            _image.Source = bitmap;
+        }
+
+        public BitmapSource GetCurrentFrame()
+        {
+            if (_mediaPlayer == null || !_mediaPlayer.IsPlaying)
+            {
+                return null; // Brak danych, jeśli nie odtwarza
+            }
+
+            try
+            {
+                using (var ms = new MemoryStream())
+                {
+                    // Pobranie rozmiaru okna wideo
+                    //var windowSize = _videoView.Width;
+                    uint width = (uint)Math.Round(_videoView.Width);  // Konwersja double na int z zaokrągleniem
+                    uint height = (uint)Math.Round(_videoView.Height); // Konwersja double na int z zaokrągleniem
+
+                    // Walidacja rozmiaru
+                    if (width <= 0 || height <= 0)
+                    {
+                        System.Diagnostics.Debug.WriteLine("Nieprawidłowy rozmiar okna wideo.");
+                        return null;
+                    }
+
+                    // Pobranie snapshotu do strumienia
+                    var result = _mediaPlayer.TakeSnapshot(
+                        _videoView.MediaPlayer.FileCaching,          // Strumień do zapisu
+                        null,
+                        (uint)width,       // Szerokość w pikselach
+                        (uint)height       // Wysokość w pikselach
+                    );
+
+                    if (!result)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Błąd pobierania snapshotu, kod: {result}");
+                        return null;
+                    }
+
+                    // Przywrócenie pozycji strumienia na początek
+                    ms.Seek(0, SeekOrigin.Begin);
+
+                    // Utworzenie BitmapSource z danych strumienia
+                    var bitmapFrame = BitmapFrame.Create(
+                        ms,
+                        BitmapCreateOptions.None,
+                        BitmapCacheOption.OnLoad
+                    );
+                    _image.Source = bitmapFrame;
+                    return bitmapFrame;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Błąd pobierania klatki: {ex.Message}");
+                return null;
+            }
         }
 
         #region Mouse events
@@ -353,12 +530,40 @@ namespace Thmd.Controls
 
         protected override void OnMouseDoubleClick(MouseButtonEventArgs e)
         {
-            base.OnMouseDoubleClick(e);
             if (e.ChangedButton == MouseButton.Left)
             {
                 // Double-click to toggle fullscreen
-                ToggleFullscreen()();
+                Fullscreen = !Fullscreen;
             }
+            base.OnMouseDoubleClick(e);
+        }
+
+
+        [NonSerialized]
+        private DateTime _lastClickTime = DateTime.MinValue;
+        [NonSerialized]
+        private Point _lastClickPosition;
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            DateTime now = DateTime.Now;
+            Point pos = e.GetPosition(this);
+            if ((now - _lastClickTime).TotalMilliseconds < System.Windows.Forms.SystemInformation.DoubleClickTime &&
+                Math.Abs(pos.X - _lastClickPosition.X) <= 4 &&
+                Math.Abs(pos.Y - _lastClickPosition.Y) <= 4)
+            {
+                OnMouseDoubleClick(e);
+                e.Handled = true;
+            }
+
+            if (e.ChangedButton == MouseButton.Right)
+                TogglePlaylist()();
+            else if (e.ChangedButton == MouseButton.Left)
+                TogglePlayPause()();
+
+            _lastClickTime = now;
+            _lastClickPosition = pos;
+
+            base.OnMouseLeftButtonDown(e);
         }
 
         protected override void OnMouseWheel(MouseWheelEventArgs e)
@@ -375,7 +580,7 @@ namespace Thmd.Controls
             Task.Delay(1000).ContinueWith(_ => Dispatcher.Invoke(() => _progressBar._popup.IsOpen = false));
         }
 
-        protected override void OnMouseDown(MouseButtonEventArgs e)
+        /*protected override void OnMouseDown(MouseButtonEventArgs e)
         {
             base.OnMouseDown(e);
             if (e.ChangedButton == MouseButton.Left && e.ClickCount == 1)
@@ -395,7 +600,7 @@ namespace Thmd.Controls
                 // Right-click to toggle playlist visibility
                 TogglePlaylist()();
             }
-        }
+        }*/
         #endregion
 
         #region Keybord events
@@ -405,11 +610,9 @@ namespace Thmd.Controls
         /// <param name="e"></param>
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            base.OnKeyDown(e);
-            
             var keyBindingList = new List<ShortcutKeyBinding>
             {
-                new ShortcutKeyBinding { MainKey = Key.Space, ModifierKey = null, Shortcut = "Space", Description = "Pause and play media", RunAction = PausePlay() },
+                new ShortcutKeyBinding { MainKey = Key.Space, ModifierKey = null, Shortcut = "Space", Description = "Pause and play media", RunAction = TogglePlayPause() },
                 new ShortcutKeyBinding { MainKey = Key.F, ModifierKey = null, Shortcut = "F", Description = "Toggle fullscreen", RunAction = ToggleFullscreen() },
                 new ShortcutKeyBinding { MainKey = Key.H, ModifierKey = null, Shortcut = "H", Description = "Toggle help window", RunAction = ToggleHelpWindow() },
                 new ShortcutKeyBinding { MainKey = Key.P, ModifierKey = null, Shortcut = "P", Description = "Toggle playlist", RunAction = TogglePlaylist() },
@@ -449,6 +652,8 @@ namespace Thmd.Controls
                     this.WriteLine($"Pressed: [{Keyboard.Modifiers}]+ {e.Key}");
 
             }
+
+            //base.OnKeyDown(e);
         }
 
         protected override void OnKeyUp(KeyEventArgs e)
@@ -487,15 +692,11 @@ namespace Thmd.Controls
         {
             return new Action(() =>
             {
-                if (ScreenHelper.IsFullscreen)
-                {
-                    this.Fullscreen();
-                    _fullscreen = ScreenHelper.IsFullscreen;
-                }
+                this.Focus();
             });
         }
 
-        private Action PausePlay()
+        private Action TogglePlayPause()
         {
             return new Action(() =>
             {
@@ -507,6 +708,9 @@ namespace Thmd.Controls
                 {
                     Play();
                 }
+                else if (!isPlaying) {
+                    Play(_playlist.Current);
+                }
             });
         }
 
@@ -514,7 +718,8 @@ namespace Thmd.Controls
         {
             return new Action(() =>
             {
-                this.Fullscreen();
+                //this.Fullscreen();
+                _videoView.Background = Brushes.Black;
                 _fullscreen = ScreenHelper.IsFullscreen;
             });
         }
@@ -666,7 +871,7 @@ namespace Thmd.Controls
 
         private void OnMediaChanged(object sender, MediaPlayerMediaChangedEventArgs e)
         {
-
+            
         }
 
         private void OnTimeChanged(object sender, MediaPlayerTimeChangedEventArgs e)
@@ -737,14 +942,7 @@ namespace Thmd.Controls
         {
             ControlBar.BtnPlay.Click += delegate
             {
-                if (isPlaying)
-                {
-                    Pause();
-                }
-                else if (isPaused)
-                {
-                    Play();
-                }
+                TogglePlayPause()();
             };
             ControlBar.BtnStop.Click += delegate
             {
@@ -795,7 +993,7 @@ namespace Thmd.Controls
             };
         }
 
-        private void OpenMediaFile()
+        private async void OpenMediaFile()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
@@ -806,7 +1004,7 @@ namespace Thmd.Controls
             {
                 foreach (string path in openFileDialog.FileNames)
                 {
-                    Playlist.AddAsync(new VideoItem(path));
+                    await Playlist.AddAsync(new VideoItem(path));
                 }
             }
         }
@@ -1119,6 +1317,7 @@ namespace Thmd.Controls
         public void Dispose()
         {
             _mediaPlayer?.Dispose();
+            SavePlaylistConfig();
             _libVLC?.Dispose();
             SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
         }

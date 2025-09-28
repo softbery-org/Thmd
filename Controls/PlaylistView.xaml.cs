@@ -1,4 +1,4 @@
-// Version: 0.1.9.92
+// Version: 0.1.11.64
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -13,6 +13,8 @@ using System.Windows.Threading;
 using Thmd.Consolas;
 using Thmd.Media;
 using Thmd.Utilities;
+
+using static MediaToolkit.Model.Metadata;
 
 namespace Thmd.Controls;
 
@@ -37,7 +39,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     private ContextMenu _rightClickMenu;
 
     // Collection of videos in the playlist, bound to the ListView's ItemsSource.
-    private ObservableCollection<VideoItem> _videos;
+    private ObservableCollection<VideoItem> _videos = new ObservableCollection<VideoItem>();
 
     // Stores the item being dragged during a drag-and-drop operation.
     private VideoItem _draggedItem;
@@ -64,7 +66,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     /// Add command
     /// </summary>
     public ICommand AddCommand { get; private set; }
-    
+
     /// <summary>
     /// Remove command
     /// </summary>
@@ -80,6 +82,9 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     /// </summary>
     public ICommand CloseCommand { get; private set; }
 
+    public ICommand SavePlaylistCommand { get; private set; }
+    public ICommand LoadPlaylistCommand { get; private set; }
+
     /// <summary>
     /// Gets or sets the collection of videos in the playlist and updates the UI.
     /// </summary>
@@ -91,7 +96,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
             Dispatcher.InvokeAsync(() =>
             {
                 _videos = value;
-                base.ItemsSource = _videos;
+                base.ItemsSource = _videos;;
                 SetValue(VideosProperty, value);
                 OnPropertyChanged(nameof(Videos));
             });
@@ -232,6 +237,11 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         }
     }
 
+    public int Count
+    {
+        get => Videos != null ? Videos.Count : 0;
+    }
+
     /// <summary>
     /// Occurs when a property value changes, used for data binding.
     /// </summary>
@@ -244,7 +254,6 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     {
         InitializeComponent();
 
-        Videos = new ObservableCollection<VideoItem>();
         base.DataContext = this;
         base.ItemsSource = Videos;
 
@@ -256,6 +265,8 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         RemoveCommand = new RelayCommand(Remove);
         EditCommand = new RelayCommand(Edit);
         CloseCommand = new RelayCommand(Close);
+        SavePlaylistCommand = new RelayCommand(SavePlaylist);
+        LoadPlaylistCommand = new RelayCommand(LoadPlaylist);
 
         // Initialize the context menu
         _rightClickMenu = new ContextMenu();
@@ -282,9 +293,6 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
 
         // Subscribe to mouse events
         this.MouseDoubleClick += ListView_MouseDoubleClick;
-        //KeyboardNavigation.SetIsTabStop(this, true);
-        /*var focusScope = FocusManager.GetFocusScope(this);
-        FocusManager.SetFocusedElement(focusScope, null);*/
     }
 
     // Metoda dla przycisku "Dodaj"
@@ -298,7 +306,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     private void Remove(object parameter)
     {
         // Logika dla usuwania elementu z playlisty
-        MessageBox.Show("Usuwanie elementu z playlisty.");
+        //NewAsync(Name, "");
     }
 
     // Metoda dla przycisku "Edytuj"
@@ -313,6 +321,16 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     {
         // Logic for hide playlist
         this.Visibility = Visibility.Collapsed;
+    }
+
+    private void SavePlaylist(object parameter)
+    {
+        _player.SavePlaylistConfig();        
+    }
+
+    public void LoadPlaylist(object parameter)
+    {
+        _player.LoadPlaylistConfig();
     }
 
     protected override void OnKeyDown(KeyEventArgs e)
@@ -351,6 +369,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
             foreach (VideoItem video in videosToClear)
             {
                 video.PositionChanged -= Video_PositionChanged;
+                video.MouseDown -= Media_MouseDown;
             }
             Dispatcher.Invoke(() =>
             {
@@ -386,6 +405,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
             {
                 VideoItem item = Videos[index];
                 item.PositionChanged -= Video_PositionChanged;
+                item.MouseDown -= Media_MouseDown;
                 Dispatcher.Invoke(() =>
                 {
                     Videos.RemoveAt(index);
@@ -430,9 +450,15 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
             if (media == null || Contains(media)) return;
             media.SetPlayer(_player);
             media.PositionChanged += Video_PositionChanged;
+            media.MouseDown += Media_MouseDown;
             Dispatcher.Invoke(() => Videos.Add(media));
             Logger.Log.Log(Thmd.Logs.LogLevel.Info, new string[2] { "Console", "File" }, $"PlaylistView: Added video {media.Name}");
         });
+    }
+
+    private void Media_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+        this.WriteLine("CLICKED");
     }
 
     /// <summary>
@@ -531,7 +557,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
             }
         }
     }
-       
+
     protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)
     {
         base.OnPreviewMouseLeftButtonDown(e);

@@ -1,5 +1,5 @@
 // IPlaylistConfig.cs
-// Version: 0.1.12.99
+// Version: 0.1.15.4
 // A class representing the configuration settings for playlists in the application.
 // Stores properties such as default playlist path, shuffle mode, repeat mode, auto-play settings,
 // and a list of media file paths or URIs.
@@ -7,6 +7,9 @@
 using System.Collections.Generic;
 using System.Windows;
 
+using LibVLCSharp.Shared;
+
+using Thmd.Media;
 using Thmd.Repeats;
 
 namespace Thmd.Configuration;
@@ -18,13 +21,11 @@ public class PlaylistConfig : IPlaylistConfig
     public string Repeat { get; set; } = "None";
     public bool AutoPlay { get; set; } = true;
     public List<string> MediaList { get; set; } = new List<string>();
-    public PlaylistContainer Container { get; set; } = new PlaylistContainer { Position=new Thickness(0,0,0,0), Size=new Size(300,400) };
-}
-
-public class PlaylistContainer
-{
-    public Thickness Position { get; set; } = new Thickness(0, 0, 0, 0);
-    public Size Size { get; set; } = new Size(300, 400);
+    public Point Position { get; set; }
+    public Size Size { get; set; }
+    public List<string> Subtitles { get; set; } = new List<string>();
+    public bool SubtitleVisible {get;set;}=true;
+    public int Current { get; set; }
 }
 
 /// <summary>
@@ -34,7 +35,8 @@ public class PlaylistContainer
 /// </summary>
 public interface IPlaylistConfig
 {
-    public PlaylistContainer Container { get; set; }
+    public Point Position { get; set; }
+    public Size Size { get; set; }
     /// <summary>
     /// Playlist name.
     /// </summary>
@@ -63,4 +65,7 @@ public interface IPlaylistConfig
     /// Defaults to an empty list.
     /// </summary>
     public List<string> MediaList { get; set; }
+    public List<string> Subtitles { get; set; }
+    public bool SubtitleVisible { get; set; }
+    public int Current { get; set; }
 }
