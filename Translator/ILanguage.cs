@@ -1,29 +1,35 @@
+// Version: 0.1.4.94
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+
+using Thmd.Controls;
 
 namespace Thmd.Translator
 {
     public interface ILanguage
     {
         string Name { get; }
-        string formSettings_btnSave { get; }
-        string formSettings_btnCancel { get; }
-        string formSettings_Text { get; }
-        string formSettings_labelOptions { get; }
+        Control Control { get; }
+        List<Button> Buttons { get; }
+        List<Translation> Values { get; }  
+    }
 
-        #region VideoControlBar
-        string videoControlBar_labelSubtilesOnOffText { get; }
-        string videoControlBar_labelOn { get; }
-        string videoControlBar_labelOff { get; }
-        string videoControlBar_fullscreenOff { get; }
-        string videoControlBar_fullscreenOn { get; }
-        string videoControlBar_startTxt { get; }
-        string videoControlBar_subtilesOn { get; }
-        string videoControlBar_subtilesOff { get; }
-        #endregion
+    public class Translation
+    {
+        public string Name {  get; set; }
+        public List<Value> Values = new List<Value>();
+
+        public class Value
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Content { get; set; }
+        }
     }
 }
-// Version: 0.1.3.34

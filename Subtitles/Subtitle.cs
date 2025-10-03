@@ -1,4 +1,4 @@
-// Version: 0.1.15.17
+// Version: 0.1.16.77
 using System;
 
 namespace Thmd.Subtitles;
@@ -11,18 +11,18 @@ public class Subtitle
 
 	public TimeSpan EndTime { get; }
 
-	public string[] Items { get; }
+	public string[] TextLines { get; }
 
 	public Subtitle(int id, TimeSpan startTime, TimeSpan endTime, string[] text)
 	{
 		Id = id;
 		StartTime = startTime;
 		EndTime = endTime;
-		Items = text;
+		TextLines = text;
 	}
 
 	public override string ToString()
 	{
-		return string.Format("[{0}] {1} --> {2}: {3}", Id, StartTime, EndTime, string.Join(" ", Items));
+		return string.Format("[{0}] {1} --> {2}: {3}", Id, StartTime, EndTime, string.Join(" ", TextLines));
 	}
 }

@@ -1,4 +1,4 @@
-// Version: 0.1.11.77
+// Version: 0.1.13.37
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -13,8 +13,6 @@ using System.Windows.Threading;
 using Thmd.Consolas;
 using Thmd.Media;
 using Thmd.Utilities;
-
-using static MediaToolkit.Model.Metadata;
 
 namespace Thmd.Controls;
 

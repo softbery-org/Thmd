@@ -1,4 +1,4 @@
-// Version: 0.1.11.42
+// Version: 0.1.13.2
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,42 +17,40 @@ using System.Windows.Shapes;
 
 using Thmd.Media;
 
-namespace Thmd.Controls
+namespace Thmd.Controls;
+/// <summary>
+/// Logika interakcji dla klasy TimerBox.xaml
+/// </summary>
+public partial class TimerBox : UserControl
 {
-    /// <summary>
-    /// Logika interakcji dla klasy TimerBox.xaml
-    /// </summary>
-    public partial class TimerBox : UserControl
+    private IPlayer _player;
+    private string _timer = "00:00:00";
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    public string Timer
     {
-        private IPlayer _player;
-        private string _timer = "00:00:00";
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public string Timer
+        get => _timer;
+        set
         {
-            get => _timer;
-            set
-            {
-                _timer = value;
-                _timerTextBlock.Text = value;
-                OnPropertyChanged(nameof(Timer));
-            }
+            _timer = value;
+            _timerTextBlock.Text = value;
+            OnPropertyChanged(nameof(Timer));
         }
+    }
 
-        public TimerBox()
-        {
-            InitializeComponent();
-        }
+    public TimerBox()
+    {
+        InitializeComponent();
+    }
 
-        public TimerBox(IPlayer player) : this()
-        {
-            _player = player;
-        }
+    public TimerBox(IPlayer player) : this()
+    {
+        _player = player;
+    }
 
-        protected void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+    protected void OnPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

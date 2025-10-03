@@ -1,0 +1,37 @@
+<classes>
+<class name="Logger" namespace="Thmd" description="Logger class for centralized logging functionality." inherits="static class" />
+<class name="Rarer" namespace="Thmd.Compress.Rar" description="Class for handling RAR compression and extraction using SharpCompress." inherits="none" />
+<class name="Zipper" namespace="Thmd.Compress.Zip" description="Class for handling ZIP compression (currently empty implementation)." inherits="none" />
+<class name="Config" namespace="Thmd.Configuration" description="A singleton class for managing application configuration settings, including database connections, logging, VLC library settings, subtitles, updates, and plugins. Supports loading and saving configuration data to a JSON file with thread-safe access." inherits="none" />
+<class name="PlaylistConfig" namespace="Thmd.Configuration" description="A class representing the configuration settings for playlists in the application. Stores properties such as default playlist path, shuffle mode, repeat mode, auto-play settings, and a list of media file paths or URIs." inherits="IPlaylistConfig" />
+<class name="IPlaylistConfig" namespace="Thmd.Configuration" description="Represents the configuration settings for playlists in the application. Provides properties to define the default playlist path, shuffle mode, repeat mode, auto-play behavior, and a list of media file paths or URIs." inherits="interface" />
+<class name="OpenAiConfig" namespace="Thmd.Configuration" description="Configuration class for OpenAI API key." inherits="none" />
+<class name="PerformanceMonitorConfig" namespace="Thmd.Configuration" description="Configuration settings for performance monitoring, including enable flag, interval, and log file path." inherits="none" />
+<class name="PluginConfig" namespace="Thmd.Configuration" description="Represents the configuration settings for a plugin in the application. Provides properties to store the plugin's name, file path, enabled status, version, and description." inherits="none" />
+<class name="Shadow" namespace="Thmd.Configuration" description="Represents the configuration settings for a shadow effect in the application. Stores properties such as color, depth, opacity, blur radius, and visibility for a shadow effect." inherits="none" />
+<class name="SubtitleConfig" namespace="Thmd.Configuration" description="Represents the configuration settings for subtitles in the application. Provides properties to define the font size, font family, font color, and shadow settings for subtitle display." inherits="none" />
+<class name="UpdateConfig" namespace="Thmd.Configuration" description="Represents the configuration settings for application updates. Provides properties to define whether updates are checked, the URLs for updates and version information, file paths, version details, and timing settings for update checks." inherits="none" />
+<class name="ConsoleWriteLine" namespace="Thmd.Consolas" description="Static class for extending Console.WriteLine functionality with class name and timestamp logging." inherits="static class" />
+<class name="ControlBar" namespace="Thmd.Controls" description="UserControl for media player control bar, handling play, pause, volume, playlist, and other UI interactions." inherits="UserControl" />
+<class name="IControlBar" namespace="Thmd.Controls" description="Interface defining buttons for media control bar." inherits="interface" />
+<class name="InfoBox" namespace="Thmd.Controls" description="UserControl for displaying information boxes with fade animations." inherits="UserControl" />
+<class name="IProgressBar" namespace="Thmd.Controls" description="Interface for progress bar (empty definition)." inherits="interface" />
+<class name="PlaylistView" namespace="Thmd.Controls" description="A custom ListView control for managing a playlist of video media items. Provides functionality to play, pause, remove, and reorder videos, with support for user interactions like double-click, right-click context menu actions, and drag-and-drop reordering with a drop shadow effect for the dragged item." inherits="ListView, INotifyPropertyChanged" />
+<class name="ProgressChangedEventArgs" namespace="Thmd.Updates" description="Event arguments for progress changed events during updates." inherits="EventArgs" />
+<class name="Updat" namespace="Thmd.Updates" description="A class responsible for checking, downloading, and applying application updates. Uses configuration settings from the Config class and supports asynchronous operations with progress reporting and error handling." inherits="IDisposable" />
+<class name="UpdateAvailableEventArgs" namespace="Thmd.Updates" description="Event arguments for when a new update is available." inherits="EventArgs" />
+<class name="UpdateErrorEventArgs" namespace="Thmd.Updates" description="Event arguments for update errors." inherits="EventArgs" />
+<class name="CommandLineHandler" namespace="Thmd.Utilities" description="Static class for processing command-line arguments for the application." inherits="static class" />
+<class name="DragDropHelper" namespace="Thmd.Utilities" description="Static class providing attached properties for drag-over detection." inherits="static class" />
+<class name="GeneratorHelper" namespace="Thmd.Utilities" description="Helper class for generating command-line help messages." inherits="none" />
+<class name="MathHelper" namespace="Thmd.Utilities" description="Static class providing clamping methods for values." inherits="static class" />
+<class name="OptionHelper" namespace="Thmd.Utilities" description="Helper class representing command-line options." inherits="none" />
+<class name="PathCheckHelper" namespace="Thmd.Utilities" description="Class for checking if a path is a file, URL, or neither." inherits="none" />
+<class name="ResizeControlHelper" namespace="Thmd.Utilities" description="Helper class for enabling resizing and moving of FrameworkElements." inherits="none" />
+<class name="ScreenHelper" namespace="Thmd.Utilities" description="Static class for handling fullscreen toggling and window size retrieval." inherits="static class" />
+<class name="ShowHideControlsHelper" namespace="Thmd.Utilities" description="Class providing asynchronous show/hide methods for controls with delays." inherits="none" />
+<class name="StoryboardHelper" namespace="Thmd.Utilities" description="A static helper class that provides extension methods for animating the visibility of WPF controls using storyboards. It supports asynchronous hiding and showing of controls with error handling and logging for animation operations." inherits="static class" />
+<class name="VideoTypeChecker" namespace="Thmd.Utilities" description="Class for checking video file types (AVI, MP4, M3U8) and handling M3U8 streams." inherits="none" />
+<class name="WindowLastStance" namespace="Thmd.Utilities" description="Class for storing the last window state, mode, and style." inherits="none" />
+<class name="WindowPropertiesExtensions" namespace="Thmd.Windowses" description="Static class providing extension methods for centering windows to the mouse cursor." inherits="static class" />
+</classes>

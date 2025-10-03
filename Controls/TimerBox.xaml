@@ -8,6 +8,10 @@
              Height="auto"
              Width="auto">
     <Grid>
-        <TextBlock x:Name="_timerTextBlock" HorizontalAlignment="Right" FontWeight="Bold" Margin="0,0,0,0" TextWrapping="Wrap" Text="00:00:00" VerticalAlignment="Top" FontSize="46" Foreground="Green"/>
+        <TextBlock x:Name="_timerTextBlock" HorizontalAlignment="Right" FontWeight="Bold" Margin="0,0,0,0" TextWrapping="Wrap" Text="00:00:00" VerticalAlignment="Top" FontSize="46" Foreground="Green">
+            <TextBlock.Effect>
+                <DropShadowEffect Color="White" Direction="30" Opacity="1" RenderingBias="Performance" ShadowDepth="3" BlurRadius="3"/>
+            </TextBlock.Effect>
+        </TextBlock>
     </Grid>
 </UserControl>

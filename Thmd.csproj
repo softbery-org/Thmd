@@ -31,8 +31,10 @@
     <PackageReference Include="LibVLCSharp" Version="3.9.4" />
     <PackageReference Include="LibVLCSharp.WPF" Version="3.9.4" />
     <PackageReference Include="MediaToolkit" Version="1.1.0.1" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3485.44" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="OpenAI" Version="2.5.0" />
     <PackageReference Include="SharpCompress" Version="0.40.0" />
     <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.21" />
   </ItemGroup>
@@ -41,6 +43,7 @@
       <HintPath>bin\Debug\MediaToolkit.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="WindowsBase" />
     <Reference Include="System.Net.Http" />
@@ -77,6 +80,10 @@
   <ItemGroup>
     <Folder Include="Devices\Mouses\" />
     <Folder Include="Devices\Mouses\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Controls\Effects\Image\alien_skeleton.png" />
+    <Resource Include="Controls\Effects\Image\green_lava.png" />
   </ItemGroup>
   <Target Name="UpdateAssemblyVersion" BeforeTargets="BeforeBuild">
     <Message Importance="high" Text="PostBuild: $(TargetPath)" />

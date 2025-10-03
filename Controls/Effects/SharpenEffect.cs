@@ -1,10 +1,10 @@
-// Version: 0.1.12.53
+// Version: 0.1.14.13
 using System;
 using System.Drawing;
 using System.Windows;
 using System.Windows.Media.Effects;
 
-namespace Thmd.Media.Effects;
+namespace Thmd.Controls.Effects;
 
 public class EnhancedSharpenEffect : ShaderEffect
 {

@@ -25,7 +25,7 @@ namespace Thmd.Translator;
         {
             if (dir_path != null)
             {
-                setLanguagesDir(dir_path);
+                SetLanguagesDir(dir_path);
             }
 
             if (!Directory.Exists(_path))
@@ -55,7 +55,7 @@ namespace Thmd.Translator;
             return _langs;
         }
 
-        private static void setLanguagesDir(string dir)
+        private static void SetLanguagesDir(string dir)
         {
             var dir_path = new DirectoryInfo(dir);
             if (dir_path.Exists)
@@ -129,13 +129,13 @@ namespace Thmd.Translator;
                 }
                 break;
 
-            // Dodaj obs�ug� innych typ�w kontrolek, np. CheckBox, ToolTip itp., je�li potrzeba
-            // case CheckBox checkBox:
-            //     if (checkBox.Content is string cbContent && _translations.TryGetValue(cbContent, out string translatedCb))
-            //     {
-            //         checkBox.Content = translatedCb;
-            //     }
-            //     break;
+            //Dodaj obs�ug� innych typ�w kontrolek, np. CheckBox, ToolTip itp., je�li potrzeba
+            case CheckBox checkBox:
+                 if (checkBox.Content is string cbContent && _translations.TryGetValue(cbContent, out string translatedCb))
+                 {
+                     checkBox.Content = translatedCb;
+                 }
+                 break;
 
             default:
                 // Ignoruj inne typy
@@ -143,4 +143,4 @@ namespace Thmd.Translator;
         }
     }
 }
-// Version: 0.1.3.34
+// Version: 0.1.4.94

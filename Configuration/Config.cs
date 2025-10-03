@@ -1,5 +1,5 @@
 // Config.cs
-// Version: 0.1.15.8
+// Version: 0.1.16.68
 // A singleton class for managing application configuration settings, including database connections,
 // logging, VLC library settings, subtitles, updates, and plugins. Supports loading and saving
 // configuration data to a JSON file with thread-safe access.
@@ -32,6 +32,7 @@ public class Config
     // Static instance of IPlaylistConfig for easy access.
     private static IPlaylistConfig _playlistConfig;
     private static UpdateConfig _updateConfig;
+    private static OpenAiConfig _openAiConfig;
     private static PerformanceMonitorConfig _performanceMonitor;
 
     /// <summary>
@@ -55,11 +56,6 @@ public class Config
     /// Gets or sets the directory path for storing log files.
     /// </summary>
     public string LogsDirectoryPath { get; set; }
-
-    /// <summary>
-    /// Gets or sets the API key for external services.
-    /// </summary>
-    public string ApiKey { get; set; }
 
     /// <summary>
     /// Gets or sets the path to the VLC library.
@@ -92,7 +88,7 @@ public class Config
         {
             lock (_lock)
             {
-                return _instance ?? (_instance = LoadFromJsonFile<Config>("config.json"));
+                return _instance ?? (_instance = LoadFromJsonFile<Config>("config/config.json"));
             }
         }
     }
@@ -105,7 +101,7 @@ public class Config
         {
             lock (_lock)
             {
-                return _playlistConfig ?? (_playlistConfig = LoadFromJsonFile<PlaylistConfig>("update.json"));
+                return _playlistConfig ?? (_playlistConfig = LoadFromJsonFile<PlaylistConfig>("config/update.json"));
             }
         }
         set
@@ -120,7 +116,7 @@ public class Config
         {
             lock (_lock)
             {
-                return _updateConfig ?? (_updateConfig = LoadFromJsonFile<UpdateConfig>("update.json"));
+                return _updateConfig ?? (_updateConfig = LoadFromJsonFile<UpdateConfig>("config/update.json"));
             }
         }
         set
@@ -129,18 +125,33 @@ public class Config
         }
     }
 
-    public UpdateConfig PerhormanceMonitor
+    /*public UpdateConfig PerhormanceMonitor
     {
         get
         {
             lock (_lock)
             {
-                return _updateConfig ?? (_updateConfig = LoadFromJsonFile<UpdateConfig>("update.json"));
+                return _updateConfig ?? (_updateConfig = LoadFromJsonFile<UpdateConfig>("config/performance_monitor.json"));
             }
         }
         set
         {
             _updateConfig = value;
+        }
+    }*/
+
+    public OpenAiConfig OpenAiConfig
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return _openAiConfig ?? (_openAiConfig = LoadFromJsonFile<OpenAiConfig>("config/openai.json"));
+            }
+        }
+        set
+        {
+            _openAiConfig = value;
         }
     }
 
@@ -150,7 +161,7 @@ public class Config
     public Config()
     {
         this.WriteLine("Inicjalizacja domyślnych ustawień konfiguracji.");
-        DatabaseConnectionString = "server=localhost;connection=default";
+        /*DatabaseConnectionString = "server=localhost;connection=default";
         Language = "pl_PL";
         MaxConnections = 10;
         EnableLogging = true;
@@ -160,7 +171,7 @@ public class Config
         EnableLibVlc = true;
         LogLevel = LogLevel.Info;
         SubtitleConfig = new SubtitleConfig(24.0, "Arial", Brushes.WhiteSmoke, show_shadow: true, new Shadow());
-        UpdateConfig = new UpdateConfig
+        _updateConfig = new UpdateConfig
         {
             CheckForUpdates = true,
             UpdateUrl = "http://thmdplayer.softbery.org/update.rar",
@@ -170,8 +181,10 @@ public class Config
             VersionUrl = "http://thmdplayer.softbery.org/version.txt",
             UpdateInterval = 86400,
             UpdateTimeout = 30
-        };
-        PlaylistConfig = LoadFromJsonFile<PlaylistConfig>("playlist.json");
+        };*/
+        _updateConfig = LoadFromJsonFile<UpdateConfig>("config/config.json");
+        _playlistConfig = LoadFromJsonFile<PlaylistConfig>("config/playlist.json");
+        _openAiConfig = LoadFromJsonFile<OpenAiConfig>("config/openai.json");
     }
 
     /// <summary>

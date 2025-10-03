@@ -1,13 +1,11 @@
-// Version: 0.1.8.51
+// Version: 0.1.10.11
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Thmd.Controls
+namespace Thmd.Controls;
+public interface IProgressBar
 {
-    public interface IProgressBar
-    {
-    }
 }

@@ -1,5 +1,5 @@
 // UpdateConfig.cs
-// Version: 0.1.15.16
+// Version: 0.1.16.76
 // A class representing the configuration settings for application updates.
 // Stores properties such as update check settings, URLs, file paths, version information, and timing settings.
 

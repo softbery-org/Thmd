@@ -14,8 +14,8 @@
                 <local:PlaylistView x:Name="_playlist" Width="400" Height="250"/>
                 <local:ControlBar x:Name="_controlBar" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                 <local:ProgressBarView x:Name="_progressBar" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" ProgressText="00:00:00"/>
-            <Image x:Name="_image" Source="/Thmd;component/icon.ico" Width="250" Height="150" Stretch="Uniform" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-        </Grid>
+                <local:LogoImage x:Name="_userImage" HorizontalAlignment="Right" VerticalAlignment="Top" Width="150" Height="75"  Margin="0,0,50,50"/>
+            </Grid>
         </vlc:VideoView>
     </Grid>
 </UserControl>

@@ -12,14 +12,14 @@ Thmd to biblioteka napisana w języku C# przeznaczona do obsługi multimediów, 
 ### 2. **Obsługa multimediów**
 - Klasa `FileMediaStream` umożliwia:
   - Strumieniowe odczytywanie plików multimedialnych.
-  - Pobieranie zawartości M3U8 zdalnie.
+  - Pobieranie zawartości `M3U8` zdalnie.
   - Asynchroniczne zarządzanie strumieniami.
 
 ### 3. **Zarządzanie napisami**
 - Klasa `SubtitleManager` pozwala na:
   - Wczytywanie napisów z plików w formacie SRT.
   - Wyszukiwanie napisów w określonym przedziale czasowym.
-  - Obsługą wyjątków zwiazanych z błędami wczytywania i parsowania napisów.
+  - Obsługą wyjątków związanych z błędami wczytywania i parsowania napisów.
 
 ## Wymagania
 
@@ -31,18 +31,18 @@ Thmd to biblioteka napisana w języku C# przeznaczona do obsługi multimediów, 
 
 ## Instalacja
 
-1. Sklonuj repozytorium:
+1. **Sklonuj repozytorium**:
 ```bash
 git clone https://github.com/[TwojeRepozytorium]/Thmd.git
 ```
-2. Otwótrz projekt w Visual Studio 2022.
+2. Otwórz projekt w Visual Studio 2022.
 3. Przygotuj środowisko:
-- Upewnij się, że masz zainstalowany .NET Framework 4.8.1.
-- Zainstaluj wymagane pakiety NuGet.
+- Upewnij się, że masz zainstalowany `.NET Framework 4.8`.
+- Zainstaluj wymagane pakiety `NuGet`.
 
-## Przykłady użycia
+## **Przykłady użycia**
 
-### Konfiguracja
+### **Konfiguracja**
 ```csharp
 using Thmd.Configuration;
 
@@ -83,8 +83,8 @@ foreach (var subtitle in subtitles)
 
 ## Autorzy
 
-Projekt został stworzony przez zespół **Softbery by Paweł Tobis**. Wszelkie pytania i sugestie prosimy kierować na [adres e-mail](mailto:kontakt@softbery.org).
+Projekt został stworzony przez zespół **Softbery**, zaś głównym CO projektu  jest **Paweł Tobis**. Wszelkie pytania i sugestie prosimy kierować na [adres e-mail](mailto:softbery@gmail.com).
 
 ## Licencja
 
-Ten projekt jest objęty licencją MIT. Szczeguły znajdują się w pliku `LICENSE`.
+Ten projekt jest objęty licencją MIT. Szczegóły znajdują się w pliku `LICENSE`.

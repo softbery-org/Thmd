@@ -1,4 +1,4 @@
-// Version: 0.1.15.4
+// Version: 0.1.16.64
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -19,7 +19,7 @@ namespace Thmd.Media;
 [Serializable]
 public class VideoItem : UIElement, INotifyPropertyChanged
 {
-    private int _index = -1;
+    private int _index = 0;
     private Uri _uri;
     private string _name;
     private double _position = 0.0;

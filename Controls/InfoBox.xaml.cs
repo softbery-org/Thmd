@@ -1,4 +1,4 @@
-// Version: 0.1.10.97
+// Version: 0.1.12.57
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,53 +17,51 @@ using System.Windows.Shapes;
 
 using Thmd.Media;
 
-namespace Thmd.Controls
+namespace Thmd.Controls;
+/// <summary>
+/// Logika interakcji dla klasy InfoBox.xaml
+/// </summary>
+public partial class InfoBox : UserControl
 {
-    /// <summary>
-    /// Logika interakcji dla klasy InfoBox.xaml
-    /// </summary>
-    public partial class InfoBox : UserControl
+    private FrameworkElement _parent;
+
+    public Action<string> DrawInfoText;
+
+    public InfoBox()
     {
-        private FrameworkElement _parent;
+        InitializeComponent();
+        DrawInfoText += InfoBox_DrawText;
+    }
 
-        public Action<string> DrawInfoText;
+    public InfoBox(FrameworkElement parent) : this()
+    {
+        _parent = parent;
+        _parent.SizeChanged += Parent_SizeChanged;
+    }
 
-        public InfoBox()
+    private async void InfoBox_DrawText(string obj)
+    {
+        var storyboard = this.FindResource("fadeInBox") as Storyboard; //.ShowByStoryboard(this, this.FindResource("fadeInBox") as Storyboard);
+
+        await Utilities.StoryboardHelper.RunStoryboad(this, storyboard);
+
+        await this.Dispatcher.InvokeAsync(() =>
         {
-            InitializeComponent();
-            DrawInfoText += InfoBox_DrawText;
-        }
+            _infoTextBlock.Text = obj;
+        });
 
-        public InfoBox(FrameworkElement parent) : this()
+        await Task.Delay(7000);
+
+        storyboard = this.FindResource("fadeOutBox") as Storyboard; //.ShowByStoryboard(this, this.FindResource("fadeInBox") as Storyboard);
+        await Utilities.StoryboardHelper.RunStoryboad(this, storyboard);
+    }
+
+    private void Parent_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        if (_parent != null)
         {
-            _parent = parent;
-            _parent.SizeChanged += Parent_SizeChanged;
-        }
-
-        private async void InfoBox_DrawText(string obj)
-        {
-                var storyboard = this.FindResource("fadeInBox") as Storyboard; //.ShowByStoryboard(this, this.FindResource("fadeInBox") as Storyboard);
-
-                await Utilities.StoryboardHelper.RunStoryboad(this, storyboard);
-
-                await this.Dispatcher.InvokeAsync(() =>
-                {
-                    _infoTextBlock.Text = obj;
-                });
-
-                await Task.Delay(7000);
-
-                storyboard = this.FindResource("fadeOutBox") as Storyboard; //.ShowByStoryboard(this, this.FindResource("fadeInBox") as Storyboard);
-                await Utilities.StoryboardHelper.RunStoryboad(this, storyboard);
-        }
-
-        private void Parent_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            if (_parent != null)
-            {
-                double newFontSize = e.NewSize.Height / 25.0;
-                _infoTextBlock.FontSize = ((newFontSize > 10.0) ? newFontSize : 10.0);
-            }
+            double newFontSize = e.NewSize.Height / 25.0;
+            _infoTextBlock.FontSize = ((newFontSize > 10.0) ? newFontSize : 10.0);
         }
     }
 }
