@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Windows.Input;
 
@@ -11,7 +11,7 @@ using System.Windows.Input;
 //
 // Example with enum Status { Active, Inactive }:
 // <CheckBox IsChecked="{Binding CurrentStatus, Converter={StaticResource EnumToBool}, ConverterParameter=Active}"
-//          Content="Active" />
+//          Translate="Active" />
 
 /// <summary>
 /// Converts an enum value to bool: true if the enum value matches the parameter.
@@ -73,3 +73,4 @@ public static class EnumToBooleanConverter
         return null;
     }
 }
+// Version: 0.1.0.14

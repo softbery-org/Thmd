@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
@@ -42,3 +42,4 @@ public static class BooleanToVisibilityConverter
         return false;
     }
 }
+// Version: 0.1.0.14

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -63,3 +63,4 @@ public class DateTimeMultiConverter : IMultiValueConverter
         return null;
     }
 }
+// Version: 0.1.0.14

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Windows.Data;
 
@@ -45,3 +45,4 @@ public static class PercentageConverter
         return 0.0;
     }
 }
+// Version: 0.1.0.14

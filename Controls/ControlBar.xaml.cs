@@ -1,4 +1,4 @@
-// Version: 0.1.9.99
+// Version: 0.1.10.14
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -33,6 +33,7 @@ public partial class ControlBar : UserControl
     public Button BtnOpen => _openMediaButton;
     public Button BtnPlaylist => _openPlaylistButton;
     public Slider SliderVolume => _volumeSlider;
+    public Button BtnStream => _streamButton;
 
     public event PropertyChangedEventHandler PropertyChanged;
 

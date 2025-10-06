@@ -25,6 +25,9 @@
     <Optimize>True</Optimize>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="thmd.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -80,6 +83,9 @@
   <ItemGroup>
     <Folder Include="Devices\Mouses\" />
     <Folder Include="Devices\Mouses\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="thmd.cs" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Controls\Effects\Image\alien_skeleton.png" />

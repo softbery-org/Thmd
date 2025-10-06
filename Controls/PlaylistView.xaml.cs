@@ -1,4 +1,4 @@
-// Version: 0.1.13.37
+// Version: 0.1.13.52
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -306,7 +306,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     private void Remove(object parameter)
     {
         // Logika dla usuwania elementu z playlisty
-        //NewAsync(Name, "");
+        //NewAsync(BaseString, "");
     }
 
     // Metoda dla przycisku "Edytuj"

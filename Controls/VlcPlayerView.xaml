@@ -15,6 +15,7 @@
                 <local:ControlBar x:Name="_controlBar" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                 <local:ProgressBarView x:Name="_progressBar" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" ProgressText="00:00:00"/>
                 <local:LogoImage x:Name="_userImage" HorizontalAlignment="Right" VerticalAlignment="Top" Width="150" Height="75"  Margin="0,0,50,50"/>
+                <!--<local:AddStreamView x:Name="_addStreamView" HorizontalAlignment="Center" VerticalContentAlignment="Center"/>-->
             </Grid>
         </vlc:VideoView>
     </Grid>

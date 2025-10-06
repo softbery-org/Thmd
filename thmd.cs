@@ -1,4 +1,4 @@
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 using System.Collections.Generic;
 using Thmd.Configuration;
@@ -124,7 +124,7 @@ namespace Thmd.Compress.Rar
         }
     }
 }
-// Version: 0.1.6.41
+// Version: 0.1.7.67
 
 
 
@@ -142,14 +142,14 @@ namespace Thmd.Compress.Zip
     {
     }
 }
-// Version: 0.1.6.41
+// Version: 0.1.7.67
 
 
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Configuration\Config.cs
 
 // Config.cs
-// Version: 0.1.15.57
+// Version: 0.1.16.83
 // A singleton class for managing application configuration settings, including database connections,
 // logging, VLC library settings, subtitles, updates, and plugins. Supports loading and saving
 // configuration data to a JSON file with thread-safe access.
@@ -411,7 +411,7 @@ public class Config
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Configuration\IPlaylistConfig.cs
 
 // IPlaylistConfig.cs
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 // A class representing the configuration settings for playlists in the application.
 // Stores properties such as default playlist path, shuffle mode, repeat mode, auto-play settings,
 // and a list of media file paths or URIs.
@@ -493,7 +493,7 @@ namespace Thmd.Configuration
         public string OpenApiKey { get; set; }
     }
 }
-// Version: 0.1.0.42
+// Version: 0.1.1.68
 
 
 
@@ -520,14 +520,14 @@ namespace Thmd.Configuration
         }
     }
 }
-// Version: 0.1.3.84
+// Version: 0.1.5.10
 
 
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Configuration\PluginConfig.cs
 
 // PluginConfig.cs
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 // A class representing the configuration settings for a plugin in the application.
 // Stores properties such as the plugin's name, file path, enabled status, version, and description.
 
@@ -570,7 +570,7 @@ public class PluginConfig
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Configuration\Shadow.cs
 
 // Shadow.cs
-// Version: 0.1.15.65
+// Version: 0.1.16.91
 // A class representing the configuration settings for a shadow effect in the application.
 // Stores properties such as color, depth, opacity, blur radius, and visibility for a shadow effect.
 
@@ -620,7 +620,7 @@ public class Shadow
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Configuration\SubtitleConfig.cs
 
 // SubtitleConfig.cs
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 // A class representing the configuration settings for subtitles in the application.
 // Stores properties such as font size, font family, font color, and shadow settings for subtitle display.
 
@@ -683,7 +683,7 @@ public class SubtitleConfig
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Configuration\UpdateConfig.cs
 
 // UpdateConfig.cs
-// Version: 0.1.15.65
+// Version: 0.1.16.91
 // A class representing the configuration settings for application updates.
 // Stores properties such as update check settings, URLs, file paths, version information, and timing settings.
 
@@ -749,7 +749,7 @@ public class UpdateConfig
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Consolas\ConsoleWriteLine.cs
 
-// Version: 0.1.6.41
+// Version: 0.1.7.67
 using System;
 using System.Reflection;
 
@@ -758,7 +758,7 @@ namespace Thmd.Consolas
     /// <summary>
     /// Delegate for getting class name
     /// </summary>
-    /// <returns>Name of Class</returns>
+    /// <returns>BaseString of Class</returns>
     public delegate string GetClassNameDelegate(object sender);
 
     /// <summary>
@@ -774,7 +774,7 @@ namespace Thmd.Consolas
         {
             if (sender == null)
                 return "Unknown";
-            return sender.GetType().FullName; // Poprawka: u yj GetType().Name zamiast DeclaringType
+            return sender.GetType().FullName; // Poprawka: u�yj GetType().BaseString zamiast DeclaringType
         }
 
         /// <summary>
@@ -788,7 +788,7 @@ namespace Thmd.Consolas
         public static void WriteLine(this object sender, Exception ex)
         {
             string data = DateTime.Now.ToString("dd-MM-yyyy H:mm:ss"); // Aktualizacja daty
-            GetClassNameDelegate delegat = GetName; // U ycie delegata
+            GetClassNameDelegate delegat = GetName; // U�ycie delegata
             var class_name = delegat(sender);
 
             if (ex != null)
@@ -808,7 +808,7 @@ namespace Thmd.Consolas
         public static void WriteLine(this object sender, string msg)
         {
             string data = DateTime.Now.ToString("dd-MM-yyyy H:mm:ss"); // Aktualizacja daty
-            GetClassNameDelegate delegat = GetName; // U ycie delegata
+            GetClassNameDelegate delegat = GetName; // U�ycie delegata
             var class_name = delegat(sender);
 
             if (!string.IsNullOrEmpty(msg))
@@ -821,9 +821,80 @@ namespace Thmd.Consolas
 
 
 
+// OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\AddStreamView.xaml.cs
+
+// Version: 0.1.0.9
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Markup;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+using Thmd.Translator;
+
+namespace Thmd.Controls
+{
+    /// <summary>
+    /// Logika interakcji dla klasy AddStreamView.xaml
+    /// </summary>
+    public partial class AddStreamView : UserControl
+    {
+        public string ReturnUrl;
+
+        public AddStreamView()
+        {
+            InitializeComponent();
+        }
+
+        private void CancelButton(object sender, RoutedEventArgs e)
+        {
+            ReturnUrl = String.Empty;
+        }
+
+        private void AddButton_Click(object sender, RoutedEventArgs e)
+        {
+            XmlLanguage language = XmlLanguage.GetLanguage("pl");
+            var l = Translator.Language.LoadLanguage("langs");
+            if (l != null)
+            {
+                foreach (var item in l)
+                {
+                    if (item.Code == "pl_pl")
+                    {
+                        foreach (var item_translation in item.Translations)
+                        {
+                            if (item_translation.Control.GetType() == typeof(ControlBar))
+                            {
+                                
+                            }
+                        }
+                    }
+                }
+            }
+            
+            
+
+            ReturnUrl = _textBox.Text;
+            this.Visibility = Visibility.Hidden;
+        }
+    }
+}
+
+
+
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\ControlBar.xaml.cs
 
-// Version: 0.1.8.88
+// Version: 0.1.10.14
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -836,6 +907,8 @@ using System.Windows.Media.Animation;
 using Thmd.Utilities;
 using Thmd.Media;
 using LibVLCSharp.Shared;
+using System.Collections.Generic;
+using Thmd.Translator;
 
 namespace Thmd.Controls;
 
@@ -845,6 +918,7 @@ namespace Thmd.Controls;
 public partial class ControlBar : UserControl
 {
     private IPlayer _player;
+    private ObservableCollection<ILanguage> _languages;
 
     public Button BtnPlay => _playPauseButton;
     public Button BtnStop => _stopButton;
@@ -855,6 +929,7 @@ public partial class ControlBar : UserControl
     public Button BtnOpen => _openMediaButton;
     public Button BtnPlaylist => _openPlaylistButton;
     public Slider SliderVolume => _volumeSlider;
+    public Button BtnStream => _streamButton;
 
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -1038,6 +1113,7 @@ public partial class ControlBar : UserControl
     public ControlBar()
     {
         InitializeComponent();
+
         _repeatButton.Click += (s, e) => RepeatPopupVisibility = !RepeatPopupVisibility;
         _repeatComboBox.SelectionChanged += (s, e) =>
         {
@@ -1268,7 +1344,7 @@ public partial class ControlBar : UserControl
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\IControlBar.cs
 
-// Version: 0.1.9.0
+// Version: 0.1.10.26
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -1280,21 +1356,16 @@ namespace Thmd.Controls
 {
     public interface IControlBar
     {
-
-        Button BtnPlay { get; }
-        Button BtnStop { get; }
-        Button BtnNext { get; }
-        Button BtnPrevious { get; }
-        Button BtnVolumeUp { get; }
-        Button BtnVolumeDown { get; }
-        Button BtnMute { get; }
-        Button BtnSettingsWindow { get; }
-        Button BtnSubtitle { get; }
-        Button BtnUpdate { get; }
-        Button BtnOpen { get; }
-        Button BtnPlaylist { get; }
-        Button BtnFullscreen { get; }
-        Button BtnClose { get; }
+        public string BtnPlay { get; }       
+        public string BtnStop { get; }      
+        public string BtnNext { get; }    
+        public string BtnPrevious { get; }        
+        public string BtnMute { get; }        
+        public string BtnSubtitle { get; }       
+        public string BtnOpen { get; }        
+        public string BtnPlaylist { get; }    
+        public string SliderVolume { get; }        
+        public string BtnStream { get; }   
     }
 }
 
@@ -1302,7 +1373,7 @@ namespace Thmd.Controls
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\InfoBox.xaml.cs
 
-// Version: 0.1.11.46
+// Version: 0.1.12.72
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -1374,7 +1445,7 @@ public partial class InfoBox : UserControl
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\IProgressBar.cs
 
-// Version: 0.1.9.0
+// Version: 0.1.10.26
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -1388,9 +1459,77 @@ public interface IProgressBar
 
 
 
+// OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\LogoImage.xaml.cs
+
+// Version: 0.1.0.74
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+using Thmd.Controls.Effects;
+
+namespace Thmd.Controls
+{
+    /// <summary>
+    /// Logika interakcji dla klasy LogoImage.xaml
+    /// </summary>
+    public partial class LogoImage : UserControl, INotifyPropertyChanged
+    {
+        private ImageSource _imageSource;
+        private IEffect _effect;
+
+        public ImageSource ImageSource
+        {
+            get => _imageSource;
+            set
+            {
+                _imageSource = value;
+                OnPropertyChanged(nameof(ImageSource));
+            }
+        }
+
+        public IEffect Effect
+        {
+            get=>_effect;
+            set
+            {
+                _effect = value;
+                OnPropertyChanged(nameof(Effect));
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public LogoImage()
+        {
+            InitializeComponent();
+        }
+    }
+}
+
+
+
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\PlaylistView.xaml.cs
 
-// Version: 0.1.12.26
+// Version: 0.1.13.52
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -1698,7 +1837,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     private void Remove(object parameter)
     {
         // Logika dla usuwania elementu z playlisty
-        //NewAsync(Name, "");
+        //NewAsync(BaseString, "");
     }
 
     // Metoda dla przycisku "Edytuj"
@@ -2216,7 +2355,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\ProgressBarView.xaml.cs
 
-// Version: 0.1.8.98
+// Version: 0.1.10.24
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -2422,7 +2561,7 @@ public partial class ProgressBarView : UserControl, INotifyPropertyChanged
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\SubtitleControl.xaml.cs
 
 // SubtitleControl.xaml.cs
-// Version: 0.1.4.24
+// Version: 0.1.5.50
 // A custom user control for displaying subtitles from an SRT file with support for formatting tags
 // such as <i>, <b>, <u>, <font color="...">, and <font size="...">.
 // Enhanced with AI-powered subtitle translation and subtitle buffering for performance optimization.
@@ -2969,7 +3108,7 @@ public partial class SubtitleControl : UserControl
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\TimerBox.xaml.cs
 
-// Version: 0.1.11.91
+// Version: 0.1.13.17
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -3030,10 +3169,11 @@ public partial class TimerBox : UserControl
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\VlcPlayerView.xaml.cs
 
-// Version: 0.1.7.63
+// Version: 0.1.8.84
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -3049,18 +3189,25 @@ using System.Windows.Media.Imaging;
 
 using LibVLCSharp.Shared;
 
+using Microsoft.VisualBasic;
 using Microsoft.Win32;
+using Microsoft.Xaml.Behaviors;
 
 using Thmd.Configuration;
 using Thmd.Consolas;
+using Thmd.Converters;
 using Thmd.Devices.Keyboards;
 using Thmd.Media;
 using Thmd.Utilities;
+
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace Thmd.Controls;
 
 /// <summary>
 /// Logic interaction for class VlcPlayerView.xaml
+/// Represents a WPF UserControl that integrates a VLC media player for video playback with controls, playlist, and subtitle support.
+/// Implements IPlayer interface for media operations and INotifyPropertyChanged for data binding.
 /// </summary>
 public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChanged
 {
@@ -3069,6 +3216,8 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     private const uint ES_SYSTEM_REQUIRED = 1u;
     private const uint ES_DISPLAY_REQUIRED = 2u;
     private const uint ES_AWAYMODE_REQUIRED = 64u;
+
+    // When you don't move mouse or keybord this IntPtr:
     // Combination to block sleep mode.
     private const uint BLOCK_SLEEP_MODE = 2147483651u;
     // Combination to allow sleep mode.
@@ -3251,7 +3400,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// </summary>
     public double MouseSleeps { get; private set; } = 7;
     /// <summary>
-    /// 
+    /// Gets or sets the current VLC player state.
     /// </summary>
     public VLCState State
     {
@@ -3262,6 +3411,9 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
     }
 
+    /// <summary>
+    /// Gets or sets whether upscale is enabled for low-resolution media.
+    /// </summary>
     public bool isUpscale
     {
         get => _isUpscale;
@@ -3294,12 +3446,14 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     private VideoItem _media;
     private Visibility _subtitleVisibility = Visibility.Hidden;
     private Visibility _playlistVisibility = Visibility.Hidden;
+    private Visibility _addStreamViewVisibility = Visibility.Hidden;
     private bool _isMouseMove;
     private BackgroundWorker _mouseNotMoveWorker;
     private bool _isUpscale = false;
 
     /// <summary>
     /// Initialize class
+    /// Initializes the VLC player view, sets up controls, events, and loads configurations.
     /// </summary>
     public VlcPlayerView()
     {
@@ -3342,6 +3496,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         // Resize helpers for control bar and playlist
         var resizer1 = new ResizeControlHelper(_controlBar);
         var resizer2 = new ResizeControlHelper(_playlist);
+        //var resizer3 = new ResizeControlHelper(_addStreamView);
 
         // Buttons event handlers
         ControlBarButtonEvent();
@@ -3357,18 +3512,27 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         LoadUpdateConfig();
     }
 
+    /// <summary>
+    /// Loads the OpenAI configuration from JSON file.
+    /// </summary>
     public void LoadOpenAiConfig()
     {
         var ai = Configuration.Config.LoadFromJsonFile<OpenAiConfig>("config/openai.json");
         Config.Instance.OpenAiConfig = ai;
     }
 
+    /// <summary>
+    /// Loads the update configuration from JSON file.
+    /// </summary>
     public void LoadUpdateConfig()
     {
         var up = Configuration.Config.LoadFromJsonFile<UpdateConfig>("config/update.json");
         Config.Instance.UpdateConfig = up;
     }
 
+    /// <summary>
+    /// Saves the default update configuration to JSON file.
+    /// </summary>
     public void SaveUpdateConfig()
     {
         var up = new UpdateConfig();
@@ -3384,6 +3548,9 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         Configuration.Config.SaveToFile("config/update.json", up);
     }
 
+    /// <summary>
+    /// Loads the playlist configuration from JSON file and applies it to the player.
+    /// </summary>
     public void LoadPlaylistConfig()
     {
         try
@@ -3414,6 +3581,9 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
     }
 
+    /// <summary>
+    /// Saves the current playlist configuration to JSON file.
+    /// </summary>
     public void SavePlaylistConfig()
     {
         var pl = new Configuration.PlaylistConfig();
@@ -3422,7 +3592,8 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         pl.EnableShuffle = true;
         foreach (var item in this.Playlist.Videos)
         {
-            pl.MediaList.Add(item.Uri.LocalPath);
+            // Support both local paths and network URLs by saving the original URI string
+            pl.MediaList.Add(item.Uri.OriginalString);
             pl.Subtitles.Add((item.SubtitlePath != null) ? item.SubtitlePath : null);
         }
         pl.Size = new Size(Playlist.Width, Playlist.Height);
@@ -3433,12 +3604,16 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         this.WriteLine($"Save playlist in config/playlist.json");
     }
 
+    /// <summary>
+    /// Applies a grayscale effect to the specified image.
+    /// </summary>
+    /// <param name="image">The image to apply the effect to.</param>
     public void ApplyGrayscaleEffect(Image image)
     {
-        // Tworzenie bitmapy na podstawie wymiar w odtwarzacza
+        // Tworzenie bitmapy na podstawie wymiar�w odtwarzacza
         WriteableBitmap bitmap = new WriteableBitmap((int)image.Width, (int)image.Height, 96, 96, PixelFormats.Bgra32, BitmapPalettes.Gray256Transparent);
 
-        // Przyk adowa modyfikacja pikseli (np. konwersja do szaro ci)
+        // Przyk�adowa modyfikacja pikseli (np. konwersja do szaro�ci)
         bitmap.Lock();
         unsafe
         {
@@ -3448,7 +3623,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
                 for (int x = 0; x < bitmap.PixelWidth; x++)
                 {
                     int index = (y * bitmap.BackBufferStride) + (x * 4); // BGRA: 4 bajty na piksel
-                    byte gray = (byte)((pixels[index + 2] + pixels[index + 1] + pixels[index]) / 3); //  rednia RGB -> szary
+                    byte gray = (byte)((pixels[index + 2] + pixels[index + 1] + pixels[index]) / 3); // �rednia RGB -> szary
                     pixels[index] = gray;     // B
                     pixels[index + 1] = gray; // G
                     pixels[index + 2] = gray; // R
@@ -3463,6 +3638,10 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         image.Source = bitmap;
     }
 
+    /// <summary>
+    /// Captures the current video frame as a BitmapSource.
+    /// </summary>
+    /// <returns>The captured frame or null if capture fails.</returns>
     public BitmapSource GetCurrentFrame()
     {
         /*if (_mediaPlayer == null || !_mediaPlayer.IsPlaying)
@@ -3476,11 +3655,11 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
             {
                 // Pobranie rozmiaru okna wideo
                 //var windowSize = _videoView.Width;
-                uint width = (uint)Math.Round(_videoView.Width);  // Konwersja double na int z zaokrągleniem
+                uint actualWidth = (uint)Math.Round(_videoView.Width);  // Konwersja double na int z zaokrągleniem
                 uint height = (uint)Math.Round(_videoView.Height); // Konwersja double na int z zaokrągleniem
 
                 // Walidacja rozmiaru
-                if (width <= 0 || height <= 0)
+                if (actualWidth <= 0 || height <= 0)
                 {
                     System.Diagnostics.Debug.WriteLine("Nieprawidłowy rozmiar okna wideo.");
                     return null;
@@ -3490,7 +3669,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
                 var result = _mediaPlayer.TakeSnapshot(
                     (uint)_mediaPlayer.Hwnd,          // Strumień do zapisu
                     null,
-                    (uint)width,       // Szerokość w pikselach
+                    (uint)actualWidth,       // Szerokość w pikselach
                     (uint)height       // Wysokość w pikselach
                 );
 
@@ -3518,11 +3697,11 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
             var result = _playlist.Current.FrameSize.Split('x');
             var width = uint.Parse(result[0]);
             var height = uint.Parse(result[1]);
-            bool success = _mediaPlayer.TakeSnapshot(0, "screenshot.png", width, height);
+            bool success = _mediaPlayer.TakeSnapshot(0, null, width, height);
 
             if (success)
             {
-                MessageBox.Show("Klatka zapisana jako screenshot.png");
+                MessageBox.Show("Klatka przrekazana ");
             }
             else
             {
@@ -3540,6 +3719,11 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     }
 
     #region Mouse events
+    /// <summary>
+    /// Background worker method to handle mouse inactivity and hide controls after a delay.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The event arguments.</param>
     private async void MouseNotMoveWorker_DoWork(object sender, DoWorkEventArgs e)
     {
         bool val = true;
@@ -3553,6 +3737,10 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
     }
 
+    /// <summary>
+    /// Checks if the mouse has moved during the sleep delay and hides controls if not.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
     private async Task<bool> IfMouseMoved()
     {
         _videoView.MouseMove += MouseMovedCallback;
@@ -3581,6 +3769,10 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
     }
 
+    /// <summary>
+    /// Handles mouse move events to show controls and set cursor.
+    /// </summary>
+    /// <param name="e">The mouse event arguments.</param>
     protected override async void OnMouseMove(MouseEventArgs e)
     {
         await ControlBar.ShowByStoryboard((Storyboard)ControlBar.FindResource("fadeInControlBar"));
@@ -3588,6 +3780,10 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         _videoView.Cursor = Cursors.Arrow;
     }
 
+    /// <summary>
+    /// Handles double-click to toggle fullscreen mode.
+    /// </summary>
+    /// <param name="e">The mouse button event arguments.</param>
     protected override void OnMouseDoubleClick(MouseButtonEventArgs e)
     {
         if (e.ChangedButton == MouseButton.Left)
@@ -3603,6 +3799,10 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     private DateTime _lastClickTime = DateTime.MinValue;
     [NonSerialized]
     private Point _lastClickPosition;
+    /// <summary>
+    /// Handles left mouse button down events, including double-click detection and play/pause toggle.
+    /// </summary>
+    /// <param name="e">The mouse button event arguments.</param>
     protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
     {
         DateTime now = DateTime.Now;
@@ -3626,6 +3826,10 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         base.OnMouseLeftButtonDown(e);
     }
 
+    /// <summary>
+    /// Handles mouse wheel events to adjust volume.
+    /// </summary>
+    /// <param name="e">The mouse wheel event arguments.</param>
     protected override void OnMouseWheel(MouseWheelEventArgs e)
     {
         base.OnMouseWheel(e);
@@ -3639,37 +3843,16 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         // Show popup briefly
         Task.Delay(1000).ContinueWith(_ => Dispatcher.Invoke(() => _progressBar._popup.IsOpen = false));
     }
-
-    /*protected override void OnMouseDown(MouseButtonEventArgs e)
-    {
-        base.OnMouseDown(e);
-        if (e.ChangedButton == MouseButton.Left && e.ClickCount == 1)
-        {
-            // Single left-click to toggle play/pause
-            if (isPlaying)
-            {
-                Pause();
-            }
-            else if (isPaused)
-            {
-                Play();
-            }
-        }
-        else if (e.ChangedButton == MouseButton.Right)
-        {
-            // Right-click to toggle playlist visibility
-            TogglePlaylist()();
-        }
-    }*/
     #endregion
 
     #region Keybord events
     /// <summary>
-    /// 
+    /// Handles key down events for media control shortcuts.
     /// </summary>
-    /// <param name="e"></param>
+    /// <param name="e">The key event arguments.</param>
     protected override void OnKeyDown(KeyEventArgs e)
     {
+        base.OnKeyDown(e);
         var keyBindingList = new List<ShortcutKeyBinding>
             {
                 new ShortcutKeyBinding { MainKey = Key.Space, ModifierKey = null, Shortcut = "Space", Description = "Pause and play media", RunAction = TogglePlayPause() },
@@ -3683,7 +3866,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
                 new ShortcutKeyBinding { MainKey = Key.Right, ModifierKey = ModifierKeys.Control, Shortcut = "Ctrl+Right", Description = "Move media forward 5 minutes", RunAction = MoveForwardMinutes() },
                 new ShortcutKeyBinding { MainKey = Key.Up, ModifierKey = null, Shortcut = "Up", Description = "Increase volume by 2", RunAction = () => Volume += 2 },
                 new ShortcutKeyBinding { MainKey = Key.Down, ModifierKey = null, Shortcut = "Down", Description = "Decrease volume by 2", RunAction = () => Volume -= 2 },
-                new ShortcutKeyBinding { MainKey = Key.M, ModifierKey = null, Shortcut = "M", Description = "Toggle mute", RunAction = () => isMute = !isMute },
+                new ShortcutKeyBinding { MainKey = Key.M, ModifierKey = null, Shortcut = "M", Description = "Toggle mute_txt", RunAction = () => isMute = !isMute },
                 new ShortcutKeyBinding { MainKey = Key.L, ModifierKey = null, Shortcut = "L", Description = "Toggle lector if subtitles are available", RunAction = ToggleLector() },
                 new ShortcutKeyBinding { MainKey = Key.Escape, ModifierKey = null, Shortcut = "Esc", Description = "Clear focus, minimize fullscreen", RunAction = ClearFocus() },
                 new ShortcutKeyBinding { MainKey = Key.N, ModifierKey = null, Shortcut = "N", Description = "Play next video", RunAction = () => Next() },
@@ -3712,10 +3895,12 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
                 this.WriteLine($"Pressed: [{Keyboard.Modifiers}]+ {e.Key}");
 
         }
-
-        //base.OnKeyDown(e);
     }
 
+    /// <summary>
+    /// Handles key up events.
+    /// </summary>
+    /// <param name="e">The key event arguments.</param>
     protected override void OnKeyUp(KeyEventArgs e)
     {
         base.OnKeyUp(e);
@@ -3724,6 +3909,10 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     #endregion
 
     #region Actions
+    /// <summary>
+    /// Toggles subtitle visibility and opens subtitle file if hidden.
+    /// </summary>
+    /// <returns>An action to toggle subtitles.</returns>
     private Action ToggleSubtitle()
     {
         return new Action(() =>
@@ -3739,6 +3928,10 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         });
     }
 
+    /// <summary>
+    /// Toggles lector functionality (placeholder).
+    /// </summary>
+    /// <returns>An action to toggle lector.</returns>
     private Action ToggleLector()
     {
         return new Action(() =>
@@ -3748,6 +3941,10 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         });
     }
 
+    /// <summary>
+    /// Clears focus on the player.
+    /// </summary>
+    /// <returns>An action to clear focus.</returns>
     private Action ClearFocus()
     {
         return new Action(() =>
@@ -3756,6 +3953,10 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         });
     }
 
+    /// <summary>
+    /// Toggles play/pause or starts playback if stopped.
+    /// </summary>
+    /// <returns>An action to toggle play/pause.</returns>
     private Action TogglePlayPause()
     {
         return new Action(() =>
@@ -3775,16 +3976,38 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         });
     }
 
+    /// <summary>
+    /// Toggles url view controler show or hide
+    /// </summary>
+    /// <returns>Visible or Hidden</returns>
+    public Action ToggleStreamUrl()
+    {
+        return new Action(() =>
+        {
+            //if (_addStreamView.Visibility == Visibility.Visible)
+               // _addStreamView.Visibility = Visibility.Hidden;
+            //else
+               // _addStreamView.Visibility = Visibility.Visible;
+        });
+    }
+
+    /// <summary>
+    /// Toggles fullscreen mode.
+    /// </summary>
+    /// <returns>An action to toggle fullscreen.</returns>
     private Action ToggleFullscreen()
     {
         return new Action(() =>
         {
-            //this.Fullscreen();
             _videoView.Background = Brushes.Black;
             _fullscreen = ScreenHelper.IsFullscreen;
         });
     }
 
+    /// <summary>
+    /// Toggles help window (placeholder).
+    /// </summary>
+    /// <returns>An action to toggle help window.</returns>
     private Action ToggleHelpWindow()
     {
         return new Action(() =>
@@ -3794,6 +4017,10 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         });
     }
 
+    /// <summary>
+    /// Toggles playlist visibility.
+    /// </summary>
+    /// <returns>An action to toggle playlist.</returns>
     private Action TogglePlaylist()
     {
         return new Action(() =>
@@ -3809,6 +4036,10 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         });
     }
 
+    /// <summary>
+    /// Seeks forward by 5 minutes.
+    /// </summary>
+    /// <returns>An action to move forward 5 minutes.</returns>
     private Action MoveForwardMinutes()
     {
         return new Action(() =>
@@ -3817,6 +4048,10 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         });
     }
 
+    /// <summary>
+    /// Seeks backward by 5 minutes.
+    /// </summary>
+    /// <returns>An action to move backward 5 minutes.</returns>
     private Action MoveBackwardMinutes()
     {
         return new Action(() =>
@@ -3828,6 +4063,11 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
 
     #region ControlBar -> SliderVolume -> Mouse Events
 
+    /// <summary>
+    /// Handles mouse move on volume slider to update volume preview.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The mouse event arguments.</param>
     private void ControlBar_SliderVolume_MouseMove(object sender, MouseEventArgs e)
     {
         if (DesignerProperties.GetIsInDesignMode(this))
@@ -3846,11 +4086,21 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
     }
 
+    /// <summary>
+    /// Handles mouse down on volume slider.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The mouse button event arguments.</param>
     private void ControlBar_SliderVolume_MouseDown(object sender, MouseButtonEventArgs e)
     {
         ControlBar_SliderVolume_MouseEventHandler(sender, e);
     }
 
+    /// <summary>
+    /// Common handler for volume slider mouse events.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The mouse event arguments.</param>
     private void ControlBar_SliderVolume_MouseEventHandler(object sender, MouseEventArgs e)
     {
         if (DesignerProperties.GetIsInDesignMode(this))
@@ -3868,11 +4118,21 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     #endregion
 
     #region MediaPlayer Events
+    /// <summary>
+    /// Handles volume change events from the media player.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The volume changed event arguments.</param>
     private void OnVolumeChanged(object sender, MediaPlayerVolumeChangedEventArgs e)
     {
 
     }
 
+    /// <summary>
+    /// Subscribes to the playing event.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The event arguments.</param>
     private void MediaPlayer_Playing(object sender, EventArgs e)
     {
         if (Playing != null)
@@ -3884,6 +4144,11 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
     }
 
+    /// <summary>
+    /// Subscribes to the stopped event.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The event arguments.</param>
     private void MediaPlayer_Stopped(object sender, EventArgs e)
     {
         if (Stopped != null)
@@ -3895,6 +4160,11 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
     }
 
+    /// <summary>
+    /// Subscribes to the time changed event.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The media changed event arguments.</param>
     private void MediaPlayer_TimeChanged(object sender, MediaPlayerMediaChangedEventArgs e)
     {
         if (TimeChanged != null)
@@ -3906,6 +4176,11 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
     }
 
+    /// <summary>
+    /// Subscribes to the length changed event.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The length changed event arguments.</param>
     private void MediaPlayer_LenghtChanges(object sender, MediaPlayerLengthChangedEventArgs e)
     {
         if (LengthChanged != null)
@@ -3917,6 +4192,11 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
     }
 
+    /// <summary>
+    /// Handles end of media playback and manages repeat behavior.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The event arguments.</param>
     private void OnEndReached(object sender, EventArgs e)
     {
         _videoView.Dispatcher.InvokeAsync(() =>
@@ -3930,11 +4210,21 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         });
     }
 
+    /// <summary>
+    /// Handles media change events.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The media changed event arguments.</param>
     private void OnMediaChanged(object sender, MediaPlayerMediaChangedEventArgs e)
     {
 
     }
 
+    /// <summary>
+    /// Updates UI elements with current playback time and progress.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The time changed event arguments.</param>
     private void OnTimeChanged(object sender, MediaPlayerTimeChangedEventArgs e)
     {
         _videoView.Dispatcher.InvokeAsync(() =>
@@ -3954,17 +4244,21 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     #endregion
 
 
+    /// <summary>
+    /// Handles mouse move on progress bar to preview seek position.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The mouse event arguments.</param>
     private void ProgressBar_MouseMove(object sender, MouseEventArgs e)
     {
         if (DesignerProperties.GetIsInDesignMode(this))
             return;
 
         Point mousePosition = e.GetPosition(_progressBar);
-        double width = _progressBar.ActualWidth;
-        if (width <= 0) return;
+        double actualWidth = _progressBar.ActualWidth;
+        if (actualWidth <= 0) return;
 
-        double position = mousePosition.X / width * _progressBar._progressBar.Maximum;
-        TimeSpan time = TimeSpan.FromMilliseconds(position);
+        var time = TimeToPositionConverter.Convert(mousePosition.X, actualWidth, _progressBar._progressBar.Maximum);
         _progressBar.PopupText = $"{time.Hours:00}:{time.Minutes:00}:{time.Seconds:00}";
         _progressBar._popup.IsOpen = true;
         _progressBar._popup.HorizontalOffset = mousePosition.X - (_progressBar._popupText.ActualWidth / 2);
@@ -3977,11 +4271,21 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
     }
 
+    /// <summary>
+    /// Handles mouse down on progress bar to seek.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The mouse button event arguments.</param>
     private void ProgressBar_MouseDown(object sender, MouseButtonEventArgs e)
     {
         ProgressBarMouseEventHandler(sender, e);
     }
 
+    /// <summary>
+    /// Common handler for progress bar mouse events to perform seeking.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The mouse event arguments.</param>
     private void ProgressBarMouseEventHandler(object sender, MouseEventArgs e)
     {
         if (DesignerProperties.GetIsInDesignMode(this))
@@ -3991,13 +4295,20 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         double width = _progressBar.ActualWidth;
         if (width <= 0) return;
 
-        double position = mousePosition.X / width * _progressBar._progressBar.Maximum;
-        TimeSpan time = TimeSpan.FromMilliseconds(position);
-        _progressBar.Value = (long)position;
+        // Calculate the corresponding time from the mouse position using the forward converter
+        var time = TimeToPositionConverter.Convert(mousePosition.X, width, _progressBar._progressBar.Maximum);
+
+        // Set the progress bar value to the milliseconds (as long) and seek the player
+        _progressBar.Value = (long)time.TotalMilliseconds;
         this.Position = time;
+
+        // Update the visual indicator for the mouse position
         _progressBar._rectangleMouseOverPoint.Margin = new Thickness(mousePosition.X - (_progressBar._rectangleMouseOverPoint.Width / 2), 0, 0, 0);
     }
 
+    /// <summary>
+    /// Sets up event handlers for control bar buttons.
+    /// </summary>
     private void ControlBarButtonEvent()
     {
         ControlBar.BtnPlay.Click += delegate
@@ -4018,22 +4329,32 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         };
         ControlBar.BtnMute.Click += delegate
         {
-            var mute = String.Empty;
+            var mute_txt = String.Empty;
+
             if (_mediaPlayer.Mute)
-            {
-                _volume = _mediaPlayer.Volume;
-                mute = "On";
-            }
+                mute_txt = "On";
             else
-            {
-                _volume = _mediaPlayer.Volume;
-                mute = "Off";
-            }
+                mute_txt = "Off";
+
+
+
+            _volume = _mediaPlayer.Volume;
             isMute = !isMute;
         };
         ControlBar.BtnOpen.Click += delegate
         {
             OpenMediaFile();
+        };
+        // Assuming a BtnStream button exists in ControlBar for network streams
+        ControlBar.BtnStream.Click += delegate
+        {
+            ToggleStreamUrl();
+
+            //if (!_addStreamView._addButton.IsCancel)
+            //{
+            //    OpenNetworkStream(_addStreamView.ReturnUrl);
+            //    _addStreamView.Visibility = Visibility.Hidden;
+            //}
         };
         ControlBar.BtnPlaylist.Click += delegate
         {
@@ -4053,6 +4374,9 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         };
     }
 
+    /// <summary>
+    /// Opens a file dialog to select and add media files to the playlist.
+    /// </summary>
     private async void OpenMediaFile()
     {
         OpenFileDialog openFileDialog = new OpenFileDialog
@@ -4069,6 +4393,41 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
     }
 
+    /// <summary>
+    /// Opens a dialog to input a network stream URL and adds it to the playlist.
+    /// Supports HTTP, RTSP, and other streaming protocols via LibVLCSharp.
+    /// </summary>
+    private async void OpenNetworkStream(string url)
+    {
+        //string url = Interaction.InputBox("Enter the URL of the network stream (e.g., http://example.com/stream.m3u8 or rtsp://example.com/stream):", "Open Network Stream", "http://");
+        
+        if (!string.IsNullOrWhiteSpace(url))
+        {
+            try
+            {
+                // Validate and create URI
+                var uri = new Uri(url, UriKind.Absolute);
+                var videoItem = new VideoItem(uri.ToString()); // Use string constructor to set Uri
+                videoItem.Name = uri.Host; // Set a simple name based on host
+                await Playlist.AddAsync(videoItem);
+                // Automatically play the stream
+                Play(videoItem);
+                this.WriteLine($"Added and playing network stream: {url}");
+            }
+            catch (UriFormatException ex)
+            {
+                MessageBox.Show($"Invalid URL format: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error adding stream: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Opens a file dialog to select subtitle files.
+    /// </summary>
     private void OpenSubtitleFile()
     {
         OpenFileDialog openFileDialog = new OpenFileDialog
@@ -4086,6 +4445,10 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
     }
 
+    /// <summary>
+    /// Sets the subtitle file path and enables AI translation.
+    /// </summary>
+    /// <param name="path">The path to the subtitle file.</param>
     public void SetSubtitle(string path)
     {
         _videoView.Dispatcher.InvokeAsync(() =>
@@ -4102,6 +4465,9 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         });
     }
 
+    /// <summary>
+    /// Pauses the current media playback.
+    /// </summary>
     public void Pause()
     {
         try
@@ -4124,6 +4490,9 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
     }
 
+    /// <summary>
+    /// Stops the current media playback.
+    /// </summary>
     public void Stop()
     {
         try
@@ -4143,18 +4512,28 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
     }
 
+    /// <summary>
+    /// Plays the next item in the playlist.
+    /// </summary>
     public void Next()
     {
         Stop();
         Playlist.MoveNext.Play();
     }
 
+    /// <summary>
+    /// Plays the previous item in the playlist.
+    /// </summary>
     public void Preview()
     {
         Stop();
         Playlist.MovePrevious.Play();
     }
 
+    /// <summary>
+    /// Seeks to a specific time position in the media.
+    /// </summary>
+    /// <param name="time">The time span to seek to.</param>
     public void Seek(TimeSpan time)
     {
         if (_mediaPlayer != null)
@@ -4164,6 +4543,11 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
     }
 
+    /// <summary>
+    /// Seeks forward or backward by a specified time span.
+    /// </summary>
+    /// <param name="time">The time span to seek by.</param>
+    /// <param name="direction">The seek direction.</param>
     public void Seek(TimeSpan time, SeekDirection direction)
     {
         if (_mediaPlayer != null)
@@ -4181,6 +4565,11 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
     }
 
+    /// <summary>
+    /// Internal method to play media, handling pause resume or new media load.
+    /// Supports both local files and network streams via URI.
+    /// </summary>
+    /// <param name="media">The media item to play, or null to resume current.</param>
     private void _Play(VideoItem media = null)
     {
         if (Playlist.Current == null)
@@ -4229,11 +4618,18 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
     }
 
+    /// <summary>
+    /// Plays a specific media item.
+    /// </summary>
+    /// <param name="media">The media item to play.</param>
     public void Play(VideoItem media)
     {
         _Play(media);
     }
 
+    /// <summary>
+    /// Plays or resumes the current media item.
+    /// </summary>
     public void Play()
     {
         if (Playlist.Current == null)
@@ -4244,12 +4640,18 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         _Play();
     }
 
+    /// <summary>
+    /// Configures real-time upscale options for the media.
+    /// </summary>
+    /// <param name="media">The media to configure.</param>
+    /// <param name="targetWidth">The target width for upscale (default 1920).</param>
+    /// <param name="targetHeight">The target height for upscale (default 1080).</param>
     private void ConfigureRealTimeUpscale(LibVLCSharp.Shared.Media media, int targetWidth = 1920, int targetHeight = 1080)
     {
         try
         {
             media.AddOption(":video-filter=scale");
-            media.AddOption($":scale-width={targetWidth}");
+            media.AddOption($":scale-actualWidth={targetWidth}");
             media.AddOption($":scale-height={targetHeight}");
             media.AddOption(":video-filter=hqdn3d");
 
@@ -4261,6 +4663,11 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
     }
 
+    /// <summary>
+    /// Checks if the media resolution is low enough to warrant upscaling.
+    /// </summary>
+    /// <param name="media">The media item to check.</param>
+    /// <returns>True if resolution is below 1280 width.</returns>
     private bool IsLowResolution(VideoItem media)
     {
         try
@@ -4279,6 +4686,10 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
     }
 
+    /// <summary>
+    /// Handles repeat mode behavior at end of playback.
+    /// </summary>
+    /// <param name="repeat">The repeat mode string ("One", "All", "Random").</param>
     private void HandleRepeat(string repeat)
     {
         switch (repeat)
@@ -4317,21 +4728,41 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
     }
 
+    /// <summary>
+    /// Handles playing state to block system sleep.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The event arguments.</param>
     private void OnPlaying(object sender, EventArgs e)
     {
         SetThreadExecutionState(BLOCK_SLEEP_MODE);
     }
 
+    /// <summary>
+    /// Handles stopped state to allow system sleep.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The event arguments.</param>
     private void OnStopped(object sender, EventArgs e)
     {
         SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
     }
 
+    /// <summary>
+    /// Handles paused state to allow system sleep.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The event arguments.</param>
     private void OnPaused(object sender, EventArgs e)
     {
         SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
     }
 
+    /// <summary>
+    /// Updates buffering progress in the UI.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The buffering event arguments.</param>
     private void OnBuffering(object sender, MediaPlayerBufferingEventArgs e)
     {
         this.Dispatcher.InvokeAsync(() =>
@@ -4340,7 +4771,12 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         });
     }
 
-    private void UserControl_Loaded(object sender, RoutedEventArgs e)
+    /// <summary>
+    /// Initializes UI elements when the control is loaded.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The routed event arguments.</param>
+    private void VlcPlayerView_Loaded(object sender, RoutedEventArgs e)
     {
         ProgressBar.Duration = Playlist.Current?.Duration ?? TimeSpan.Zero;
         ProgressBar.Value = (long)0.0;
@@ -4349,6 +4785,13 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         ControlBar.MediaTitle = Playlist.Current?.Name ?? "No video loaded";
     }
 
+    /// <summary>
+    /// Raises the PropertyChanged event for a property with value comparison.
+    /// </summary>
+    /// <typeparam name="T">The type of the property.</typeparam>
+    /// <param name="propertyName">The name of the property.</param>
+    /// <param name="field">Reference to the backing field.</param>
+    /// <param name="value">The new value.</param>
     private void OnPropertyChanged<T>(string propertyName, ref T field, T value)
     {
         if (field != null || value == null)
@@ -4367,6 +4810,10 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         PropertyChanged?.Invoke(field, new PropertyChangedEventArgs(propertyName));
     }
 
+    /// <summary>
+    /// Raises the PropertyChanged event for a property.
+    /// </summary>
+    /// <param name="propertyName">The name of the property.</param>
     protected void OnPropertyChanged(string propertyName)
     {
         if (PropertyChanged != null)
@@ -4375,6 +4822,9 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
     }
 
+    /// <summary>
+    /// Disposes resources and saves configuration.
+    /// </summary>
     public void Dispose()
     {
         _mediaPlayer?.Dispose();
@@ -4386,9 +4836,62 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
 
 
 
+// OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\YoutubeControl.xaml.cs
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+using Microsoft.Web.WebView2.Wpf;
+
+namespace Thmd.Controls
+{
+    /// <summary>
+    /// Logika interakcji dla klasy YoutubeControl.xaml
+    /// </summary>
+    public partial class YoutubeControl : UserControl
+    {
+        public YoutubeControl()
+        {
+            InitializeComponent();
+        }
+
+            public YoutubeControl(WebView2 webView)
+            {
+                _webView = webView;
+            }
+
+            public async Task InitializeAsync()
+            {
+                await _webView.EnsureCoreWebView2Async();
+            }
+
+            public void LoadVideo(string videoId)
+            {
+                // YouTube embed URL – bez reklam
+                string url = $"https://www.youtube.com/embed/{videoId}?autoplay=1&modestbranding=1&rel=0";
+                _webView.Source = new Uri(url);
+            }
+    }
+}
+// Version: 0.1.0.94
+
+
+
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\ControlButtons\PlayerButtonsControl.xaml.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System.Windows.Controls;
 using System.Windows.Markup;
 
@@ -4406,7 +4909,7 @@ public partial class PlayerButtonsControl : UserControl
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\ControlButtons\PlayerButtonsControlSecondRow.xaml.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System.Windows.Controls;
 using System.Windows.Markup;
 
@@ -4424,7 +4927,7 @@ public partial class PlayerButtonsControlSecondRow : UserControl
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\ControlButtons\PlayerCloseButtonControl.xaml.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
@@ -4437,6 +4940,242 @@ public partial class PlayerCloseButtonControl : UserControl
 	{
 		InitializeComponent();
 	}
+}
+
+
+
+// OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\Effects\BeatsEffect.xaml.cs
+
+// Version: 0.1.0.94
+using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+
+using Thmd.Consolas;
+
+namespace Thmd.Controls.Effects
+{
+    /// <summary>
+    /// Logika interakcji dla klasy Beats.xaml
+    /// </summary>
+    public partial class BeatsEffect : UserControl, INotifyPropertyChanged, IEffect
+    {
+        private double _time = 0.0;
+        private DateTime _lastFrameTime;
+
+        // Stałe częstotliwości
+        private const double PRIMARY_BEAT_FREQUENCY = 1.8;
+        private const double SECONDARY_BEAT_FREQUENCY = 0.9;
+
+        // Event INotifyPropertyChanged (opcjonalny dla DependencyProperties)
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        // DependencyProperty dla tła (ImageSource w Twoim kodzie → BackgroundImageSource)
+        public static readonly DependencyProperty BackgroundImageSourceProperty =
+            DependencyProperty.Register(nameof(BackgroundImageSource), typeof(ImageSource), typeof(BeatsEffect),
+                new PropertyMetadata(null, OnBackgroundImageSourceChanged));
+
+        public ImageSource BackgroundImageSource
+        {
+            get => (ImageSource)GetValue(BackgroundImageSourceProperty);
+            set => SetValue(BackgroundImageSourceProperty, value);
+        }
+
+        private static void OnBackgroundImageSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is BeatsEffect control)
+            {
+                // Opcjonalnie: logika po zmianie
+            }
+        }
+
+        // DependencyProperty dla efektu (ImageSource)
+        public static readonly DependencyProperty ImageSourceProperty =
+            DependencyProperty.Register(nameof(ImageSource), typeof(ImageSource), typeof(BeatsEffect),
+                new PropertyMetadata(null, OnImageSourceChanged));
+
+        public ImageSource ImageSource
+        {
+            get => (ImageSource)GetValue(ImageSourceProperty);
+            set => SetValue(ImageSourceProperty, value);
+        }
+
+        private static void OnImageSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is BeatsEffect control && e.NewValue == null)
+            {
+                // Domyślna wartość tylko jeśli null
+                control.ImageSource = control.LoadImageFromResource("pack://Thmd:,,,/Image/alien_skeleton.png");
+            }
+        }
+
+        public BeatsEffect()
+        {
+            InitializeComponent();
+            Name = this.GetType().Name;
+            DataContext = this;
+            _lastFrameTime = DateTime.Now;
+            BackgroundImageSource = LoadImageFromResource("pack://Thmd:,,,/Image/alien_skeleton.png");
+            ImageSource = LoadImageFromResource("pack://Thmd:,,,/Image/alien_skeleton.png");
+            CompositionTarget.Rendering += CompositionTarget_Rendering;
+
+            // Dynamiczne centrowanie transformów po załadowaniu
+            Loaded += BeatsEffect_Loaded;
+        }
+
+        private void BeatsEffect_Loaded(object sender, RoutedEventArgs e)
+        {
+            UpdateTransformCenters();
+        }
+
+        private void UpdateTransformCenters()
+        {
+            double centerX = ActualWidth / 2;
+            double centerY = ActualHeight / 2;
+            BeatRotate.CenterX = centerX;
+            BeatRotate.CenterY = centerY;
+            BeatScale.CenterX = centerX;
+            BeatScale.CenterY = centerY;
+            BeatSkew.CenterX = centerX;
+            BeatSkew.CenterY = centerY;
+        }
+
+        // Wywołaj to też w SizeChanged event, jeśli UserControl zmienia rozmiar
+        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
+        {
+            base.OnRenderSizeChanged(sizeInfo);
+            UpdateTransformCenters();
+        }
+
+        // Metoda pomocnicza do ładowania ImageSource z zasobu
+        private ImageSource LoadImageFromResource(string resourcePath)
+        {
+            try
+            {
+                var uri = new Uri(resourcePath, UriKind.Relative);
+                var bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.UriSource = uri;
+                bitmap.EndInit();
+                return bitmap;
+            }
+            catch(Exception ex)
+            {
+                this.WriteLine($"[{ex.HResult}]: {ex.Message}");
+                return null; // Obsługa błędów (np. brak pliku)
+            }
+        }
+
+        private void CompositionTarget_Rendering(object sender, EventArgs e)
+        {
+            DateTime currentTime = DateTime.Now;
+            double deltaTime = (currentTime - _lastFrameTime).TotalSeconds;
+            _lastFrameTime = currentTime;
+            _time += deltaTime;
+
+            // 1. Pulsowanie (Scale)
+            double primaryBeat = Math.Abs(Math.Sin(_time * PRIMARY_BEAT_FREQUENCY * Math.PI));
+            double secondaryBeat = Math.Abs(Math.Sin(_time * SECONDARY_BEAT_FREQUENCY * Math.PI));
+            double combinedBeat = (primaryBeat * 0.7 + secondaryBeat * 0.3);
+            double scaleFactor = 1.0 + Math.Pow(combinedBeat, 1.5) * 0.08;
+            BeatScale.ScaleX = scaleFactor;
+            BeatScale.ScaleY = scaleFactor;
+
+            // 2. Wibracje (Translate)
+            double pulseVibration = Math.Pow(primaryBeat, 3) * 4;
+            BeatTranslate.X = Math.Sin(_time * 15) * pulseVibration;
+            BeatTranslate.Y = Math.Cos(_time * 18) * pulseVibration;
+
+            // 3. Wyginanie (Skew)
+            BeatSkew.AngleX = combinedBeat * 2.5;
+            BeatSkew.AngleY = combinedBeat * 1.5;
+
+            // 4. Opacity na elemencie UI (nie na ImageSource!)
+            /*if (BeatImageElement != null)
+            {
+                BeatImageElement.Opacity = 0.8 + combinedBeat * 0.2;
+            }*/
+
+            // 5. Rotacja
+            BeatRotate.Angle = Math.Sin(_time * PRIMARY_BEAT_FREQUENCY * Math.PI) * 5;
+        }
+    }
+}
+
+
+
+// OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\Effects\IEffect.cs
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Thmd.Controls.Effects
+{
+    public interface IEffect
+    {
+        string Name { get; }
+    }
+}
+// Version: 0.1.0.70
+
+
+
+// OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\Effects\SharpenEffect.cs
+
+// Version: 0.1.14.28
+using System;
+using System.Drawing;
+using System.Windows;
+using System.Windows.Media.Effects;
+
+namespace Thmd.Controls.Effects;
+
+public class EnhancedSharpenEffect : ShaderEffect
+{
+    public static readonly DependencyProperty InputProperty = RegisterPixelShaderSamplerProperty("Input", typeof(EnhancedSharpenEffect), 0);
+    public static readonly DependencyProperty SharpenAmountProperty = DependencyProperty.Register("SharpenAmount", typeof(float), typeof(EnhancedSharpenEffect), new PropertyMetadata(1.0f, PixelShaderConstantCallback(0)));
+    public static readonly DependencyProperty SmoothAmountProperty = DependencyProperty.Register("SmoothAmount", typeof(float), typeof(EnhancedSharpenEffect), new PropertyMetadata(0.0f, PixelShaderConstantCallback(1)));
+
+    public EnhancedSharpenEffect()
+    {
+        PixelShader = new PixelShader
+        {
+            UriSource = new Uri("pack://application:,,,/EnhancedSharpenEffect.ps")
+        };
+        UpdateShaderValue(InputProperty);
+        UpdateShaderValue(SharpenAmountProperty);
+        UpdateShaderValue(SmoothAmountProperty);
+    }
+
+    public Brush Input
+    {
+        get => (Brush)GetValue(InputProperty);
+        set => SetValue(InputProperty, value);
+    }
+
+    public float SharpenAmount
+    {
+        get => (float)GetValue(SharpenAmountProperty);
+        set => SetValue(SharpenAmountProperty, value);
+    }
+
+    public float SmoothAmount
+    {
+        get => (float)GetValue(SmoothAmountProperty);
+        set => SetValue(SmoothAmountProperty, value);
+    }
 }
 
 
@@ -4468,21 +5207,426 @@ namespace Thmd.Controls.Enums
         BoldItalic
     }
 }
-// Version: 0.1.0.34
+// Version: 0.1.1.60
+
+
+
+// OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Converters\ArithmeticMultiConverter.cs
+
+using System;
+using System.Globalization;
+using System.Windows.Data;
+
+// Usage in XAML:
+// 
+//<TextBlock Text = "{MultiBinding Converter={StaticResource ArithmeticMultiConverter}, 
+//                  ConverterParameter='+',
+//                  <Binding Path="Price" />,
+//                  <Binding Path="Tax" />}"
+//              />
+
+/// <summary>
+/// Multi-value converter for performing arithmetic operations on two numbers (e.g., addition).
+/// </summary>
+public class ArithmeticMultiConverter : IMultiValueConverter
+{
+    /// <summary>
+    /// Adds two numeric values.
+    /// </summary>
+    /// <param name="values">Array: [0] = first number, [1] = second number.</param>
+    /// <param name="targetType">Target type (double).</param>
+    /// <param name="parameter">Operator: "+" (default), "-" or "*".</param>
+    /// <param name="culture">Culture.</param>
+    /// <returns>Operation result; 0.0 in case of error.</returns>
+    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (values.Length >= 2 && values[0] is double num1 && values[1] is double num2)
+        {
+            var op = parameter as string ?? "+";
+            return op switch
+            {
+                "+" => num1 + num2,
+                "-" => num1 - num2,
+                "*" => num1 * num2,
+                _ => num1 + num2
+            };
+        }
+        return 0.0;
+    }
+
+    /// <summary>
+    /// Reverse conversion is not supported (returns null).
+    /// </summary>
+    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+    {
+        return null; // For one-way operations
+    }
+}
+// Version: 0.1.0.14
+
+
+
+// OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Converters\BooleanToVisibilityConverter.cs
+
+using System;
+using System.Globalization;
+using System.Windows;
+using System.Windows.Data;
+
+/// <summary>
+/// Converts a bool value to Visibility: true = Visible, false = Collapsed.
+/// </summary>
+public static class BooleanToVisibilityConverter
+{
+    /// <summary>
+    /// Converts bool to Visibility.
+    /// </summary>
+    /// <param name="value">The bool value to convert.</param>
+    /// <param name="targetType">The target type (Visibility).</param>
+    /// <param name="parameter">Parameter (unused).</param>
+    /// <param name="culture">Culture (unused).</param>
+    /// <returns>Visibility.Visible if true, Visibility.Collapsed if false.</returns>
+    public static object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is bool boolValue)
+        {
+            return boolValue ? Visibility.Visible : Visibility.Collapsed;
+        }
+        return Visibility.Collapsed;
+    }
+
+    /// <summary>
+    /// Converts Visibility back to bool (optional).
+    /// </summary>
+    /// <param name="value">The Visibility value to convert.</param>
+    /// <param name="targetType">The target type (bool).</param>
+    /// <param name="parameter">Parameter (unused).</param>
+    /// <param name="culture">Culture (unused).</param>
+    /// <returns>true if Visible, false otherwise.</returns>
+    public static object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is Visibility visibility)
+        {
+            return visibility == Visibility.Visible;
+        }
+        return false;
+    }
+}
+// Version: 0.1.0.14
+
+
+
+// OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Converters\DateTimeMultiConverter.cs
+
+using System;
+using System.Globalization;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Forms;
+using System.Windows.Input;
+using System.Windows.Markup;
+
+// Usage in XAML
+// First, register the converter in resources (e.g., in App.xaml or window):
+//
+// <Window.Resources>
+//    <local:DateTimeMultiConverter x:Key="DateTimeMultiConverter" />
+// </Window.Resources>
+//
+// Example binding in TextBlock (displays combined DateTime):
+// <TextBlock>
+//    <TextBlock.Text>
+//        <MultiBinding Converter="{StaticResource DateTimeMultiConverter}">
+//            <Binding Path="SelectedDate" />  <!-- Source: date -->
+//            <Binding Path="SelectedTime" />  <!-- Source: time -->
+//        </MultiBinding>
+//    </TextBlock.Text>
+// </TextBlock>
+
+/// <summary>
+/// Multi-value converter that combines DateTime (date) and TimeSpan (time) into one DateTime.
+/// Useful for bindings where date and time are stored separately.
+/// </summary>
+public class DateTimeMultiConverter : IMultiValueConverter
+{
+    /// <summary>
+    /// Converts an array of values (date and time) to a single DateTime.
+    /// </summary>
+    /// <param name="values">Array of values: [0] = DateTime (date), [1] = TimeSpan (time).</param>
+    /// <param name="targetType">Target type (DateTime).</param>
+    /// <param name="parameter">Parameter (unused).</param>
+    /// <param name="culture">Culture (unused).</param>
+    /// <returns>DateTime with combined date and time; DateTime.MinValue in case of error.</returns>
+    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (values.Length >= 2 && values[0] is DateTime date && values[1] is TimeSpan time)
+        {
+            return date.Date + time; // Combines date with time
+        }
+        return DateTime.MinValue;
+    }
+
+    /// <summary>
+    /// Converts DateTime back to an array [DateTime (date), TimeSpan (time)].
+    /// </summary>
+    /// <param name="value">DateTime to decompose.</param>
+    /// <param name="targetTypes">Array of target types (DateTime and TimeSpan).</param>
+    /// <param name="parameter">Parameter (unused).</param>
+    /// <param name="culture">Culture (unused).</param>
+    /// <returns>Array with date and time; null in case of error.</returns>
+    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+    {
+        if (value is DateTime dateTime && targetTypes.Length >= 2)
+        {
+            return new object[] { dateTime.Date, dateTime.TimeOfDay };
+        }
+        return null;
+    }
+}
+// Version: 0.1.0.14
+
+
+
+// OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Converters\EnumToBooleanConverter.cs
+
+using System;
+using System.Globalization;
+using System.Windows.Input;
+
+// Usage in XAML:
+// First, add the converter to resources (e.g., in App.xaml or window):
+//
+// <Window.Resources>
+//      <local:EnumToBooleanConverter x:Key="EnumToBool" />
+// </Window.Resources>
+//
+// Example with enum Status { Active, Inactive }:
+// <CheckBox IsChecked="{Binding CurrentStatus, Converter={StaticResource EnumToBool}, ConverterParameter=Active}"
+//          Translate="Active" />
+
+/// <summary>
+/// Converts an enum value to bool: true if the enum value matches the parameter.
+/// Useful for bindings with checkboxes or radiobuttons based on enums.
+/// </summary>
+public static class EnumToBooleanConverter
+{
+    /// <summary>
+    /// Converts an enum value to bool.
+    /// </summary>
+    /// <param name="value">The current enum value to check.</param>
+    /// <param name="targetType">The target type (bool).</param>
+    /// <param name="parameter">The expected enum value (as string name or enum object).</param>
+    /// <param name="culture">Culture (unused).</param>
+    /// <returns>true if value == parameter; false otherwise.</returns>
+    public static object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value == null || parameter == null)
+            return false;
+
+        var enumType = value.GetType();
+        if (!enumType.IsEnum)
+            return false;
+
+        object expectedValue;
+        if (parameter is string paramString)
+        {
+            if (Enum.IsDefined(enumType, paramString))
+            {
+                expectedValue = Enum.Parse(enumType, paramString);
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            expectedValue = parameter;
+        }
+
+        return value.Equals(expectedValue);
+    }
+
+    /// <summary>
+    /// Converts bool back to enum (optional: returns parameter if true).
+    /// </summary>
+    /// <param name="value">The bool value to convert.</param>
+    /// <param name="targetType">The target type (enum).</param>
+    /// <param name="parameter">The expected enum value.</param>
+    /// <param name="culture">Culture (unused).</param>
+    /// <returns>Parameter (enum value) if true; null otherwise.</returns>
+    public static object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is bool boolValue && boolValue)
+        {
+            return parameter;
+        }
+        return null;
+    }
+}
+// Version: 0.1.0.14
+
+
+
+// OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Converters\InverseBooleanConverter.cs
+
+using System;
+using System.Globalization;
+using System.Windows.Data;
+
+/// <summary>
+/// Inverts a bool value: true becomes false and vice versa.
+/// </summary>
+public static class InverseBooleanConverter
+{
+    /// <summary>
+    /// Inverts bool.
+    /// </summary>
+    /// <param name="value">The bool value to invert.</param>
+    /// <param name="targetType">Target type (bool).</param>
+    /// <param name="parameter">Parameter (unused).</param>
+    /// <param name="culture">Culture (unused).</param>
+    /// <returns>The inverted bool value.</returns>
+    public static object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is bool boolValue)
+        {
+            return !boolValue;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Inverts bool back (same as Convert).
+    /// </summary>
+    public static object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        return Convert(value, targetType, parameter, culture);
+    }
+}
+// Version: 0.1.0.14
+
+
+
+// OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Converters\MathClampConverter.cs
+
+// Version: 0.1.14.5
+using System;
+
+namespace Thmd.Converters
+{
+    /// <summary>
+    /// Static math class
+    /// </summary>
+    public static class MathClampConverter
+    {
+        /// <summary>
+        /// Clamps the specified value to be within the inclusive range defined by the minimum and maximum values.
+        /// </summary>
+        /// <typeparam name="T">The type of the value, which must implement <see cref="IComparable{T}"/>.</typeparam>
+        /// <param name="value">The value to clamp.</param>
+        /// <param name="min">The lower bound of the range.</param>
+        /// <param name="max">The upper bound of the range.</param>
+        /// <returns>The clamped value, which is the original value if it falls within the range, otherwise the nearest bound.</returns>
+        public static T Clamp<T>(T value, T min, T max) where T : IComparable<T>
+        {
+            if (value.CompareTo(min) < 0) return min;
+            if (value.CompareTo(max) > 0) return max;
+            return value;
+        }
+
+        /// <summary>
+        /// Clamps the specified double value to be within the inclusive range defined by the minimum and maximum values.
+        /// </summary>
+        /// <param name="value">The value to clamp.</param>
+        /// <param name="min">The lower bound of the range.</param>
+        /// <param name="max">The upper bound of the range.</param>
+        /// <returns>The clamped value, which is the original value if it falls within the range, otherwise the nearest bound.</returns>
+        public static double Clamp(double value, double min, double max)
+        {
+            return System.Math.Max(min, System.Math.Min(max, value));
+        }
+    }
+}
+
+
+
+// OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Converters\PercentageConverter.cs
+
+using System;
+using System.Globalization;
+using System.Windows.Data;
+
+/// <summary>
+/// Converts a numeric value (0-1) to a percentage string.
+/// </summary>
+public static class PercentageConverter
+{
+    /// <summary>
+    /// Converts the value to percentage (e.g., 0.75 → "75%").
+    /// </summary>
+    /// <param name="value">Numeric value (double).</param>
+    /// <param name="targetType">Target type (string).</param>
+    /// <param name="parameter">Optional divisor (default 1).</param>
+    /// <param name="culture">Culture.</param>
+    /// <returns>String with percentages.</returns>
+    public static object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is double doubleValue && doubleValue >= 0 && doubleValue <= 1)
+        {
+            double divisor = parameter is double p ? p : 1.0;
+            double percentage = (doubleValue / divisor) * 100;
+            return $"{percentage:F0}%";
+        }
+        return "0%";
+    }
+
+    /// <summary>
+    /// Converts percentage string back to double (e.g., "50%" → 0.5).
+    /// </summary>
+    public static object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is string strValue)
+        {
+            if (strValue.EndsWith("%"))
+            {
+                strValue = strValue.TrimEnd('%');
+            }
+            if (double.TryParse(strValue, NumberStyles.Any, culture, out double percentage))
+            {
+                return percentage / 100.0;
+            }
+        }
+        return 0.0;
+    }
+}
+// Version: 0.1.0.14
 
 
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Converters\PercentageToWidthConverter.cs
 
-// Version: 0.1.12.54
+// Version: 0.1.13.80
 using System;
 using System.Globalization;
 using System.Windows.Data;
 
 namespace Thmd.Converters
 {
+    /// <summary>
+    /// Converts between a percentage value and an absolute width based on a total width parameter.
+    /// Useful for dynamic sizing in WPF UI elements, such as progress bars or proportional layouts.
+    /// </summary>
     public class PercentageToWidthConverter : IValueConverter
     {
+        /// <summary>
+        /// Converts a percentage value (0-100) to an absolute width in pixels.
+        /// </summary>
+        /// <param name="value">The percentage value to convert (double).</param>
+        /// <param name="targetType">The target type (typically double for width).</param>
+        /// <param name="parameter">The total width used for calculation (double).</param>
+        /// <param name="culture">The culture information (unused).</param>
+        /// <returns>The calculated width; 0.0 if the conversion fails.</returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is double percentage && parameter is double totalWidth)
@@ -4492,18 +5636,135 @@ namespace Thmd.Converters
             return 0.0;
         }
 
+        /// <summary>
+        /// Converts an absolute width back to a percentage value based on the total width.
+        /// </summary>
+        /// <param name="value">The absolute width to convert (double).</param>
+        /// <param name="targetType">The target type (typically double for percentage).</param>
+        /// <param name="parameter">The total width used for calculation (double).</param>
+        /// <param name="culture">The culture information (unused).</param>
+        /// <returns>The calculated percentage; 0.0 if the conversion fails.</returns>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            if (value is double width && parameter is double totalWidth)
+            {
+                return width * 100.0 / totalWidth;
+            }
+            return 0.0;
         }
     }
 }
 
 
 
+// OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Converters\StringFormatConverter.cs
+
+using System;
+using System.Globalization;
+using System.Windows.Data;
+
+/// <summary>
+/// Formats a string according to the given pattern (e.g., "{0:C}" for currency).
+/// </summary>
+public static class StringFormatConverter
+{
+    /// <summary>
+    /// Formats the value according to the parameter (string as format).
+    /// </summary>
+    /// <param name="value">The value to format (e.g., double).</param>
+    /// <param name="targetType">The target type (string).</param>
+    /// <param name="parameter">The format pattern (e.g., "C" for currency).</param>
+    /// <param name="culture">The culture for formatting.</param>
+    /// <returns>The formatted string.</returns>
+    public static object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value != null && parameter is string format)
+        {
+            return string.Format(culture ?? CultureInfo.CurrentCulture, "{0:" + format + "}", value);
+        }
+        return value?.ToString() ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Reverse conversion is not supported (returns null).
+    /// </summary>
+    public static object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        return null; // Or parsing implementation if needed
+    }
+}
+// Version: 0.1.0.14
+
+
+
+// OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Converters\TimeToPositionConverter.cs
+
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Thmd.Converters
+{
+    /// <summary>
+    /// Helper class for converting between position (e.g., on a slider) and time (TimeSpan).
+    /// Serves as a converter in WPF bindings, mapping position to time and vice versa.
+    /// </summary>
+    public static class TimeToPositionConverter
+    {
+        /// <summary>
+        /// Converts a position value (e.g., in pixels) to a TimeSpan representing time.
+        /// </summary>
+        /// <param name="value">Current position (double).</param>
+        /// <param name="totalWidth">Total slider width (double, e.g., in pixels).</param>
+        /// <param name="maximumLength">Maximum time length in milliseconds (double).</param>
+        /// <returns>TimeSpan corresponding to the position; TimeSpan.Zero in case of error.</returns>
+        public static TimeSpan Convert(object value, object totalWidth, object maximumLength)
+        {
+            if (value is double currentPosition && totalWidth is double width && maximumLength is double length)
+            {
+                if (width <= 0 || length <= 0)
+                    return TimeSpan.Zero;
+
+                var result = (currentPosition / width) * length;
+                return TimeSpan.FromMilliseconds(result);
+            }
+            return TimeSpan.Zero;
+        }
+
+        /// <summary>
+        /// Converts TimeSpan back to position (e.g., in pixels).
+        /// </summary>
+        /// <typeparam name="T">Target type (unused in implementation).</typeparam>
+        /// <param name="value">Time to convert (TimeSpan).</param>
+        /// <param name="totalWidth">Total slider width (double, e.g., in pixels).</param>
+        /// <param name="maximumLength">Maximum time length in milliseconds (double).</param>
+        /// <param name="targetType">Target type (unused).</param>
+        /// <returns>Position as double; 0.0 in case of error.</returns>
+        public static object ConvertBack<T>(object value, object totalWidth, object maximumLength, T targetType) where T : class
+        {
+            if (value is TimeSpan timeSpan && totalWidth is double width && maximumLength is double length)
+            {
+                if (width <= 0 || length <= 0)
+                    return 0.0;
+
+                var ms = timeSpan.TotalMilliseconds;
+                var result = (ms / length) * width;
+                return result;
+            }
+            return 0.0;
+        }
+    }
+}
+// Version: 0.1.0.14
+
+
+
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Devices\Keyboards\ShortcutKeyBinding.cs
 
-// Version: 0.1.3.2
+// Version: 0.1.4.28
 using System;
 using System.Windows.Input;
 
@@ -4545,7 +5806,7 @@ namespace Thmd.Devices.Keyboards
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\AsyncLogger.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -4674,7 +5935,7 @@ public class AsyncLogger : IDisposable
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\CategoryFilterSink.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -4710,7 +5971,7 @@ public class CategoryFilterSink : ILogSink
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\ConsoleSink.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 using System.Threading.Tasks;
 
@@ -4771,7 +6032,7 @@ public class ConsoleSink : ILogSink
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\FileSink.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -4864,7 +6125,7 @@ public class FileSink : ILogSink
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\ILogFormatter.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 namespace Thmd.Logs;
 
 public interface ILogFormatter
@@ -4876,7 +6137,7 @@ public interface ILogFormatter
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\ILogSink.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System.Threading.Tasks;
 
 namespace Thmd.Logs;
@@ -4892,7 +6153,7 @@ public interface ILogSink
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\JsonFormatter.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using Newtonsoft.Json;
 
 namespace Thmd.Logs;
@@ -4917,7 +6178,7 @@ public class JsonFormatter : ILogFormatter
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\LogEntry.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 
 namespace Thmd.Logs;
@@ -4958,12 +6219,464 @@ public class LogEntry
 
 
 
+// OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\Logger.cs
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Windows; // For WPF integration, e.g., MessageBox for UI alerts
+using System.Threading.Tasks; // For asynchronous logging
+using System.Windows.Threading; // For Dispatcher
+
+namespace Thmd.Logs
+{
+    /// <summary>
+    /// Enum representing different levels of logging severity.
+    /// </summary>
+    public enum LogLevel
+    {
+        /// <summary>
+        /// Debug level
+        /// </summary>
+        Debug,
+        /// <summary>
+        /// Info level
+        /// </summary>
+        Info,
+        /// <summary>
+        /// Warning level
+        /// </summary>
+        Warning,
+        /// <summary>
+        /// Error level
+        /// </summary>
+        Error,
+        /// <summary>
+        /// Critical level
+        /// </summary>
+        Critical
+    }
+
+    /// <summary>
+    /// Interface defining the contract for log handlers.
+    /// Handlers implement this to process log messages.
+    /// </summary>
+    public interface ILogHandler
+    {
+        /// <summary>
+        /// Logs a message with the specified level and optional exception.
+        /// </summary>
+        /// <param name="level">The severity level of the log.</param>
+        /// <param name="message">The log message.</param>
+        /// <param name="ex">Optional exception associated with the log.</param>
+        void Log(LogLevel level, string message, Exception ex = null);
+    }
+
+    /// <summary>
+    /// Abstract base class for log handlers providing common functionality
+    /// such as minimum level filtering.
+    /// </summary>
+    public abstract class BaseLogHandler : ILogHandler
+    {
+        /// <summary>
+        /// Gets or sets the minimum log level this handler will process.
+        /// </summary>
+        protected LogLevel MinimumLevel { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the BaseLogHandler class.
+        /// </summary>
+        /// <param name="minLevel">The minimum log level to handle (default: Info).</param>
+        protected BaseLogHandler(LogLevel minLevel = LogLevel.Info)
+        {
+            MinimumLevel = minLevel;
+        }
+
+        /// <summary>
+        /// Logs a message if the level meets or exceeds the minimum level.
+        /// </summary>
+        /// <param name="level">The severity level of the log.</param>
+        /// <param name="message">The log message.</param>
+        /// <param name="ex">Optional exception associated with the log.</param>
+        public void Log(LogLevel level, string message, Exception ex = null)
+        {
+            if (level >= MinimumLevel)
+            {
+                HandleLog(level, message, ex);
+            }
+        }
+
+        /// <summary>
+        /// Abstract method to be implemented by derived handlers for actual logging logic.
+        /// </summary>
+        /// <param name="level">The severity level of the log.</param>
+        /// <param name="message">The log message.</param>
+        /// <param name="ex">Optional exception associated with the log.</param>
+        protected abstract void HandleLog(LogLevel level, string message, Exception ex = null);
+    }
+
+    /// <summary>
+    /// Console log handler that outputs logs to the console.
+    /// </summary>
+    public class ConsoleLogHandler : BaseLogHandler
+    {
+        /// <summary>
+        /// Initializes a new instance of the ConsoleLogHandler class.
+        /// </summary>
+        /// <param name="minLevel">The minimum log level to handle (default: Info).</param>
+        public ConsoleLogHandler(LogLevel minLevel = LogLevel.Info) : base(minLevel) { }
+
+        /// <summary>
+        /// Handles logging by writing to the console.
+        /// </summary>
+        /// <param name="level">The severity level of the log.</param>
+        /// <param name="message">The log message.</param>
+        /// <param name="ex">Optional exception associated with the log.</param>
+        protected override void HandleLog(LogLevel level, string message, Exception ex = null)
+        {
+            var logMessage = $"[{DateTime.Now}] [{level}] {message}";
+            if (ex != null)
+            {
+                logMessage += $"\n{ex}";
+            }
+            Console.WriteLine(logMessage);
+        }
+    }
+
+    /// <summary>
+    /// File log handler that appends logs to a specified file.
+    /// </summary>
+    public class FileLogHandler : BaseLogHandler
+    {
+        private readonly string _filePath;
+        private readonly object _lock = new object();
+
+        /// <summary>
+        /// Initializes a new instance of the FileLogHandler class.
+        /// </summary>
+        /// <param name="filePath">The path to the log file.</param>
+        /// <param name="minLevel">The minimum log level to handle (default: Info).</param>
+        public FileLogHandler(string filePath, LogLevel minLevel = LogLevel.Info) : base(minLevel)
+        {
+            _filePath = filePath;
+            EnsureFileExists();
+        }
+
+        /// <summary>
+        /// Ensures the log file exists and creates the directory if necessary.
+        /// </summary>
+        private void EnsureFileExists()
+        {
+            if (!File.Exists(_filePath))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(_filePath) ?? string.Empty);
+                File.Create(_filePath).Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Handles logging by appending to the file (thread-safe).
+        /// </summary>
+        /// <param name="level">The severity level of the log.</param>
+        /// <param name="message">The log message.</param>
+        /// <param name="ex">Optional exception associated with the log.</param>
+        protected override void HandleLog(LogLevel level, string message, Exception ex = null)
+        {
+            lock (_lock)
+            {
+                using (var writer = File.AppendText(_filePath))
+                {
+                    var logMessage = $"[{DateTime.Now}] [{level}] {message}";
+                    if (ex != null)
+                    {
+                        logMessage += $"\n{ex}";
+                    }
+                    writer.WriteLine(logMessage);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// WPF UI log handler that displays logs via MessageBox for UI thread safety.
+    /// </summary>
+    public class WpfUiLogHandler : BaseLogHandler
+    {
+        /// <summary>
+        /// Initializes a new instance of the WpfUiLogHandler class.
+        /// </summary>
+        /// <param name="minLevel">The minimum log level to handle (default: Error).</param>
+        public WpfUiLogHandler(LogLevel minLevel = LogLevel.Error) : base(minLevel) { }
+
+        /// <summary>
+        /// Handles logging by showing a MessageBox on the UI thread.
+        /// </summary>
+        /// <param name="level">The severity level of the log.</param>
+        /// <param name="message">The log message.</param>
+        /// <param name="ex">Optional exception associated with the log.</param>
+        protected override void HandleLog(LogLevel level, string message, Exception ex = null)
+        {
+            Application.Current?.Dispatcher.Invoke(() =>
+            {
+                var fullMessage = $"{message}{(ex != null ? $"\n{ex.Message}\n{ex.StackTrace}" : "")}";
+                MessageBox.Show($"[{level}] {fullMessage}", "Log Message", MessageBoxButton.OK, GetMessageBoxImage(level));
+            });
+        }
+
+        /// <summary>
+        /// Gets the appropriate MessageBox image based on the log level.
+        /// </summary>
+        /// <param name="level">The log level.</param>
+        /// <returns>The corresponding MessageBoxImage.</returns>
+        private MessageBoxImage GetMessageBoxImage(LogLevel level)
+        {
+            return level switch
+            {
+                LogLevel.Warning => MessageBoxImage.Warning,
+                LogLevel.Error => MessageBoxImage.Error,
+                LogLevel.Critical => MessageBoxImage.Error,
+                _ => MessageBoxImage.Information
+            };
+        }
+    }
+
+    /// <summary>
+    /// Main singleton Logger class that manages multiple handlers and global settings.
+    /// </summary>
+    public class Logger
+    {
+        private static Logger _instance;
+        private static readonly object _instanceLock = new object();
+        private readonly List<ILogHandler> _handlers = new List<ILogHandler>();
+        private LogLevel _globalMinLevel = LogLevel.Info;
+
+        private Logger() { }
+
+        /// <summary>
+        /// Gets the singleton instance of the Logger.
+        /// </summary>
+        public static Logger Instance
+        {
+            get
+            {
+                lock (_instanceLock)
+                {
+                    return _instance ??= new Logger();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adds a log handler to the list of active handlers.
+        /// </summary>
+        /// <param name="handler">The ILogHandler to add.</param>
+        public void AddHandler(ILogHandler handler)
+        {
+            _handlers.Add(handler);
+        }
+
+        /// <summary>
+        /// Sets the global minimum log level for all handlers.
+        /// </summary>
+        /// <param name="level">The new global minimum level.</param>
+        public void SetGlobalMinLevel(LogLevel level)
+        {
+            _globalMinLevel = level;
+        }
+
+        /// <summary>
+        /// Logs a message synchronously (without exception).
+        /// </summary>
+        /// <param name="level">The severity level of the log.</param>
+        /// <param name="message">The log message.</param>
+        public void Log(LogLevel level, string message)
+        {
+            Log(level, message, null);
+        }
+
+        /// <summary>
+        /// Logs a message synchronously with optional exception.
+        /// </summary>
+        /// <param name="level">The severity level of the log.</param>
+        /// <param name="message">The log message.</param>
+        /// <param name="ex">Optional exception associated with the log.</param>
+        public void Log(LogLevel level, string message, Exception ex)
+        {
+            if (level < _globalMinLevel) return;
+
+            foreach (var handler in _handlers)
+            {
+                handler.Log(level, message, ex);
+            }
+        }
+
+        /// <summary>
+        /// Logs a message asynchronously (without exception).
+        /// </summary>
+        /// <param name="level">The severity level of the log.</param>
+        /// <param name="message">The log message.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task LogAsync(LogLevel level, string message)
+        {
+            await LogAsync(level, message, null);
+        }
+
+        /// <summary>
+        /// Logs a message asynchronously with optional exception.
+        /// </summary>
+        /// <param name="level">The severity level of the log.</param>
+        /// <param name="message">The log message.</param>
+        /// <param name="ex">Optional exception associated with the log.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task LogAsync(LogLevel level, string message, Exception ex)
+        {
+            if (level < _globalMinLevel) return;
+
+            await Task.Run(() => Log(level, message, ex));
+        }
+
+        // Convenience methods (sync)
+        /// <summary>
+        /// Logs a debug message synchronously (without exception).
+        /// </summary>
+        /// <param name="message">The log message.</param>
+        public void Debug(string message) => Log(LogLevel.Debug, message);
+        /// <summary>
+        /// Logs a debug message synchronously with exception.
+        /// </summary>
+        /// <param name="message">The log message.</param>
+        /// <param name="ex">The exception.</param>
+        public void Debug(string message, Exception ex) => Log(LogLevel.Debug, message, ex);
+        /// <summary>
+        /// Logs an info message synchronously (without exception).
+        /// </summary>
+        /// <param name="message">The log message.</param>
+        public void Info(string message) => Log(LogLevel.Info, message);
+        /// <summary>
+        /// Logs an info message synchronously with exception.
+        /// </summary>
+        /// <param name="message">The log message.</param>
+        /// <param name="ex">The exception.</param>
+        public void Info(string message, Exception ex) => Log(LogLevel.Info, message, ex);
+        /// <summary>
+        /// Logs a warning message synchronously (without exception).
+        /// </summary>
+        /// <param name="message">The log message.</param>
+        public void Warn(string message) => Log(LogLevel.Warning, message);
+        /// <summary>
+        /// Logs a warning message synchronously with exception.
+        /// </summary>
+        /// <param name="message">The log message.</param>
+        /// <param name="ex">The exception.</param>
+        public void Warn(string message, Exception ex) => Log(LogLevel.Warning, message, ex);
+        /// <summary>
+        /// Logs an error message synchronously (without exception).
+        /// </summary>
+        /// <param name="message">The log message.</param>
+        public void Error(string message) => Log(LogLevel.Error, message);
+        /// <summary>
+        /// Logs an error message synchronously with exception.
+        /// </summary>
+        /// <param name="message">The log message.</param>
+        /// <param name="ex">The exception.</param>
+        public void Error(string message, Exception ex) => Log(LogLevel.Error, message, ex);
+        /// <summary>
+        /// Logs a critical message synchronously (without exception).
+        /// </summary>
+        /// <param name="message">The log message.</param>
+        public void Critical(string message) => Log(LogLevel.Critical, message);
+        /// <summary>
+        /// Logs a critical message synchronously with exception.
+        /// </summary>
+        /// <param name="message">The log message.</param>
+        /// <param name="ex">The exception.</param>
+        public void Critical(string message, Exception ex) => Log(LogLevel.Critical, message, ex);
+
+        // Simplified async convenience methods
+        /// <summary>
+        /// Logs a debug message asynchronously (without exception).
+        /// </summary>
+        /// <param name="message">The log message.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task DebugAsync(string message) => await LogAsync(LogLevel.Debug, message);
+        /// <summary>
+        /// Logs a debug message asynchronously with exception.
+        /// </summary>
+        /// <param name="message">The log message.</param>
+        /// <param name="ex">The exception.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task DebugAsync(string message, Exception ex) => await LogAsync(LogLevel.Debug, message, ex);
+        /// <summary>
+        /// Logs an info message asynchronously (without exception).
+        /// </summary>
+        /// <param name="message">The log message.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task InfoAsync(string message) => await LogAsync(LogLevel.Info, message);
+        /// <summary>
+        /// Logs an info message asynchronously with exception.
+        /// </summary>
+        /// <param name="message">The log message.</param>
+        /// <param name="ex">The exception.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task InfoAsync(string message, Exception ex) => await LogAsync(LogLevel.Info, message, ex);
+        /// <summary>
+        /// Logs a warning message asynchronously (without exception).
+        /// </summary>
+        /// <param name="message">The log message.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task WarnAsync(string message) => await LogAsync(LogLevel.Warning, message);
+        /// <summary>
+        /// Logs a warning message asynchronously with exception.
+        /// </summary>
+        /// <param name="message">The log message.</param>
+        /// <param name="ex">The exception.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task WarnAsync(string message, Exception ex) => await LogAsync(LogLevel.Warning, message, ex);
+        /// <summary>
+        /// Logs an error message asynchronously (without exception).
+        /// </summary>
+        /// <param name="message">The log message.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task ErrorAsync(string message) => await LogAsync(LogLevel.Error, message);
+        /// <summary>
+        /// Logs an error message asynchronously with exception.
+        /// </summary>
+        /// <param name="message">The log message.</param>
+        /// <param name="ex">The exception.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task ErrorAsync(string message, Exception ex) => await LogAsync(LogLevel.Error, message, ex);
+        /// <summary>
+        /// Logs a critical message asynchronously (without exception).
+        /// </summary>
+        /// <param name="message">The log message.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task CriticalAsync(string message) => await LogAsync(LogLevel.Critical, message);
+        /// <summary>
+        /// Logs a critical message asynchronously with exception.
+        /// </summary>
+        /// <param name="message">The log message.</param>
+        /// <param name="ex">The exception.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task CriticalAsync(string message, Exception ex) => await LogAsync(LogLevel.Critical, message, ex);
+    }
+
+    // Example usage in a WPF application
+    // In App.xaml.cs or MainWindow.xaml.cs:
+    // Logger.Instance.AddHandler(new ConsoleLogHandler());
+    // Logger.Instance.AddHandler(new FileLogHandler("app.log"));
+    // Logger.Instance.AddHandler(new WpfUiLogHandler(LogLevel.Critical));
+    // await Logger.Instance.InfoAsync("Application started.");
+}
+// Version: 0.1.0.2
+
+
+
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\LogLevel.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 namespace Thmd.Logs;
 
-public enum LogLevel
+public enum LoggerLevel
 {
 	Debug,
 	Info,
@@ -4975,7 +6688,7 @@ public enum LogLevel
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\Metrics.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 using System.Threading;
 
@@ -5014,7 +6727,7 @@ public class Metrics
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\TextFormatter.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 
 namespace Thmd.Logs;
@@ -5038,7 +6751,7 @@ public class TextFormatter : ILogFormatter
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\XmlFormatter.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System.IO;
 using System.Xml.Serialization;
 
@@ -5059,7 +6772,7 @@ public class XmlFormatter : ILogFormatter
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Media\FileMediaStream.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 using System.IO;
 using System.Net.Http;
@@ -5123,7 +6836,7 @@ public class FileMediaStream : IMediaStream, IDisposable
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Media\HlsPlaylistParser.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 using System.Collections.Generic;
 
@@ -5179,7 +6892,7 @@ public static class HlsPlaylistParser
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Media\HlsSegment.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 using System.Collections.Generic;
 
@@ -5206,7 +6919,7 @@ public class HlsSegment
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Media\HLSStreamer.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -5319,7 +7032,7 @@ public class HLSStreamer : IDisposable
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Media\IMedia.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 
 namespace Thmd.Media;
@@ -5347,7 +7060,7 @@ public interface IMedia
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Media\IMediaStream.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -5367,7 +7080,7 @@ public interface IMediaStream : IDisposable
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Media\IPlayer.cs
 
-// Version: 0.1.15.61
+// Version: 0.1.16.87
 using System;
 using System.ComponentModel;
 using System.Windows;
@@ -5417,7 +7130,7 @@ public interface IPlayer
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Media\MediaEditor.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 using System.IO;
 using System.Windows.Controls;
@@ -5505,7 +7218,7 @@ public class MediaEditor
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Media\Playlist.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 using System.Collections.Generic;
 
@@ -5681,7 +7394,7 @@ public class Playlist : List<VideoItem>
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Media\SeekDirection.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 namespace Thmd.Media;
 
 /// <summary>
@@ -5703,7 +7416,7 @@ public enum SeekDirection
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Media\VideoItem.cs
 
-// Version: 0.1.15.53
+// Version: 0.1.16.79
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -5724,7 +7437,7 @@ namespace Thmd.Media;
 [Serializable]
 public class VideoItem : UIElement, INotifyPropertyChanged
 {
-    private int _index = -1;
+    private int _index = 0;
     private Uri _uri;
     private string _name;
     private double _position = 0.0;
@@ -5747,7 +7460,7 @@ public class VideoItem : UIElement, INotifyPropertyChanged
 
     public int Id { get => _index; }
     /// <summary>
-    /// Name property representing the media name.
+    /// BaseString property representing the media name.
     /// </summary>
     public string Name
     {
@@ -5758,7 +7471,7 @@ public class VideoItem : UIElement, INotifyPropertyChanged
         set
         {
             _name = value;
-            OnPropertyChanged("Name");
+            OnPropertyChanged("BaseString");
         }
     }
     /// <summary>
@@ -6252,55 +7965,7 @@ public class VideoItem : UIElement, INotifyPropertyChanged
     /// <returns>string</returns>
     public override string ToString()
     {
-        return $"Name: {Name}, Duration: {Duration}, Format: {Format}";
-    }
-}
-
-
-
-// OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Media\Effects\SharpenEffect.cs
-
-// Version: 0.1.13.2
-using System;
-using System.Drawing;
-using System.Windows;
-using System.Windows.Media.Effects;
-
-namespace Thmd.Media.Effects;
-
-public class EnhancedSharpenEffect : ShaderEffect
-{
-    public static readonly DependencyProperty InputProperty = RegisterPixelShaderSamplerProperty("Input", typeof(EnhancedSharpenEffect), 0);
-    public static readonly DependencyProperty SharpenAmountProperty = DependencyProperty.Register("SharpenAmount", typeof(float), typeof(EnhancedSharpenEffect), new PropertyMetadata(1.0f, PixelShaderConstantCallback(0)));
-    public static readonly DependencyProperty SmoothAmountProperty = DependencyProperty.Register("SmoothAmount", typeof(float), typeof(EnhancedSharpenEffect), new PropertyMetadata(0.0f, PixelShaderConstantCallback(1)));
-
-    public EnhancedSharpenEffect()
-    {
-        PixelShader = new PixelShader
-        {
-            UriSource = new Uri("pack://application:,,,/EnhancedSharpenEffect.ps")
-        };
-        UpdateShaderValue(InputProperty);
-        UpdateShaderValue(SharpenAmountProperty);
-        UpdateShaderValue(SmoothAmountProperty);
-    }
-
-    public Brush Input
-    {
-        get => (Brush)GetValue(InputProperty);
-        set => SetValue(InputProperty, value);
-    }
-
-    public float SharpenAmount
-    {
-        get => (float)GetValue(SharpenAmountProperty);
-        set => SetValue(SharpenAmountProperty, value);
-    }
-
-    public float SmoothAmount
-    {
-        get => (float)GetValue(SmoothAmountProperty);
-        set => SetValue(SmoothAmountProperty, value);
+        return $"BaseString: {Name}, Duration: {Duration}, Format: {Format}";
     }
 }
 
@@ -6308,7 +7973,7 @@ public class EnhancedSharpenEffect : ShaderEffect
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Properties\AssemblyInfo.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -6334,7 +7999,7 @@ using System.Windows.Markup;
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Repeats\RepeatType.cs
 
 // Repeat.cs
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 namespace Thmd.Repeats;
 
 // Placeholder for Repeat enum (assumed to be in Thmd.Repeats)
@@ -6362,7 +8027,7 @@ public enum RepeatType
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Subtitles\Subtitle.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 
 namespace Thmd.Subtitles;
@@ -6395,7 +8060,7 @@ public class Subtitle
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Subtitles\SubtitleExtensions.cs
 
-// Version: 0.1.3.83
+// Version: 0.1.5.9
 namespace Thmd.Subtitles
 {
     /// <summary>
@@ -6422,7 +8087,7 @@ namespace Thmd.Subtitles
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Subtitles\SubtitleFontArgs.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 using System.Windows;
 using System.Windows.Media;
@@ -6444,7 +8109,7 @@ public class SubtitleFontArgs : EventArgs
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Subtitles\SubtitleLoadException.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 
 namespace Thmd.Subtitles;
@@ -6470,7 +8135,7 @@ public class SubtitleLoadException : Exception
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Subtitles\SubtitleManager.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6614,7 +8279,7 @@ public class SubtitleManager
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Subtitles\SubtitleParseException.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 
 namespace Thmd.Subtitles;
@@ -6640,7 +8305,7 @@ public class SubtitleParseException : Exception
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Templates\Buttons.xaml.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System.Windows;
 using System.Windows.Markup;
 
@@ -6654,7 +8319,7 @@ public partial class Buttons : ResourceDictionary
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Templates\PlayerMainButtons.xaml.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System.Windows;
 using System.Windows.Markup;
 
@@ -6668,7 +8333,7 @@ public partial class PlayerMainButtons : ResourceDictionary
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Templates\PlayerSecondButtons.xaml.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System.Windows;
 using System.Windows.Markup;
 
@@ -6682,7 +8347,7 @@ public partial class PlayerSecondButtons : ResourceDictionary
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Templates\ProgressBarTheme.xaml.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System.Windows;
 using System.Windows.Markup;
 
@@ -6696,7 +8361,7 @@ public partial class ProgressBarTheme : ResourceDictionary
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Templates\RepeatButton.xaml.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System.Windows;
 using System.Windows.Markup;
 
@@ -6710,7 +8375,7 @@ public partial class RepeatButton : ResourceDictionary
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Templates\ScrollViewerStyle.xaml.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System.Windows;
 using System.Windows.Markup;
 
@@ -6724,7 +8389,7 @@ public partial class ScrollViewerStyle : ResourceDictionary
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Themes\Generic.xaml.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System.Windows;
 using System.Windows.Markup;
 
@@ -6738,35 +8403,93 @@ public partial class Generic : ResourceDictionary
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Translator\ILanguage.cs
 
+// Version: 0.1.5.8
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+
+using Thmd.Consolas;
+using Thmd.Controls;
 
 namespace Thmd.Translator
 {
     public interface ILanguage
     {
-        string Name { get; }
-        string formSettings_btnSave { get; }
-        string formSettings_btnCancel { get; }
-        string formSettings_Text { get; }
-        string formSettings_labelOptions { get; }
+        string Name { get; set; }
+        string Code { get; set; }
+        List<ITranslation> Translations { get; set; }
+    }
 
-        #region VideoControlBar
-        string videoControlBar_labelSubtilesOnOffText { get; }
-        string videoControlBar_labelOn { get; }
-        string videoControlBar_labelOff { get; }
-        string videoControlBar_fullscreenOff { get; }
-        string videoControlBar_fullscreenOn { get; }
-        string videoControlBar_startTxt { get; }
-        string videoControlBar_subtilesOn { get; }
-        string videoControlBar_subtilesOff { get; }
-        #endregion
+    public interface ITranslation
+    {
+        object Control { get; }
+        List<Translate> Translates { get; }
+    }
+
+    public class Translate
+    {
+        public string Key { get; set; }
+        public string Value { get; set; }
+    }
+
+    public class Translation : ITranslation
+    {
+        private string _key;
+        private string _value;
+        private object _control;
+        private List<Translate> _translations = new List<Translate>();
+
+        /// <summary>
+        /// Control witch can we change
+        /// </summary>
+        public object Control => _control;
+        /// <summary>
+        /// Translates list for Control
+        /// </summary>
+        public List<Translate> Translates => _translations;
+
+        /// <summary>
+        /// Class creator
+        /// </summary>
+        public Translation(object control)
+        {
+            _control = control;
+            _translations = new List<Translate>();
+        }
+        /// <summary>
+        /// Class creator with starting keys and values
+        /// </summary>
+        /// <param name="translation_key">string</param>
+        /// <param name="translation_value">string</param>
+        public Translation(object control, string translation_key, string translation_value)
+        {
+            _key = translation_key;
+            _value = translation_value;
+            _control = control;
+            _translations.Add(new Translate { Key = _key, Value = _value });
+        }
+        /// <summary>
+        /// Add translate
+        /// </summary>
+        /// <param name="translate">table of translate</param>
+        public void AddTranslate(Translate[] translate)
+        {
+            try
+            {
+                _translations.AddRange(translate);
+            }
+            catch (Exception ex)
+            {
+                this.WriteLine(ex.ToString());
+            }
+        }
     }
 }
-// Version: 0.1.3.83
 
 
 
@@ -6799,7 +8522,7 @@ namespace Thmd.Translator;
         {
             if (dir_path != null)
             {
-                setLanguagesDir(dir_path);
+                SetLanguagesDir(dir_path);
             }
 
             if (!Directory.Exists(_path))
@@ -6829,7 +8552,7 @@ namespace Thmd.Translator;
             return _langs;
         }
 
-        private static void setLanguagesDir(string dir)
+        private static void SetLanguagesDir(string dir)
         {
             var dir_path = new DirectoryInfo(dir);
             if (dir_path.Exists)
@@ -6847,15 +8570,15 @@ namespace Thmd.Translator;
         }
 
     /// <summary>
-    /// Rekurencyjnie t umaczy teksty w kontrolkach drzewa wizualnego.
-    /// Obs uguje TextBlock, Button (Content), Label, MenuItem (Header) itp.
+    /// Rekurencyjnie t�umaczy teksty w kontrolkach drzewa wizualnego.
+    /// Obs�uguje TextBlock, Button (Translate), Label, MenuItem (Header) itp.
     /// </summary>
     /// <param name="obj">Obiekt DependencyObject do przetworzenia (kontrolka lub kontener).</param>
     public static void TranslateControls(DependencyObject obj)
     {
         if (obj == null) return;
 
-        // Przetwarzaj bie  cy obiekt
+        // Przetwarzaj bie��cy obiekt
         TranslateSingleControl(obj);
 
         // Przetwarzaj dzieci rekurencyjnie
@@ -6868,9 +8591,9 @@ namespace Thmd.Translator;
     }
 
     /// <summary>
-    /// T umaczy tekst w pojedynczej kontrolce na podstawie jej typu.
+    /// T�umaczy tekst w pojedynczej kontrolce na podstawie jej typu.
     /// </summary>
-    /// <param name="control">Kontrolka do przet umaczenia.</param>
+    /// <param name="control">Kontrolka do przet�umaczenia.</param>
     public static void TranslateSingleControl(DependencyObject control)
     {
         switch (control)
@@ -6903,13 +8626,13 @@ namespace Thmd.Translator;
                 }
                 break;
 
-            // Dodaj obs ug  innych typ w kontrolek, np. CheckBox, ToolTip itp., je li potrzeba
-            // case CheckBox checkBox:
-            //     if (checkBox.Content is string cbContent && _translations.TryGetValue(cbContent, out string translatedCb))
-            //     {
-            //         checkBox.Content = translatedCb;
-            //     }
-            //     break;
+            //Dodaj obs�ug� innych typ�w kontrolek, np. CheckBox, ToolTip itp., je�li potrzeba
+            case CheckBox checkBox:
+                 if (checkBox.Content is string cbContent && _translations.TryGetValue(cbContent, out string translatedCb))
+                 {
+                     checkBox.Content = translatedCb;
+                 }
+                 break;
 
             default:
                 // Ignoruj inne typy
@@ -6917,13 +8640,84 @@ namespace Thmd.Translator;
         }
     }
 }
-// Version: 0.1.3.83
+// Version: 0.1.5.9
+
+
+
+// OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Translator\LanguageChanger.cs
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Controls;
+
+namespace Thmd.Translator
+{
+    public static class LanguageChanger
+    {
+        public static ILanguage Translation { get; private set; }
+        public static IList<ILanguage> Languages { get; private set; } = new List<ILanguage>();
+
+        /// <summary>
+        /// Change or refresh language
+        /// </summary>
+        public static void ChangeLanguage()
+        {
+            Translation = Translation.UseLanguage() as ILanguage;
+        }
+
+        public static void ChangeLanguage(string language)
+        {
+            if (language == String.Empty)
+            {
+                Console.WriteLine("Don't know language: 'empty string'");
+                return;
+            }
+            foreach (var item in Languages)
+            {
+                if (item.Name == language)
+                    Translation = item.UseLanguage() as ILanguage;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="language"></param>
+        public static void ChangeLanguage(this object obj, string language = null)
+        {
+            var control = obj as Control;
+
+            if (language == null || language == String.Empty)
+            {
+                Console.WriteLine($"Can't change language. I don't know: '{language}' language.");
+                Console.WriteLine($"Trying refresh control: {obj.GetType().Name}");
+            }
+            else
+                ChangeLanguage(language);
+
+            try
+            {
+                control.InvalidateVisual();
+                Console.WriteLine($"Control refreshed.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error with refreshing control: {ex.Message}");
+            }
+        }
+    }
+}
+// Version: 0.1.0.5
 
 
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Updates\ProgressChangedEventArgs.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 
 namespace Thmd.Updates;
@@ -6948,7 +8742,7 @@ public class ProgressChangedEventArgs : EventArgs
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Updates\Updat.cs
 
 // Updater.cs
-// Version: 0.1.16.55
+// Version: 0.1.17.81
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -7328,7 +9122,7 @@ public class UpdateErrorEventArgs : EventArgs
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Updates\UpdateAvailableEventArgs.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 
 namespace Thmd.Updates;
@@ -7348,7 +9142,7 @@ public class UpdateAvailableEventArgs : EventArgs
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Utilities\CommandLineHandler.cs
 
 // CommandLineHandler.cs
-// Version: 0.1.10.30
+// Version: 0.1.11.56
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -7526,7 +9320,7 @@ For more details, run the application without arguments.
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Utilities\DragDropHelper.cs
 
-// Version: 0.1.6.24
+// Version: 0.1.7.50
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7560,7 +9354,7 @@ namespace Thmd.Utilities
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Utilities\GeneratorHelper.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7617,34 +9411,9 @@ public class GeneratorHelper
 
 
 
-// OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Utilities\MathHelper.cs
-
-// Version: 0.1.12.79
-using System;
-
-namespace Thmd.Utilities
-{
-    public static class MathHelper
-    {
-        public static T Clamp<T>(T value, T min, T max) where T : IComparable<T>
-        {
-            if (value.CompareTo(min) < 0) return min;
-            if (value.CompareTo(max) > 0) return max;
-            return value;
-        }
-
-        public static double Clamp(double value, double min, double max)
-        {
-            return Math.Max(min, Math.Min(max, value));
-        }
-    }
-}
-
-
-
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Utilities\OptionHelper.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System.Collections.Generic;
 
 namespace Thmd.Utilities;
@@ -7672,7 +9441,7 @@ public class OptionHelper
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Utilities\PathCheckHelper.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 using System.Text.RegularExpressions;
 
@@ -7726,7 +9495,7 @@ public class PathCheckHelper
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Utilities\ResizeControlHelper.cs
 
-// Version: 0.1.8.77
+// Version: 0.1.10.3
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -8027,7 +9796,7 @@ public class ResizeControlHelper
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Utilities\ScreenHelper.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System.Windows;
 using System.Windows.Controls;
 
@@ -8116,7 +9885,7 @@ public static class ScreenHelper
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Utilities\ShowHideControlsHelper.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 using System.Threading.Tasks;
 using System.Windows;
@@ -8143,7 +9912,7 @@ public class ShowHideControlsHelper
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Utilities\StoryboardHelper.cs
 
-// Version: 0.1.15.65
+// Version: 0.1.16.91
 // StoryboardHelper.cs
 // A static helper class that provides extension methods for animating the visibility of WPF controls
 // using storyboards. It supports asynchronous hiding and showing of controls with error handling
@@ -8365,7 +10134,7 @@ public static class StoryboardHelper
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Utilities\VideoTypeChecker.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8459,7 +10228,7 @@ public class VideoTypeChecker
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Utilities\WindowLastStance.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System.Windows;
 
 namespace Thmd.Utilities;
@@ -8477,7 +10246,7 @@ public class WindowLastStance
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Windowses\WindowPropertiesExtensions.cs
 
-// Version: 0.1.15.66
+// Version: 0.1.16.92
 using System;
 using System.Runtime.InteropServices;
 using System.Windows;

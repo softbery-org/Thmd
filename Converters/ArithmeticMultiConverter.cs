@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Windows.Data;
 
@@ -47,3 +47,4 @@ public class ArithmeticMultiConverter : IMultiValueConverter
         return null; // For one-way operations
     }
 }
+// Version: 0.1.0.14

@@ -1,4 +1,4 @@
-// Version: 0.1.16.64
+// Version: 0.1.16.79
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -42,7 +42,7 @@ public class VideoItem : UIElement, INotifyPropertyChanged
 
     public int Id { get => _index; }
     /// <summary>
-    /// Name property representing the media name.
+    /// BaseString property representing the media name.
     /// </summary>
     public string Name
     {
@@ -53,7 +53,7 @@ public class VideoItem : UIElement, INotifyPropertyChanged
         set
         {
             _name = value;
-            OnPropertyChanged("Name");
+            OnPropertyChanged("BaseString");
         }
     }
     /// <summary>
@@ -547,6 +547,6 @@ public class VideoItem : UIElement, INotifyPropertyChanged
     /// <returns>string</returns>
     public override string ToString()
     {
-        return $"Name: {Name}, Duration: {Duration}, Format: {Format}";
+        return $"BaseString: {Name}, Duration: {Duration}, Format: {Format}";
     }
 }

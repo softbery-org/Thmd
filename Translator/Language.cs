@@ -74,7 +74,7 @@ namespace Thmd.Translator;
 
     /// <summary>
     /// Rekurencyjnie t�umaczy teksty w kontrolkach drzewa wizualnego.
-    /// Obs�uguje TextBlock, Button (Content), Label, MenuItem (Header) itp.
+    /// Obs�uguje TextBlock, Button (Translate), Label, MenuItem (Header) itp.
     /// </summary>
     /// <param name="obj">Obiekt DependencyObject do przetworzenia (kontrolka lub kontener).</param>
     public static void TranslateControls(DependencyObject obj)
@@ -143,4 +143,4 @@ namespace Thmd.Translator;
         }
     }
 }
-// Version: 0.1.4.94
+// Version: 0.1.5.9

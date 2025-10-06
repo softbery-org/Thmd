@@ -1,4 +1,4 @@
-// Version: 0.1.4.94
+// Version: 0.1.5.8
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,28 +8,80 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
+using Thmd.Consolas;
 using Thmd.Controls;
 
 namespace Thmd.Translator
 {
     public interface ILanguage
     {
-        string Name { get; }
-        Control Control { get; }
-        List<Button> Buttons { get; }
-        List<Translation> Values { get; }  
+        string Name { get; set; }
+        string Code { get; set; }
+        List<ITranslation> Translations { get; set; }
     }
 
-    public class Translation
+    public interface ITranslation
     {
-        public string Name {  get; set; }
-        public List<Value> Values = new List<Value>();
+        object Control { get; }
+        List<Translate> Translates { get; }
+    }
 
-        public class Value
+    public class Translate
+    {
+        public string Key { get; set; }
+        public string Value { get; set; }
+    }
+
+    public class Translation : ITranslation
+    {
+        private string _key;
+        private string _value;
+        private object _control;
+        private List<Translate> _translations = new List<Translate>();
+
+        /// <summary>
+        /// Control witch can we change
+        /// </summary>
+        public object Control => _control;
+        /// <summary>
+        /// Translates list for Control
+        /// </summary>
+        public List<Translate> Translates => _translations;
+
+        /// <summary>
+        /// Class creator
+        /// </summary>
+        public Translation(object control)
         {
-            public int Id { get; set; }
-            public string Name { get; set; }
-            public string Content { get; set; }
+            _control = control;
+            _translations = new List<Translate>();
+        }
+        /// <summary>
+        /// Class creator with starting keys and values
+        /// </summary>
+        /// <param name="translation_key">string</param>
+        /// <param name="translation_value">string</param>
+        public Translation(object control, string translation_key, string translation_value)
+        {
+            _key = translation_key;
+            _value = translation_value;
+            _control = control;
+            _translations.Add(new Translate { Key = _key, Value = _value });
+        }
+        /// <summary>
+        /// Add translate
+        /// </summary>
+        /// <param name="translate">table of translate</param>
+        public void AddTranslate(Translate[] translate)
+        {
+            try
+            {
+                _translations.AddRange(translate);
+            }
+            catch (Exception ex)
+            {
+                this.WriteLine(ex.ToString());
+            }
         }
     }
 }

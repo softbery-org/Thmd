@@ -1,4 +1,4 @@
-// Version: 0.1.7.52
+// Version: 0.1.7.67
 using System;
 using System.Reflection;
 
@@ -7,7 +7,7 @@ namespace Thmd.Consolas
     /// <summary>
     /// Delegate for getting class name
     /// </summary>
-    /// <returns>Name of Class</returns>
+    /// <returns>BaseString of Class</returns>
     public delegate string GetClassNameDelegate(object sender);
 
     /// <summary>
@@ -23,7 +23,7 @@ namespace Thmd.Consolas
         {
             if (sender == null)
                 return "Unknown";
-            return sender.GetType().FullName; // Poprawka: u�yj GetType().Name zamiast DeclaringType
+            return sender.GetType().FullName; // Poprawka: u�yj GetType().BaseString zamiast DeclaringType
         }
 
         /// <summary>

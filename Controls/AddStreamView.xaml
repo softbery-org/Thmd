@@ -1,0 +1,14 @@
+﻿<UserControl x:Class="Thmd.Controls.AddStreamView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Thmd.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="150" d:DesignWidth="800">
+    <Grid>
+        <TextBox x:Name="_textBox" HorizontalAlignment="Stretch" Margin="0,42,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="800" Height="33"/>
+        <Button x:Name="_cancelButton" Content="Cancel" HorizontalAlignment="Right" Margin="0,85,70,0" VerticalAlignment="Top" Width="50"/>
+        <Button x:Name="_addButton" Content="Ok" HorizontalAlignment="Right" Margin="0,85,10,0" VerticalAlignment="Top" Width="50" Click="AddButton_Click"/>
+    </Grid>
+</UserControl>

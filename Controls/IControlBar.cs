@@ -1,4 +1,4 @@
-// Version: 0.1.10.11
+// Version: 0.1.10.26
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,20 +10,15 @@ namespace Thmd.Controls
 {
     public interface IControlBar
     {
-
-        Button BtnPlay { get; }
-        Button BtnStop { get; }
-        Button BtnNext { get; }
-        Button BtnPrevious { get; }
-        Button BtnVolumeUp { get; }
-        Button BtnVolumeDown { get; }
-        Button BtnMute { get; }
-        Button BtnSettingsWindow { get; }
-        Button BtnSubtitle { get; }
-        Button BtnUpdate { get; }
-        Button BtnOpen { get; }
-        Button BtnPlaylist { get; }
-        Button BtnFullscreen { get; }
-        Button BtnClose { get; }
+        public string BtnPlay { get; }       
+        public string BtnStop { get; }      
+        public string BtnNext { get; }    
+        public string BtnPrevious { get; }        
+        public string BtnMute { get; }        
+        public string BtnSubtitle { get; }       
+        public string BtnOpen { get; }        
+        public string BtnPlaylist { get; }    
+        public string SliderVolume { get; }        
+        public string BtnStream { get; }   
     }
 }

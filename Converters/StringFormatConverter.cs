@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Windows.Data;
 
@@ -32,3 +32,4 @@ public static class StringFormatConverter
         return null; // Or parsing implementation if needed
     }
 }
+// Version: 0.1.0.14

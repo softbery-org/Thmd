@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             mc:Ignorable="d" d:DesignWidth="620" MaxWidth="620" MaxHeight="165"  HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Height="105">
+             mc:Ignorable="d" d:DesignWidth="680" MaxWidth="680" MaxHeight="165"  HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Height="105">
     <UserControl.Resources>
         <!-- Define colors -->
         <SolidColorBrush x:Key="DarkOrangeBrush" Color="#D35400"/>
@@ -300,6 +300,8 @@
         <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
             <!-- Open Media Button -->
             <Button x:Name="_openMediaButton" Content="📂" Style="{StaticResource ControlButtonStyle}" ToolTip="Open Media"/>
+            <!-- Stream Button -->
+            <Button x:Name="_streamButton" Content="🌐" Style="{StaticResource ControlButtonStyle}" ToolTip="Open Stream"/>
             <!-- Open Subtitles Button -->
             <Button x:Name="_openSubtitlesButton" Content="📜" Style="{StaticResource ControlButtonStyle}" ToolTip="Open Subtitles"/>
             <!-- Open Playlist Button -->
