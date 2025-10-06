@@ -1,10 +1,4 @@
 // Version: 0.2.0.0
-//Zmiany:
-// uproszczony AddLog — bez zbêdnych pêtli i null-checków w œrodku;
-// dodane skróty: Info(), Error(), Warn();
-// ograniczono tworzenie nowych AsyncLogger tylko w InitLogs;
-// kod jest w pe³ni null-safe i zgodny z zasadami C# 10.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;

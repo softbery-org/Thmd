@@ -1,11 +1,4 @@
 // Version: 0.2.0.0
-//Zmiany:
-// poprawiono ścieżki plików (update.json, playlist.json, performance_monitor.json);
-// usunięto martwy kod i komentarze;
-// uproszczono metody LoadFromJsonFile i SaveToFile;
-// dodano pełną obsługę PerformanceMonitorConfig;
-// klasy są w pełni thread-safe i gotowe do użycia produkcyjnego.
-
 using System;
 using System.IO;
 
