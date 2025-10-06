@@ -1,5 +1,5 @@
 // Shadow.cs
-// Version: 0.1.16.91
+// Version: 0.1.16.92
 // A class representing the configuration settings for a shadow effect in the application.
 // Stores properties such as color, depth, opacity, blur radius, and visibility for a shadow effect.
 

@@ -1,4 +1,4 @@
-// Version: 0.2.0.0
+// Version: 0.2.0.1
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using Thmd.Logs;
 namespace Thmd;
 
 /// <summary>
-/// Centralny logger aplikacji z obs³ug¹ kategorii i poziomów logowania.
+/// Centralny logger aplikacji z obsï¿½ugï¿½ kategorii i poziomï¿½w logowania.
 /// </summary>
 public static class Logger
 {
@@ -18,7 +18,7 @@ public static class Logger
     public static Config Config { get; set; } = Config.Instance;
 
     /// <summary>
-    /// Zwraca instancjê loggera asynchronicznego.
+    /// Zwraca instancjï¿½ loggera asynchronicznego.
     /// </summary>
     public static AsyncLogger Log
     {
@@ -52,7 +52,7 @@ public static class Logger
     }
 
     /// <summary>
-    /// Dodaje nowy wpis do logów.
+    /// Dodaje nowy wpis do logï¿½w.
     /// </summary>
     public static void AddLog(LogLevel level, string message, string[] categories = null, Exception exception = null)
     {
@@ -71,17 +71,17 @@ public static class Logger
     }
 
     /// <summary>
-    /// Skrót do logowania informacji.
+    /// Skrï¿½t do logowania informacji.
     /// </summary>
     public static void Info(string message) => AddLog(LogLevel.Info, message);
 
     /// <summary>
-    /// Skrót do logowania b³êdów.
+    /// Skrï¿½t do logowania bï¿½ï¿½dï¿½w.
     /// </summary>
     public static void Error(string message, Exception ex = null) => AddLog(LogLevel.Error, message, exception: ex);
 
     /// <summary>
-    /// Skrót do logowania ostrze¿eñ.
+    /// Skrï¿½t do logowania ostrzeï¿½eï¿½.
     /// </summary>
     public static void Warn(string message) => AddLog(LogLevel.Warning, message);
 }

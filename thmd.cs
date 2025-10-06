@@ -1,4 +1,4 @@
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 using System.Collections.Generic;
 using Thmd.Configuration;
@@ -124,7 +124,7 @@ namespace Thmd.Compress.Rar
         }
     }
 }
-// Version: 0.1.7.67
+// Version: 0.1.7.68
 
 
 
@@ -142,14 +142,14 @@ namespace Thmd.Compress.Zip
     {
     }
 }
-// Version: 0.1.7.67
+// Version: 0.1.7.68
 
 
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Configuration\Config.cs
 
 // Config.cs
-// Version: 0.1.16.83
+// Version: 0.1.16.84
 // A singleton class for managing application configuration settings, including database connections,
 // logging, VLC library settings, subtitles, updates, and plugins. Supports loading and saving
 // configuration data to a JSON file with thread-safe access.
@@ -411,7 +411,7 @@ public class Config
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Configuration\IPlaylistConfig.cs
 
 // IPlaylistConfig.cs
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 // A class representing the configuration settings for playlists in the application.
 // Stores properties such as default playlist path, shuffle mode, repeat mode, auto-play settings,
 // and a list of media file paths or URIs.
@@ -493,7 +493,7 @@ namespace Thmd.Configuration
         public string OpenApiKey { get; set; }
     }
 }
-// Version: 0.1.1.68
+// Version: 0.1.1.69
 
 
 
@@ -520,14 +520,14 @@ namespace Thmd.Configuration
         }
     }
 }
-// Version: 0.1.5.10
+// Version: 0.1.5.11
 
 
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Configuration\PluginConfig.cs
 
 // PluginConfig.cs
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 // A class representing the configuration settings for a plugin in the application.
 // Stores properties such as the plugin's name, file path, enabled status, version, and description.
 
@@ -570,7 +570,7 @@ public class PluginConfig
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Configuration\Shadow.cs
 
 // Shadow.cs
-// Version: 0.1.16.91
+// Version: 0.1.16.92
 // A class representing the configuration settings for a shadow effect in the application.
 // Stores properties such as color, depth, opacity, blur radius, and visibility for a shadow effect.
 
@@ -620,7 +620,7 @@ public class Shadow
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Configuration\SubtitleConfig.cs
 
 // SubtitleConfig.cs
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 // A class representing the configuration settings for subtitles in the application.
 // Stores properties such as font size, font family, font color, and shadow settings for subtitle display.
 
@@ -683,7 +683,7 @@ public class SubtitleConfig
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Configuration\UpdateConfig.cs
 
 // UpdateConfig.cs
-// Version: 0.1.16.91
+// Version: 0.1.16.92
 // A class representing the configuration settings for application updates.
 // Stores properties such as update check settings, URLs, file paths, version information, and timing settings.
 
@@ -749,7 +749,7 @@ public class UpdateConfig
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Consolas\ConsoleWriteLine.cs
 
-// Version: 0.1.7.67
+// Version: 0.1.7.68
 using System;
 using System.Reflection;
 
@@ -823,7 +823,7 @@ namespace Thmd.Consolas
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\AddStreamView.xaml.cs
 
-// Version: 0.1.0.9
+// Version: 0.1.0.10
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -894,7 +894,7 @@ namespace Thmd.Controls
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\ControlBar.xaml.cs
 
-// Version: 0.1.10.14
+// Version: 0.1.10.15
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -1344,7 +1344,7 @@ public partial class ControlBar : UserControl
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\IControlBar.cs
 
-// Version: 0.1.10.26
+// Version: 0.1.10.27
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -1373,7 +1373,7 @@ namespace Thmd.Controls
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\InfoBox.xaml.cs
 
-// Version: 0.1.12.72
+// Version: 0.1.12.73
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -1445,7 +1445,7 @@ public partial class InfoBox : UserControl
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\IProgressBar.cs
 
-// Version: 0.1.10.26
+// Version: 0.1.10.27
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -1461,7 +1461,7 @@ public interface IProgressBar
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\LogoImage.xaml.cs
 
-// Version: 0.1.0.74
+// Version: 0.1.0.75
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -1529,7 +1529,7 @@ namespace Thmd.Controls
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\PlaylistView.xaml.cs
 
-// Version: 0.1.13.52
+// Version: 0.1.13.53
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -2355,7 +2355,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\ProgressBarView.xaml.cs
 
-// Version: 0.1.10.24
+// Version: 0.1.10.25
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -2561,7 +2561,7 @@ public partial class ProgressBarView : UserControl, INotifyPropertyChanged
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\SubtitleControl.xaml.cs
 
 // SubtitleControl.xaml.cs
-// Version: 0.1.5.50
+// Version: 0.1.5.51
 // A custom user control for displaying subtitles from an SRT file with support for formatting tags
 // such as <i>, <b>, <u>, <font color="...">, and <font size="...">.
 // Enhanced with AI-powered subtitle translation and subtitle buffering for performance optimization.
@@ -3108,7 +3108,7 @@ public partial class SubtitleControl : UserControl
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\TimerBox.xaml.cs
 
-// Version: 0.1.13.17
+// Version: 0.1.13.18
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -3169,7 +3169,7 @@ public partial class TimerBox : UserControl
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\VlcPlayerView.xaml.cs
 
-// Version: 0.1.8.84
+// Version: 0.1.8.85
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -4885,13 +4885,13 @@ namespace Thmd.Controls
             }
     }
 }
-// Version: 0.1.0.94
+// Version: 0.1.0.95
 
 
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\ControlButtons\PlayerButtonsControl.xaml.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System.Windows.Controls;
 using System.Windows.Markup;
 
@@ -4909,7 +4909,7 @@ public partial class PlayerButtonsControl : UserControl
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\ControlButtons\PlayerButtonsControlSecondRow.xaml.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System.Windows.Controls;
 using System.Windows.Markup;
 
@@ -4927,7 +4927,7 @@ public partial class PlayerButtonsControlSecondRow : UserControl
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\ControlButtons\PlayerCloseButtonControl.xaml.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
@@ -4946,7 +4946,7 @@ public partial class PlayerCloseButtonControl : UserControl
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\Effects\BeatsEffect.xaml.cs
 
-// Version: 0.1.0.94
+// Version: 0.1.0.95
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -5128,13 +5128,13 @@ namespace Thmd.Controls.Effects
         string Name { get; }
     }
 }
-// Version: 0.1.0.70
+// Version: 0.1.0.71
 
 
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Controls\Effects\SharpenEffect.cs
 
-// Version: 0.1.14.28
+// Version: 0.1.14.29
 using System;
 using System.Drawing;
 using System.Windows;
@@ -5207,7 +5207,7 @@ namespace Thmd.Controls.Enums
         BoldItalic
     }
 }
-// Version: 0.1.1.60
+// Version: 0.1.1.61
 
 
 
@@ -5262,7 +5262,7 @@ public class ArithmeticMultiConverter : IMultiValueConverter
         return null; // For one-way operations
     }
 }
-// Version: 0.1.0.14
+// Version: 0.1.0.15
 
 
 
@@ -5312,7 +5312,7 @@ public static class BooleanToVisibilityConverter
         return false;
     }
 }
-// Version: 0.1.0.14
+// Version: 0.1.0.15
 
 
 
@@ -5383,7 +5383,7 @@ public class DateTimeMultiConverter : IMultiValueConverter
         return null;
     }
 }
-// Version: 0.1.0.14
+// Version: 0.1.0.15
 
 
 
@@ -5464,7 +5464,7 @@ public static class EnumToBooleanConverter
         return null;
     }
 }
-// Version: 0.1.0.14
+// Version: 0.1.0.15
 
 
 
@@ -5504,13 +5504,13 @@ public static class InverseBooleanConverter
         return Convert(value, targetType, parameter, culture);
     }
 }
-// Version: 0.1.0.14
+// Version: 0.1.0.15
 
 
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Converters\MathClampConverter.cs
 
-// Version: 0.1.14.5
+// Version: 0.1.14.6
 using System;
 
 namespace Thmd.Converters
@@ -5600,13 +5600,13 @@ public static class PercentageConverter
         return 0.0;
     }
 }
-// Version: 0.1.0.14
+// Version: 0.1.0.15
 
 
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Converters\PercentageToWidthConverter.cs
 
-// Version: 0.1.13.80
+// Version: 0.1.13.81
 using System;
 using System.Globalization;
 using System.Windows.Data;
@@ -5693,7 +5693,7 @@ public static class StringFormatConverter
         return null; // Or parsing implementation if needed
     }
 }
-// Version: 0.1.0.14
+// Version: 0.1.0.15
 
 
 
@@ -5758,13 +5758,13 @@ namespace Thmd.Converters
         }
     }
 }
-// Version: 0.1.0.14
+// Version: 0.1.0.15
 
 
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Devices\Keyboards\ShortcutKeyBinding.cs
 
-// Version: 0.1.4.28
+// Version: 0.1.4.29
 using System;
 using System.Windows.Input;
 
@@ -5806,7 +5806,7 @@ namespace Thmd.Devices.Keyboards
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\AsyncLogger.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -5935,7 +5935,7 @@ public class AsyncLogger : IDisposable
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\CategoryFilterSink.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -5971,7 +5971,7 @@ public class CategoryFilterSink : ILogSink
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\ConsoleSink.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 using System.Threading.Tasks;
 
@@ -6032,7 +6032,7 @@ public class ConsoleSink : ILogSink
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\FileSink.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -6125,7 +6125,7 @@ public class FileSink : ILogSink
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\ILogFormatter.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 namespace Thmd.Logs;
 
 public interface ILogFormatter
@@ -6137,7 +6137,7 @@ public interface ILogFormatter
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\ILogSink.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System.Threading.Tasks;
 
 namespace Thmd.Logs;
@@ -6153,7 +6153,7 @@ public interface ILogSink
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\JsonFormatter.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using Newtonsoft.Json;
 
 namespace Thmd.Logs;
@@ -6178,7 +6178,7 @@ public class JsonFormatter : ILogFormatter
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\LogEntry.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 
 namespace Thmd.Logs;
@@ -6667,13 +6667,13 @@ namespace Thmd.Logs
     // Logger.Instance.AddHandler(new WpfUiLogHandler(LogLevel.Critical));
     // await Logger.Instance.InfoAsync("Application started.");
 }
-// Version: 0.1.0.2
+// Version: 0.1.0.3
 
 
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\LogLevel.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 namespace Thmd.Logs;
 
 public enum LoggerLevel
@@ -6688,7 +6688,7 @@ public enum LoggerLevel
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\Metrics.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 using System.Threading;
 
@@ -6727,7 +6727,7 @@ public class Metrics
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\TextFormatter.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 
 namespace Thmd.Logs;
@@ -6751,7 +6751,7 @@ public class TextFormatter : ILogFormatter
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Logs\XmlFormatter.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System.IO;
 using System.Xml.Serialization;
 
@@ -6772,7 +6772,7 @@ public class XmlFormatter : ILogFormatter
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Media\FileMediaStream.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 using System.IO;
 using System.Net.Http;
@@ -6836,7 +6836,7 @@ public class FileMediaStream : IMediaStream, IDisposable
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Media\HlsPlaylistParser.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 using System.Collections.Generic;
 
@@ -6892,7 +6892,7 @@ public static class HlsPlaylistParser
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Media\HlsSegment.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 using System.Collections.Generic;
 
@@ -6919,7 +6919,7 @@ public class HlsSegment
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Media\HLSStreamer.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7032,7 +7032,7 @@ public class HLSStreamer : IDisposable
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Media\IMedia.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 
 namespace Thmd.Media;
@@ -7060,7 +7060,7 @@ public interface IMedia
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Media\IMediaStream.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -7080,7 +7080,7 @@ public interface IMediaStream : IDisposable
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Media\IPlayer.cs
 
-// Version: 0.1.16.87
+// Version: 0.1.16.88
 using System;
 using System.ComponentModel;
 using System.Windows;
@@ -7130,7 +7130,7 @@ public interface IPlayer
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Media\MediaEditor.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 using System.IO;
 using System.Windows.Controls;
@@ -7218,7 +7218,7 @@ public class MediaEditor
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Media\Playlist.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 using System.Collections.Generic;
 
@@ -7394,7 +7394,7 @@ public class Playlist : List<VideoItem>
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Media\SeekDirection.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 namespace Thmd.Media;
 
 /// <summary>
@@ -7416,7 +7416,7 @@ public enum SeekDirection
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Media\VideoItem.cs
 
-// Version: 0.1.16.79
+// Version: 0.1.16.80
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -7973,7 +7973,7 @@ public class VideoItem : UIElement, INotifyPropertyChanged
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Properties\AssemblyInfo.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -7999,7 +7999,7 @@ using System.Windows.Markup;
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Repeats\RepeatType.cs
 
 // Repeat.cs
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 namespace Thmd.Repeats;
 
 // Placeholder for Repeat enum (assumed to be in Thmd.Repeats)
@@ -8027,7 +8027,7 @@ public enum RepeatType
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Subtitles\Subtitle.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 
 namespace Thmd.Subtitles;
@@ -8060,7 +8060,7 @@ public class Subtitle
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Subtitles\SubtitleExtensions.cs
 
-// Version: 0.1.5.9
+// Version: 0.1.5.10
 namespace Thmd.Subtitles
 {
     /// <summary>
@@ -8087,7 +8087,7 @@ namespace Thmd.Subtitles
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Subtitles\SubtitleFontArgs.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 using System.Windows;
 using System.Windows.Media;
@@ -8109,7 +8109,7 @@ public class SubtitleFontArgs : EventArgs
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Subtitles\SubtitleLoadException.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 
 namespace Thmd.Subtitles;
@@ -8135,7 +8135,7 @@ public class SubtitleLoadException : Exception
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Subtitles\SubtitleManager.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8279,7 +8279,7 @@ public class SubtitleManager
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Subtitles\SubtitleParseException.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 
 namespace Thmd.Subtitles;
@@ -8305,7 +8305,7 @@ public class SubtitleParseException : Exception
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Templates\Buttons.xaml.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System.Windows;
 using System.Windows.Markup;
 
@@ -8319,7 +8319,7 @@ public partial class Buttons : ResourceDictionary
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Templates\PlayerMainButtons.xaml.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System.Windows;
 using System.Windows.Markup;
 
@@ -8333,7 +8333,7 @@ public partial class PlayerMainButtons : ResourceDictionary
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Templates\PlayerSecondButtons.xaml.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System.Windows;
 using System.Windows.Markup;
 
@@ -8347,7 +8347,7 @@ public partial class PlayerSecondButtons : ResourceDictionary
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Templates\ProgressBarTheme.xaml.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System.Windows;
 using System.Windows.Markup;
 
@@ -8361,7 +8361,7 @@ public partial class ProgressBarTheme : ResourceDictionary
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Templates\RepeatButton.xaml.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System.Windows;
 using System.Windows.Markup;
 
@@ -8375,7 +8375,7 @@ public partial class RepeatButton : ResourceDictionary
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Templates\ScrollViewerStyle.xaml.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System.Windows;
 using System.Windows.Markup;
 
@@ -8389,7 +8389,7 @@ public partial class ScrollViewerStyle : ResourceDictionary
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Themes\Generic.xaml.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System.Windows;
 using System.Windows.Markup;
 
@@ -8403,7 +8403,7 @@ public partial class Generic : ResourceDictionary
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Translator\ILanguage.cs
 
-// Version: 0.1.5.8
+// Version: 0.1.5.9
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8640,7 +8640,7 @@ namespace Thmd.Translator;
         }
     }
 }
-// Version: 0.1.5.9
+// Version: 0.1.5.10
 
 
 
@@ -8711,13 +8711,13 @@ namespace Thmd.Translator
         }
     }
 }
-// Version: 0.1.0.5
+// Version: 0.1.0.6
 
 
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Updates\ProgressChangedEventArgs.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 
 namespace Thmd.Updates;
@@ -8742,7 +8742,7 @@ public class ProgressChangedEventArgs : EventArgs
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Updates\Updat.cs
 
 // Updater.cs
-// Version: 0.1.17.81
+// Version: 0.1.17.82
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -9122,7 +9122,7 @@ public class UpdateErrorEventArgs : EventArgs
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Updates\UpdateAvailableEventArgs.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 
 namespace Thmd.Updates;
@@ -9142,7 +9142,7 @@ public class UpdateAvailableEventArgs : EventArgs
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Utilities\CommandLineHandler.cs
 
 // CommandLineHandler.cs
-// Version: 0.1.11.56
+// Version: 0.1.11.57
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -9320,7 +9320,7 @@ For more details, run the application without arguments.
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Utilities\DragDropHelper.cs
 
-// Version: 0.1.7.50
+// Version: 0.1.7.51
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9354,7 +9354,7 @@ namespace Thmd.Utilities
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Utilities\GeneratorHelper.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9413,7 +9413,7 @@ public class GeneratorHelper
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Utilities\OptionHelper.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System.Collections.Generic;
 
 namespace Thmd.Utilities;
@@ -9441,7 +9441,7 @@ public class OptionHelper
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Utilities\PathCheckHelper.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 using System.Text.RegularExpressions;
 
@@ -9495,7 +9495,7 @@ public class PathCheckHelper
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Utilities\ResizeControlHelper.cs
 
-// Version: 0.1.10.3
+// Version: 0.1.10.4
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -9796,7 +9796,7 @@ public class ResizeControlHelper
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Utilities\ScreenHelper.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System.Windows;
 using System.Windows.Controls;
 
@@ -9885,7 +9885,7 @@ public static class ScreenHelper
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Utilities\ShowHideControlsHelper.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 using System.Threading.Tasks;
 using System.Windows;
@@ -9912,7 +9912,7 @@ public class ShowHideControlsHelper
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Utilities\StoryboardHelper.cs
 
-// Version: 0.1.16.91
+// Version: 0.1.16.92
 // StoryboardHelper.cs
 // A static helper class that provides extension methods for animating the visibility of WPF controls
 // using storyboards. It supports asynchronous hiding and showing of controls with error handling
@@ -10134,7 +10134,7 @@ public static class StoryboardHelper
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Utilities\VideoTypeChecker.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10228,7 +10228,7 @@ public class VideoTypeChecker
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Utilities\WindowLastStance.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System.Windows;
 
 namespace Thmd.Utilities;
@@ -10246,7 +10246,7 @@ public class WindowLastStance
 
 // OtherInformation: Compare this snippet from F:\dev\Thmd\Thmd\Windowses\WindowPropertiesExtensions.cs
 
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 using System;
 using System.Runtime.InteropServices;
 using System.Windows;

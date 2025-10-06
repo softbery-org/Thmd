@@ -73,4 +73,4 @@ public static class EnumToBooleanConverter
         return null;
     }
 }
-// Version: 0.1.0.14
+// Version: 0.1.0.15

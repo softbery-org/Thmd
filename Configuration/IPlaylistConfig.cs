@@ -1,5 +1,5 @@
 // IPlaylistConfig.cs
-// Version: 0.1.16.92
+// Version: 0.1.16.93
 // A class representing the configuration settings for playlists in the application.
 // Stores properties such as default playlist path, shuffle mode, repeat mode, auto-play settings,
 // and a list of media file paths or URIs.
