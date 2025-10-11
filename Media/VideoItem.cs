@@ -13,6 +13,7 @@ using Thmd.Consolas;
 using Thmd.Controls;
 using Thmd.Logs;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace Thmd.Media;
 
@@ -38,6 +39,8 @@ public class VideoItem : UIElement, INotifyPropertyChanged
     private int _audioBitRate;
     private string _audioChanelOutput;
     private bool _isPlaying;
+    private List<VideoIndent> _indent = new List<VideoIndent>();
+    private bool _isIndents = false;
 
     /// <summary>
     /// Is video playing
@@ -54,6 +57,19 @@ public class VideoItem : UIElement, INotifyPropertyChanged
             }
         }
     }
+
+    public bool isIndents {
+        get => _isIndents;
+        set {
+            _isIndents = value;
+            OnPropertyChanged(nameof(isIndents));
+        } }
+
+    public List<VideoIndent> Indents {  get => _indent; 
+        set { 
+            _indent = value;
+            OnPropertyChanged(nameof(Indents));
+        } }
     /// <summary>
     /// MediaType property representing the type of media (e.g., video, audio, etc.).
     /// </summary>

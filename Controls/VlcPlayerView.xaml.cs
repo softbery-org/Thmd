@@ -392,7 +392,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
             {
                 var media = new VideoItem(pl.MediaList[i]);
                 media.SubtitlePath = pl.Subtitles[i];
-
+                media.Indents = pl.Indents;
                 _playlist.AddAsync(media);
             }
             _playlist.Width = pl.Size.Width;
@@ -424,6 +424,10 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
             // Support both local paths and network URLs by saving the original URI string
             pl.MediaList.Add(item.Uri.OriginalString);
             pl.Subtitles.Add((item.SubtitlePath != null) ? item.SubtitlePath : null);
+            //if (item.Id == 1)
+            //{
+            //    pl.Indents.Add(new VideoIndent() { Id = 0, Name = "Jump", Start = TimeSpan.Parse("00:01:16"), End = TimeSpan.Parse("00:01:25") });
+            //}
         }
         pl.Size = new Size(Playlist.Width, Playlist.Height);
         pl.Current = _playlist.CurrentIndex;
@@ -1068,6 +1072,19 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
             _controlBar.Position = TimeSpan.FromMilliseconds(e.Time).ToString("hh\\:mm\\:ss");
             _controlBar.Duration = _playlist.Current.Duration.ToString("hh\\:mm\\:ss");
             _subtitleControl.PositionTime = TimeSpan.FromMilliseconds(e.Time);
+
+            foreach (var item in this.Playlist.Current.Indents)
+            {
+                if (this.Playlist.Current.isIndents)
+                {
+                    if (TimeSpan.FromMilliseconds(e.Time) >= item.Start && TimeSpan.FromMilliseconds(e.Time) <= item.End)
+                    {
+                        Seek(item.End, SeekDirection.Forward);
+                        break;
+                    }
+                }
+            }
+            
         });
     }
     #endregion
@@ -1310,6 +1327,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
                 if (_mediaPlayer.IsPlaying)
                 {
                     _mediaPlayer.Pause();
+                    this.Playlist.Current.IsPlaying = false;
                 }
                 SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
             });
@@ -1333,6 +1351,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
                 _paused = false;
                 _stopped = true;
                 _mediaPlayer.Stop();
+                this.Playlist.Current.IsPlaying = false;
                 SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
             });
         }
@@ -1439,6 +1458,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
                         _mediaPlayer.Play();
                     }
 
+                    this.Playlist.Current.IsPlaying = true;
                     SetThreadExecutionState(BLOCK_SLEEP_MODE);
                 });
             });
@@ -1566,7 +1586,6 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <param name="e">The event arguments.</param>
     private void OnPlaying(object sender, EventArgs e)
     {
-        Playlist.Current.IsPlaying = true;
         SetThreadExecutionState(BLOCK_SLEEP_MODE);
     }
 
@@ -1577,7 +1596,6 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <param name="e">The event arguments.</param>
     private void OnStopped(object sender, EventArgs e)
     {
-        Playlist.Current.IsPlaying = false;
         SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
     }
 
@@ -1588,7 +1606,6 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <param name="e">The event arguments.</param>
     private void OnPaused(object sender, EventArgs e)
     {
-        Playlist.Current.IsPlaying = false;
         SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
     }
 

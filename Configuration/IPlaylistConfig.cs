@@ -26,6 +26,7 @@ public class PlaylistConfig : IPlaylistConfig
     public List<string> Subtitles { get; set; } = new List<string>();
     public bool SubtitleVisible {get;set;}=true;
     public int Current { get; set; }
+    public List<VideoIndent> Indents { get; set; }
 }
 
 /// <summary>
@@ -68,4 +69,5 @@ public interface IPlaylistConfig
     public List<string> Subtitles { get; set; }
     public bool SubtitleVisible { get; set; }
     public int Current { get; set; }
+    public List<VideoIndent> Indents { get; set; }
 }

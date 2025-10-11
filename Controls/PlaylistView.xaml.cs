@@ -533,8 +533,6 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
 
         Config.Instance.PlaylistConfig.Size = new Size(this.Width, this.Height);
         //Config.Instance.PlaylistConfig.Position = new Point(0, 0);
-        
-
         EndDrag();
     }
 
@@ -554,7 +552,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         }
         if (Thread.CurrentThread.GetApartmentState() != ApartmentState.STA)
         {
-            throw new InvalidOperationException("DragDrop wymaga STA threada.");
+            this.WriteLine(new InvalidOperationException("DragDrop wymaga STA threada."));
         }
 
         _adornerLayer = AdornerLayer.GetAdornerLayer(this);
@@ -573,8 +571,8 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
 
         // Snapshot wizualny
         RenderTargetBitmap bitmap = new RenderTargetBitmap(
-            (int)draggedContainer.ActualWidth/3,
-            (int)draggedContainer.ActualHeight/3,
+            (int)draggedContainer.ActualWidth,
+            (int)draggedContainer.ActualHeight,
             96, 96,
             PixelFormats.Pbgra32);
         draggedContainer.UpdateLayout();
@@ -745,10 +743,10 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
             Point position = e.GetPosition(this);
 
             // Centrowanie: Odejmij środek kontenera dla "podążania" za myszą
-            double offsetX = position.X - (_draggedContainer.ActualWidth / 2);
-            double offsetY = position.Y - (_draggedContainer.ActualHeight / 2);
+            double offsetX = position.X - (_draggedContainer.ActualWidth/2);
+            double offsetY = position.Y - (_draggedContainer.ActualHeight/2);
 
-            _dragAdorner.Offset = new Point(offsetX, offsetY);
+            _dragAdorner.Offset = new Point(offsetX/2, offsetY/2);
 
             // Fix: Wymuś redraw dla natychmiastowego efektu (płynność w .NET 4.8)
             _dragAdorner.InvalidateArrange();
@@ -1076,10 +1074,13 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     /// </remarks>
     private void Video_MouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
-        if (SelectedItem is VideoItem selectedVideo)
+        if (e.LeftButton == MouseButtonState.Pressed && e.ClickCount >= 2)
         {
-            PlayVideo(selectedVideo);
-            this.WriteLine($"PlaylistView: Double-clicked to play video {selectedVideo.Name}");
+            if (SelectedItem is VideoItem selectedVideo)
+            {
+                PlayVideo(selectedVideo);
+                this.WriteLine($"PlaylistView: Double-clicked to play video {selectedVideo.Name}");
+            }
         }
     }
 
