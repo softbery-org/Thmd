@@ -1,4 +1,5 @@
 // Version: 0.2.0.1
+
 using System;
 using System.IO;
 
@@ -121,6 +122,8 @@ public sealed class Config
         }
     }
 
+    private string _filePath = string.Empty;
+
     /// <summary>
     /// Zapisuje obiekt do pliku JSON.
     /// </summary>
@@ -143,12 +146,12 @@ public sealed class Config
     /// <summary>
     /// Aktualizuje i zapisuje konfigurację w sposób bezpieczny dla wątków.
     /// </summary>
-    public void UpdateAndSave(Action<Config> updateAction, string filePath = "config/config.json")
+    public void UpdateAndSave(Action<Config> updateAction)
     {
         lock (_lock)
         {
             updateAction?.Invoke(this);
-            SaveToFile(filePath, this);
+            SaveToFile(_filePath, this);
         }
     }
 }

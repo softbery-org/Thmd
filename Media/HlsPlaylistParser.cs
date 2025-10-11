@@ -4,17 +4,40 @@ using System.Collections.Generic;
 
 namespace Thmd.Media;
 
+/// <summary>
+/// Provides functionality to parse HLS (HTTP Live Streaming) M3U8 playlist content.
+/// Converts playlist data into a list of <see cref="HlsSegment"/> objects
+/// containing metadata such as duration, URI, and discontinuity markers.
+/// </summary>
 public static class HlsPlaylistParser
 {
+	/// <summary>
+	/// Parses the specified M3U8 playlist content into a collection of <see cref="HlsSegment"/> objects.
+	/// </summary>
+	/// <param name="m3u8Content">The raw M3U8 playlist content as a string.</param>
+	/// <param name="baseUri">The base URI used to resolve relative segment paths.</param>
+	/// <returns>
+	/// A list of <see cref="HlsSegment"/> objects representing the parsed media segments.
+	/// </returns>
+	/// <remarks>
+	/// The parser handles the following HLS tags:
+	/// <list type="bullet">
+	/// <item><description><c>#EXTINF</c> – Defines the duration of a media segment.</description></item>
+	/// <item><description><c>#EXT-X-DISCONTINUITY</c> – Marks a boundary between segments.</description></item>
+	/// <item><description>Any other tag (starting with <c>#</c>) is stored as a key-value pair in <see cref="HlsSegment.Tags"/>.</description></item>
+	/// </list>
+	/// Lines not starting with <c>#</c> are treated as segment URIs and combined with the <paramref name="baseUri"/> if relative.
+	/// </remarks>
 	public static List<HlsSegment> ParsePlaylist(string m3u8Content, Uri baseUri)
 	{
 		List<HlsSegment> segments = new List<HlsSegment>();
 		string[] lines = m3u8Content.Split(new char[1] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 		HlsSegment currentSegment = null;
-		string[] array = lines;
-		foreach (string line in array)
+
+		foreach (string line in lines)
 		{
 			string trimmedLine = line.Trim();
+
 			if (trimmedLine.StartsWith("#EXTINF:"))
 			{
 				currentSegment = new HlsSegment();

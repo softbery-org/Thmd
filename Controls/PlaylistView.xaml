@@ -11,6 +11,7 @@
           Margin="0,25,0,0"
           Background="#2E2E2E"
           AllowDrop="True"
+          ScrollViewer.CanContentScroll="True"
           VirtualizingStackPanel.IsVirtualizing="True"
           VirtualizingStackPanel.VirtualizationMode="Recycling" 
           d:ItemsSource="{d:SampleData ItemCount=5}">
@@ -44,9 +45,9 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type Button}">
                             <Border Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="4">
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="4">
                                 <Border.Effect>
                                     <DropShadowEffect ShadowDepth="2" BlurRadius="4" Opacity="0.3"/>
                                 </Border.Effect>
@@ -84,6 +85,8 @@
             </Style>
             <!-- ScrollViewer Style -->
             <Style x:Key="{x:Type ScrollViewer}" TargetType="{x:Type ScrollViewer}">
+                <Setter Property="CanContentScroll" Value="True"/>
+                <!-- Fix: Jawne ustawienie w stylu -->
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ScrollViewer}">
@@ -97,19 +100,19 @@
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 <ScrollContentPresenter x:Name="PART_ScrollContentPresenter"
-                                                           Grid.Column="0"
-                                                           Grid.Row="0"
-                                                           Content="{TemplateBinding Content}"
-                                                           ContentTemplate="{TemplateBinding ContentTemplate}"
-                                                           CanContentScroll="{TemplateBinding CanContentScroll}"/>
+                                                        Grid.Column="0"
+                                                        Grid.Row="0"
+                                                        Content="{TemplateBinding Content}"
+                                                        ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                        CanContentScroll="{TemplateBinding CanContentScroll}"/>
                                 <ScrollBar x:Name="PART_VerticalScrollBar"
-                                               Grid.Column="1"
-                                               Grid.Row="0"
-                                               Orientation="Vertical"
-                                               Maximum="{TemplateBinding ScrollableHeight}"
-                                               ViewportSize="{TemplateBinding ViewportHeight}"
-                                               Value="{TemplateBinding VerticalOffset}"
-                                               Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}">
+                                           Grid.Column="1"
+                                           Grid.Row="0"
+                                           Orientation="Vertical"
+                                           Maximum="{TemplateBinding ScrollableHeight}"
+                                           ViewportSize="{TemplateBinding ViewportHeight}"
+                                           Value="{TemplateBinding VerticalOffset}"
+                                           Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}">
                                     <ScrollBar.Template>
                                         <ControlTemplate TargetType="{x:Type ScrollBar}">
                                             <Grid>
@@ -154,8 +157,8 @@
                                                     </Track.Thumb>
                                                 </Track>
                                                 <RepeatButton Grid.Row="0" 
-                                                                  Command="ScrollBar.LineUpCommand" 
-                                                                  Content="↑" FontSize="10">
+                                                              Command="ScrollBar.LineUpCommand" 
+                                                              Content="↑" FontSize="10">
                                                     <RepeatButton.Background>
                                                         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                                                             <GradientStop Color="#D35400" Offset="0"/>
@@ -164,8 +167,8 @@
                                                     </RepeatButton.Background>
                                                 </RepeatButton>
                                                 <RepeatButton Grid.Row="2" 
-                                                                  Command="ScrollBar.LineDownCommand" 
-                                                                  Content="↓" FontSize="10">
+                                                              Command="ScrollBar.LineDownCommand" 
+                                                              Content="↓" FontSize="10">
                                                     <RepeatButton.Background>
                                                         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                                                             <GradientStop Color="#D35400" Offset="0"/>
@@ -178,13 +181,13 @@
                                     </ScrollBar.Template>
                                 </ScrollBar>
                                 <ScrollBar x:Name="PART_HorizontalScrollBar"
-                                               Grid.Column="0"
-                                               Grid.Row="1"
-                                               Orientation="Horizontal"
-                                               Maximum="{TemplateBinding ScrollableWidth}"
-                                               ViewportSize="{TemplateBinding ViewportWidth}"
-                                               Value="{TemplateBinding HorizontalOffset}"
-                                               Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}">
+                                           Grid.Column="0"
+                                           Grid.Row="1"
+                                           Orientation="Horizontal"
+                                           Maximum="{TemplateBinding ScrollableWidth}"
+                                           ViewportSize="{TemplateBinding ViewportWidth}"
+                                           Value="{TemplateBinding HorizontalOffset}"
+                                           Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}">
                                     <ScrollBar.Template>
                                         <ControlTemplate TargetType="{x:Type ScrollBar}">
                                             <Grid>
@@ -229,8 +232,8 @@
                                                     </Track.Thumb>
                                                 </Track>
                                                 <RepeatButton Grid.Column="0" 
-                                                                  Command="ScrollBar.LineLeftCommand" 
-                                                                  Content="←" FontSize="10">
+                                                              Command="ScrollBar.LineLeftCommand" 
+                                                              Content="←" FontSize="10">
                                                     <RepeatButton.Background>
                                                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                                                             <GradientStop Color="#D35400" Offset="0"/>
@@ -239,8 +242,8 @@
                                                     </RepeatButton.Background>
                                                 </RepeatButton>
                                                 <RepeatButton Grid.Column="2" 
-                                                                  Command="ScrollBar.LineRightCommand" 
-                                                                  Content="→" FontSize="10">
+                                                              Command="ScrollBar.LineRightCommand" 
+                                                              Content="→" FontSize="10">
                                                     <RepeatButton.Background>
                                                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                                                             <GradientStop Color="#D35400" Offset="0"/>
@@ -264,6 +267,8 @@
                 <Setter Property="Padding" Value="5"/>
                 <Setter Property="BorderThickness" Value="3"/>
                 <Setter Property="BorderBrush" Value="#555555"/>
+                <Setter Property="helper:DragDropHelper.IsDragOver" Value="False"/>
+
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ListViewItem}">
@@ -277,15 +282,22 @@
                                 </Border.Effect>
                                 <ContentPresenter Margin="{TemplateBinding Padding}"/>
                             </Border>
+
                             <ControlTemplate.Triggers>
+
+                                <!-- 🔸 Zaznaczony element -->
                                 <Trigger Property="IsSelected" Value="True">
                                     <Setter Property="Background" Value="#FF6200"/>
                                     <Setter Property="BorderBrush" Value="#FF8C2F"/>
                                 </Trigger>
+
+                                <!-- 🔸 Hover -->
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="Background" Value="#E65100"/>
                                     <Setter Property="BorderBrush" Value="#FF8C2F"/>
                                 </Trigger>
+
+                                <!-- 🔸 Hover + Selected -->
                                 <MultiTrigger>
                                     <MultiTrigger.Conditions>
                                         <Condition Property="IsSelected" Value="True"/>
@@ -294,12 +306,65 @@
                                     <Setter Property="Background" Value="#FF4500"/>
                                     <Setter Property="BorderBrush" Value="#FF8C2F"/>
                                 </MultiTrigger>
-                                <!-- Nowy Trigger dla DragOver -->
+
+                                <!-- 🔸 Drag-over -->
                                 <Trigger Property="helper:DragDropHelper.IsDragOver" Value="True">
                                     <Setter TargetName="Border" Property="BorderBrush" Value="#FFD700"/>
                                     <Setter TargetName="Border" Property="BorderThickness" Value="2"/>
                                     <Setter TargetName="Border" Property="Background" Value="#4A2E00"/>
                                 </Trigger>
+
+                                <!-- 🔹 Element aktualnie odtwarzany -->
+                                <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                    <!-- Główne podświetlenie -->
+                                    <Setter TargetName="Border" Property="Background" Value="#5C2E00"/>
+                                    <Setter TargetName="Border" Property="BorderBrush" Value="#FF8C2F"/>
+                                    <Setter TargetName="Border" Property="BorderThickness" Value="3"/>
+
+                                    <!-- Efekt świecącego pomarańczowego cienia -->
+                                    <Setter TargetName="Border" Property="Effect">
+                                        <Setter.Value>
+                                            <DropShadowEffect BlurRadius="12"
+                              ShadowDepth="0"
+                              Color="#FF8C2F"
+                              Opacity="0.6"/>
+                                        </Setter.Value>
+                                    </Setter>
+
+                                    <!-- ✨ Animacja pulsowania -->
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard x:Name="PlayHighlightStoryboard">
+                                            <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                                <ColorAnimation Storyboard.TargetName="Border"
+                                Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                From="#5C2E00"
+                                To="#803000"
+                                Duration="0:0:1.5"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+
+                                    <!-- 🔁 Po zatrzymaniu odtwarzania -->
+                                    <DataTrigger.ExitActions>
+                                        <!-- Zatrzymaj animację -->
+                                        <StopStoryboard BeginStoryboardName="PlayHighlightStoryboard"/>
+
+                                        <!-- Usuń tylko dodatkowy cień; resztę (kolory, tło) WPF sam przywróci -->
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Border"
+                                               Storyboard.TargetProperty="Effect">
+                                                    <DiscreteObjectKeyFrame KeyTime="0:0:0">
+                                                        <DiscreteObjectKeyFrame.Value>
+                                                            <DropShadowEffect ShadowDepth="2" BlurRadius="4" Opacity="0.2"/>
+                                                        </DiscreteObjectKeyFrame.Value>
+                                                    </DiscreteObjectKeyFrame>
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.ExitActions>
+                                </DataTrigger>
+
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>
@@ -321,32 +386,28 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-
                 <DockPanel Grid.Row="0" Grid.ColumnSpan="4" Background="#2E2E2E" VerticalAlignment="Center" HorizontalAlignment="Stretch">
-                    <Button Content="Dodaj" Command="{Binding AddCommand, RelativeSource={RelativeSource AncestorType={x:Type local:PlaylistView}}}" Style="{StaticResource ToolBarButtonStyle}"/>
-                    <Button Content="Usuń" Command="{Binding RemoveCommand, RelativeSource={RelativeSource AncestorType={x:Type local:PlaylistView}}}" Style="{StaticResource ToolBarButtonStyle}"/>
-                    <Button Content="Edytuj" Command="{Binding EditCommand, RelativeSource={RelativeSource AncestorType={x:Type local:PlaylistView}}}" Style="{StaticResource ToolBarButtonStyle}"/>
-                    <Button Content="Save Playlist" Command="{Binding SavePlaylistCommand, RelativeSource={RelativeSource AncestorType={x:Type local:PlaylistView}}}" Style="{StaticResource ToolBarButtonStyle}"/>
-                    <Button Content="Load Playlist" Command="{Binding LoadPlaylistCommand, RelativeSource={RelativeSource AncestorType={x:Type local:PlaylistView}}}" Style="{StaticResource ToolBarButtonStyle}"/>
+                    <Button Content="Add" Command="{Binding AddCommand, RelativeSource={RelativeSource AncestorType={x:Type local:PlaylistView}}}" Style="{StaticResource ToolBarButtonStyle}"/>
+                    <Button Content="Remove" Command="{Binding RemoveCommand, RelativeSource={RelativeSource AncestorType={x:Type local:PlaylistView}}}" Style="{StaticResource ToolBarButtonStyle}"/>
+                    <Button Content="Edit" Command="{Binding EditCommand, RelativeSource={RelativeSource AncestorType={x:Type local:PlaylistView}}}" Style="{StaticResource ToolBarButtonStyle}"/>
+                    <Button Content="Save" Command="{Binding SavePlaylistCommand, RelativeSource={RelativeSource AncestorType={x:Type local:PlaylistView}}}" Style="{StaticResource ToolBarButtonStyle}"/>
+                    <Button Content="Load" Command="{Binding LoadPlaylistCommand, RelativeSource={RelativeSource AncestorType={x:Type local:PlaylistView}}}" Style="{StaticResource ToolBarButtonStyle}"/>
                     <StackPanel/>
                     <Button Content="X" Command="{Binding CloseCommand, RelativeSource={RelativeSource AncestorType={x:Type local:PlaylistView}}}" Style="{StaticResource ToolBarButtonStyle}" HorizontalAlignment="Right"/>
                 </DockPanel>
-
-                <Border Grid.Row="1" Grid.ColumnSpan="4" Grid.Column="0" BorderThickness="3" BorderBrush="{TemplateBinding Background}">
-                        <ScrollViewer Style="{StaticResource {x:Type ScrollViewer}}">
+                <Border Grid.Row="1" Grid.ColumnSpan="4" BorderThickness="5" BorderBrush="{TemplateBinding Background}">
+                        <ScrollViewer Style="{StaticResource {x:Type ScrollViewer}}" CanContentScroll="True">
+                            <!-- Fix: Jawne w szablonie -->
                             <ItemsPresenter/>
                         </ScrollViewer>
                 </Border>
             </Grid>
         </ControlTemplate>
     </ListView.Template>
-    
+
     <ItemsControl.ItemTemplate>
         <DataTemplate>
             <Grid Margin="5">
-                <behaviors:Interaction.Behaviors>
-                    <behaviors:MouseDragElementBehavior ConstrainToParentBounds="True"/>
-                </behaviors:Interaction.Behaviors>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="350"/>
                     <ColumnDefinition Width="100"/>
@@ -369,10 +430,10 @@
                         </Style>
                     </FrameworkElement.Style>
                     <TextBlock FontWeight="Medium" 
-                                   TextWrapping="Wrap" 
-                                   Text="{Binding Name}" 
-                                   FontSize="14" 
-                                   Foreground="#E0E0E0"/>
+                               TextWrapping="Wrap" 
+                               Text="{Binding Name}" 
+                               FontSize="14" 
+                               Foreground="#E0E0E0"/>
                 </Border>
                 <Border Grid.Column="1" BorderThickness="2,0,0,0" Padding="8" CornerRadius="4">
                     <FrameworkElement.Style>
@@ -392,10 +453,10 @@
                     </FrameworkElement.Style>
                     <Grid>
                         <TextBlock FontWeight="Medium" 
-                                       Text="{Binding PositionFormatted}" 
-                                       FontSize="14" 
-                                       Foreground="#E0E0E0" 
-                                       HorizontalAlignment="Center"/>
+                                   Text="{Binding PositionFormatted}" 
+                                   FontSize="14" 
+                                   Foreground="#E0E0E0" 
+                                   HorizontalAlignment="Center"/>
                     </Grid>
                 </Border>
                 <Border Grid.Column="2" BorderThickness="2,0,0,0" Padding="8" CornerRadius="4">
@@ -416,22 +477,21 @@
                     </FrameworkElement.Style>
                     <StackPanel>
                         <TextBlock FontWeight="Bold" 
-                                       Foreground="#FF4500" 
-                                       Text="{Binding Duration}" 
-                                       FontSize="14"/>
+                                   Foreground="#FF4500" 
+                                   Text="{Binding Duration}" 
+                                   FontSize="14"/>
                         <TextBlock Text="{Binding Fps}" 
-                                       FontSize="12" 
-                                       Foreground="#B0B0B0"/>
+                                   FontSize="12" 
+                                   Foreground="#B0B0B0"/>
                         <TextBlock Text="{Binding FrameSize}" 
-                                       FontSize="12" 
-                                       Foreground="#B0B0B0"/>
+                                   FontSize="12" 
+                                   Foreground="#B0B0B0"/>
                         <TextBlock Text="{Binding Format}" 
-                                       FontSize="12" 
-                                       Foreground="#B0B0B0"/>
+                                   FontSize="12" 
+                                   Foreground="#B0B0B0"/>
                     </StackPanel>
                 </Border>
             </Grid>
         </DataTemplate>
-
     </ItemsControl.ItemTemplate>
 </ListView>

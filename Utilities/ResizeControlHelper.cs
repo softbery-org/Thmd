@@ -64,7 +64,7 @@ public class ResizeControlHelper
         ResizeDirection direction = GetResizeDirection(position);
         if (direction != ResizeDirection.None)
         {
-            _lastMousePosition = e.GetPosition(GetParentContainer());
+            _lastMousePosition = e.GetPosition(GetParentWindow() as UIElement);//GetParentContainer());
             _originalBounds = new Rect(_element.Margin.Left, _element.Margin.Top, _element.ActualWidth, _element.ActualHeight);
             _resizeDirection = direction;
             _isResizing = direction != ResizeDirection.Moving;
@@ -95,15 +95,17 @@ public class ResizeControlHelper
 
     private void ResizeElement(MouseEventArgs e)
     {
-        UIElement parent = GetParentContainer();
-        if (parent != null)
+        Window window = GetParentWindow();
+        if (window != null)
         {
-            Point currentPosition = e.GetPosition(parent);
+            Point currentPosition = e.GetPosition(window);
             double dx = currentPosition.X - _lastMousePosition.X;
             double dy = currentPosition.Y - _lastMousePosition.Y;
+
             Thickness newMargin = _element.Margin;
             double newWidth = _element.ActualWidth;
             double newHeight = _element.ActualHeight;
+
             switch (_resizeDirection)
             {
                 case ResizeDirection.Right:
@@ -141,16 +143,29 @@ public class ResizeControlHelper
                     newHeight += dy;
                     break;
             }
+
+            // Minimalny rozmiar
             newWidth = Math.Max(newWidth, _element.MinWidth);
             newHeight = Math.Max(newHeight, _element.MinHeight);
-            if (newWidth <= _element.MinWidth && (_resizeDirection == ResizeDirection.Left || _resizeDirection == ResizeDirection.TopLeft || _resizeDirection == ResizeDirection.BottomLeft))
+            // Granice okna
+            double maxWidth = window.ActualWidth - newMargin.Left;
+            double maxHeight = window.ActualHeight - newMargin.Top;
+
+            newWidth = Math.Min(newWidth, maxWidth);
+            newHeight = Math.Min(newHeight, maxHeight);
+
+            // Nie pozwalamy na ujemne marginesy
+            if (newMargin.Left < 0)
             {
-                newMargin.Left = _originalBounds.Left + (_originalBounds.Width - newWidth);
+                newWidth += newMargin.Left;
+                newMargin.Left = 0;
             }
-            if (newHeight <= _element.MinHeight && (_resizeDirection == ResizeDirection.Top || _resizeDirection == ResizeDirection.TopLeft || _resizeDirection == ResizeDirection.TopRight))
+            if (newMargin.Top < 0)
             {
-                newMargin.Top = _originalBounds.Top + (_originalBounds.Height - newHeight);
+                newHeight += newMargin.Top;
+                newMargin.Top = 0;
             }
+
             _element.Margin = newMargin;
             _element.Width = newWidth;
             _element.Height = newHeight;
@@ -159,34 +174,33 @@ public class ResizeControlHelper
         }
     }
 
+    private Window GetParentWindow()
+    {
+        return Window.GetWindow(_element);
+    }
+
     private void MoveElement(MouseEventArgs e)
     {
-        UIElement parent = GetParentContainer();
-        if (parent != null)
+        Window window = GetParentWindow();
+        if (window != null)
         {
-            Point currentPosition = e.GetPosition(parent);
-            //Size size = parent.GetWindowSize();
+            Point currentPosition = e.GetPosition(window);
             double dx = currentPosition.X - _lastMousePosition.X;
             double dy = currentPosition.Y - _lastMousePosition.Y;
-            Thickness newMargin = _element.Margin;            
-            newMargin.Left += dx*2;
-            newMargin.Top += dy*2;
-            /*if (newMargin.Left <= -size.Width / 2)
-            {
-                newMargin.Left = -size.Width / 2;
-            }
-            if (newMargin.Top <= -size.Height/2)
-            {
-                newMargin.Top = -size.Height/2;
-            }
-            if (newMargin.Left > size.Width/2)
-            {
-                newMargin.Left = size.Width / 2;
-            }
-            if (newMargin.Top > size.Height / 2 + _element.ActualHeight)
-            {
-                newMargin.Left = size.Height /2 - _element.ActualHeight;
-            }*/
+
+            Thickness newMargin = _element.Margin;
+
+            // Aktualizacja pozycji
+            newMargin.Left += dx;
+            newMargin.Top += dy;
+
+            // Granice okna
+            double maxLeft = window.ActualWidth - _element.ActualWidth;
+            double maxTop = window.ActualHeight - _element.ActualHeight;
+
+            newMargin.Left = Math.Max(0, Math.Min(maxLeft, newMargin.Left));
+            newMargin.Top = Math.Max(0, Math.Min(maxTop, newMargin.Top));
+
             _element.Margin = newMargin;
             _lastMousePosition = currentPosition;
             e.Handled = true;

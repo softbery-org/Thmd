@@ -1226,10 +1226,11 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// Opens a dialog to input a network stream URL and adds it to the playlist.
     /// Supports HTTP, RTSP, and other streaming protocols via LibVLCSharp.
     /// </summary>
+    /// <param name="url">The URL of the network stream to open.</param>
     private async void OpenNetworkStream(string url)
     {
         //string url = Interaction.InputBox("Enter the URL of the network stream (e.g., http://example.com/stream.m3u8 or rtsp://example.com/stream):", "Open Network Stream", "http://");
-        
+
         if (!string.IsNullOrWhiteSpace(url))
         {
             try
@@ -1376,7 +1377,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// Seeks forward or backward by a specified time span.
     /// </summary>
     /// <param name="time">The time span to seek by.</param>
-    /// <param name="direction">The seek direction.</param>
+    /// <param name="direction">The seek direction (Forward or Backward).</param>
     public void Seek(TimeSpan time, SeekDirection direction)
     {
         if (_mediaPlayer != null)
@@ -1391,6 +1392,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
                     this.Position -= time;
                     break;
             }
+            _mediaPlayer.Time = (long)this.Position.TotalMilliseconds;
         }
     }
 
@@ -1564,6 +1566,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <param name="e">The event arguments.</param>
     private void OnPlaying(object sender, EventArgs e)
     {
+        Playlist.Current.IsPlaying = true;
         SetThreadExecutionState(BLOCK_SLEEP_MODE);
     }
 
@@ -1574,6 +1577,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <param name="e">The event arguments.</param>
     private void OnStopped(object sender, EventArgs e)
     {
+        Playlist.Current.IsPlaying = false;
         SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
     }
 
@@ -1584,6 +1588,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <param name="e">The event arguments.</param>
     private void OnPaused(object sender, EventArgs e)
     {
+        Playlist.Current.IsPlaying = false;
         SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
     }
 
@@ -1596,7 +1601,8 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     {
         this.Dispatcher.InvokeAsync(() =>
         {
-            ProgressBar.BufforBarValue = e.Cache;
+            var x = (100 * e.Cache) / _progressBar.Width;
+            ProgressBar.BufforBarValue = x;
         });
     }
 

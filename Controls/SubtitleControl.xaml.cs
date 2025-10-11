@@ -37,7 +37,7 @@ namespace Thmd.Controls;
 /// Now includes AI integration for translating subtitles using OpenAI API and subtitle buffering
 /// to improve performance by caching processed subtitles.
 /// </summary>
-public partial class SubtitleControl : UserControl
+public partial class SubtitleControl : UserControl, INotifyPropertyChanged
 {
     /// <summary>
     /// Delegate for handling time change events.
@@ -46,35 +46,117 @@ public partial class SubtitleControl : UserControl
     /// <param name="time">The current time position in the subtitle timeline.</param>
     public delegate void TimeHandlerDelegate(object sender, TimeSpan time);
 
+    /// <summary>
+    /// Backing field for the current playback position time in the subtitle timeline.
+    /// </summary>
     private TimeSpan _positionTime = TimeSpan.Zero;
+
+    /// <summary>
+    /// Manages the loading and parsing of subtitle entries from the SRT file.
+    /// </summary>
     private SubtitleManager _subtitleManager;
+
+    /// <summary>
+    /// Backing field for the default font size of subtitle text.
+    /// </summary>
     private double _fontSize = 48.0;
+
+    /// <summary>
+    /// Backing field for the background brush of the subtitle control.
+    /// </summary>
     private Brush _backgroundBrush = new SolidColorBrush(Colors.Transparent);
+
+    /// <summary>
+    /// Backing field for the foreground brush (text color) of the subtitle text.
+    /// </summary>
     private Brush _subtitleBrush = new SolidColorBrush(Colors.White);
+
+    /// <summary>
+    /// Backing field indicating whether a shadow effect is applied to the subtitle text.
+    /// </summary>
     private bool _shadowSubtitle = true;
+
+    /// <summary>
+    /// Backing field for the font family used in subtitle text.
+    /// </summary>
     private FontFamily _fontFamily = new FontFamily("Segoe UI");
+
+    /// <summary>
+    /// Backing field indicating whether the font size should automatically adjust to fit the available space.
+    /// </summary>
     private bool _sizeToFit = true;
+
+    /// <summary>
+    /// Stores the available size for subtitle rendering.
+    /// </summary>
     private Size _size;
+
+    /// <summary>
+    /// Reference to the parent element for size change notifications.
+    /// </summary>
     private FrameworkElement _parent;
+
+    /// <summary>
+    /// Backing field for the path to the SRT subtitle file.
+    /// </summary>
     private string _filePath;
+
+    /// <summary>
+    /// Backing field for the base text style applied to the subtitle text block.
+    /// </summary>
     private TextStyle _textStyle = TextStyle.Normal;
 
     // AI Integration Properties
+    /// <summary>
+    /// Backing field for the OpenAI API key used for subtitle translation.
+    /// </summary>
     private string _openAiApiKey; // Set this via configuration or property
+
+    /// <summary>
+    /// Backing field for the target language code for AI translation (e.g., "en" for English).
+    /// </summary>
     private string _targetLanguage = "en"; // Default target language (e.g., English)
+
+    /// <summary>
+    /// Backing field indicating whether AI-powered translation is enabled for subtitles.
+    /// </summary>
     private bool _enableAiTranslation = false; // Flag to enable/disable AI translation
+
+    /// <summary>
+    /// Semaphore for synchronizing access to the OpenAI API to prevent concurrent calls.
+    /// </summary>
     private readonly SemaphoreSlim _apiSemaphore = new SemaphoreSlim(1, 1);
+
+    /// <summary>
+    /// Tracks the timestamp of the last API call for rate limiting.
+    /// </summary>
     private DateTime _lastApiCall = DateTime.MinValue;
-    private const int MinIntervalMs = 5000; // Minimum 1 second between calls
+
+    /// <summary>
+    /// Minimum interval in milliseconds between consecutive API calls to respect rate limits.
+    /// </summary>
+    private const int MinIntervalMs = 5000; // Minimum 5 seconds between calls
 
     // Buffering Properties
+    /// <summary>
+    /// Thread-safe cache for storing processed subtitle text keyed by time position.
+    /// </summary>
     private readonly ConcurrentDictionary<TimeSpan, string> _subtitleCache = new ConcurrentDictionary<TimeSpan, string>();
+
+    /// <summary>
+    /// Time window in milliseconds for cache entry validity.
+    /// </summary>
     private const int CacheTimeWindow = 10000; // 10 seconds window for cache validity (in milliseconds)
 
     /// <summary>
     /// Occurs when the position time changes, allowing synchronization with the media player.
     /// </summary>
     public event TimeHandlerDelegate TimeChanged;
+
+    /// <summary>
+    /// Occurs when a property value changes, enabling data binding notifications in WPF.
+    /// </summary>
+    public event PropertyChangedEventHandler PropertyChanged;
 
     /// <summary>
     /// Gets or sets the OpenAI API key for AI translation.
@@ -97,6 +179,9 @@ public partial class SubtitleControl : UserControl
     /// <summary>
     /// Gets or sets whether AI translation is enabled for subtitles.
     /// </summary>
+    /// <remarks>
+    /// When enabled and a subtitle file is loaded, the cache is cleared to force re-processing of subtitles.
+    /// </remarks>
     public bool EnableAiTranslation
     {
         get => _enableAiTranslation;
@@ -172,7 +257,7 @@ public partial class SubtitleControl : UserControl
             if (_fontSize != value)
             {
                 _subtitleTextBlock.FontSize = value;
-                OnPropertyChanged("_fontSize", ref _fontSize, value);
+                OnPropertyChanged("SubtitleFontSize", ref _fontSize, value);
             }
         }
     }
@@ -188,7 +273,7 @@ public partial class SubtitleControl : UserControl
             if (_backgroundBrush != value)
             {
                 base.Background = value;
-                OnPropertyChanged("_backgroundBrush", ref _backgroundBrush, value);
+                OnPropertyChanged("SubtitleBackground", ref _backgroundBrush, value);
             }
         }
     }
@@ -207,7 +292,7 @@ public partial class SubtitleControl : UserControl
             if (_subtitleBrush != value)
             {
                 _subtitleTextBlock.Foreground = value;
-                OnPropertyChanged("_subtitleBrush", ref _subtitleBrush, value);
+                OnPropertyChanged("SubtitleBrush", ref _subtitleBrush, value);
             }
         }
     }
@@ -297,6 +382,9 @@ public partial class SubtitleControl : UserControl
     /// <summary>
     /// Initializes a new instance of the <see cref="SubtitleControl"/> class.
     /// </summary>
+    /// <remarks>
+    /// Loads the OpenAI API key from configuration if available.
+    /// </remarks>
     public SubtitleControl()
     {
         InitializeComponent();
@@ -304,6 +392,14 @@ public partial class SubtitleControl : UserControl
         _openAiApiKey = Thmd.Configuration.Config.Instance.OpenAiConfig.OpenApiKey ?? string.Empty; // Assume Config has OpenAiApiKey property added
     }
 
+    /// <summary>
+    /// Asynchronously retrieves and displays the subtitle text for the given time position.
+    /// </summary>
+    /// <param name="time">The current playback time to match against subtitle timestamps.</param>
+    /// <remarks>
+    /// Uses caching to avoid redundant processing. If no matching subtitle is found, clears the text block.
+    /// Supports AI translation if enabled. Evicts old cache entries based on time window.
+    /// </remarks>
     private async void GetSubtitle(TimeSpan time)
     {
         await Task.Run(async () =>
@@ -373,6 +469,10 @@ public partial class SubtitleControl : UserControl
     /// </summary>
     /// <param name="text">The text to translate.</param>
     /// <returns>The translated text or original if translation fails.</returns>
+    /// <remarks>
+    /// Applies rate limiting and semaphore for thread safety. Logs errors and skips translation if API key is missing.
+    /// Uses GPT-4.1-mini model for translation.
+    /// </remarks>
     private async Task<string> TranslateWithAiAsync(string text)
     {
         if (string.IsNullOrEmpty(_openAiApiKey))
@@ -521,6 +621,9 @@ public partial class SubtitleControl : UserControl
     /// </summary>
     /// <param name="sender">The parent element that raised the event.</param>
     /// <param name="e">The event data containing the new size information.</param>
+    /// <remarks>
+    /// Automatically scales the font size based on the parent height, with a minimum of 10.0.
+    /// </remarks>
     private void OnParentSizeChanged(object sender, SizeChangedEventArgs e)
     {
         if (_parent != null)
@@ -530,6 +633,13 @@ public partial class SubtitleControl : UserControl
         }
     }
 
+    /// <summary>
+    /// Raises the PropertyChanged event when a property value changes.
+    /// </summary>
+    /// <typeparam name="T">The type of the property.</typeparam>
+    /// <param name="propertyName">The name of the property that changed.</param>
+    /// <param name="field">Reference to the backing field.</param>
+    /// <param name="value">The new value.</param>
     private void OnPropertyChanged<T>(string propertyName, ref T field, T value)
     {
         if (!EqualityComparer<T>.Default.Equals(field, value))
@@ -538,6 +648,4 @@ public partial class SubtitleControl : UserControl
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
-
-    public event PropertyChangedEventHandler PropertyChanged;
 }

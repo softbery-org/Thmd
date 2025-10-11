@@ -16,6 +16,9 @@ using System.Windows.Forms;
 
 namespace Thmd.Media;
 
+/// <summary>
+/// Video item, media
+/// </summary>
 [Serializable]
 public class VideoItem : UIElement, INotifyPropertyChanged
 {
@@ -34,12 +37,30 @@ public class VideoItem : UIElement, INotifyPropertyChanged
     private string _audioSampleRate;
     private int _audioBitRate;
     private string _audioChanelOutput;
+    private bool _isPlaying;
 
+    /// <summary>
+    /// Is video playing
+    /// </summary>
+    public bool IsPlaying
+    {
+        get => _isPlaying;
+        set
+        {
+            if (_isPlaying != value)
+            {
+                _isPlaying = value;
+                OnPropertyChanged(nameof(IsPlaying));
+            }
+        }
+    }
     /// <summary>
     /// MediaType property representing the type of media (e.g., video, audio, etc.).
     /// </summary>
     public object MediaType { get; private set; }
-
+    /// <summary>
+    /// Video item id.
+    /// </summary>
     public int Id { get => _index; }
     /// <summary>
     /// BaseString property representing the media name.
