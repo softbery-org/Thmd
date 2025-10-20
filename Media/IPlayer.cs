@@ -1,4 +1,4 @@
-// Version: 0.1.16.88
+// Version: 0.1.17.6
 using System;
 using System.ComponentModel;
 using System.Windows;
@@ -127,7 +127,7 @@ namespace Thmd.Media
         /// <summary>
         /// Loads the playlist configuration.
         /// </summary>
-        void LoadPlaylistConfig();
+        void LoadPlaylistConfig_Question();
 
         /// <summary>
         /// Gets the current video frame as a <see cref="BitmapSource"/>.

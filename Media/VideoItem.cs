@@ -1,9 +1,12 @@
-// Version: 0.1.16.80
+// Version: 0.1.16.98
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 
 using MediaToolkit;
@@ -12,8 +15,6 @@ using MediaToolkit.Model;
 using Thmd.Consolas;
 using Thmd.Controls;
 using Thmd.Logs;
-using System.Windows.Forms;
-using System.Collections.Generic;
 
 namespace Thmd.Media;
 
@@ -261,6 +262,44 @@ public class VideoItem : UIElement, INotifyPropertyChanged
         _index++;
         _uri = new Uri(path);
         _name = new FileInfo(_uri.LocalPath).Name;
+        LoadMetadata();
+        AutoSetSubtitle(path);
+    }
+
+    /// <summary>
+    /// Initialize a new instance of the VideoItem class with a specified media player.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="player"></param>
+    public VideoItem(string path, IPlayer player)
+        : this(path)
+    {
+        _player = player;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="VideoItem"/> class with the specified file path and metadata
+    /// loading option.
+    /// </summary>
+    /// <remarks>If <paramref name="deferMetadata"/> is set to <see langword="false"/>, metadata for the video
+    /// is loaded immediately. Otherwise, metadata loading is deferred until explicitly triggered.</remarks>
+    /// <param name="path">The file path of the video. This must be a valid URI or a local file path.</param>
+    /// <param name="deferMetadata">A value indicating whether to defer loading metadata for the video.  <see langword="true"/> to defer metadata
+    /// loading; otherwise, <see langword="false"/>.</param>
+    public VideoItem(string path, bool deferMetadata)
+    {
+        _index++;
+        _uri = new Uri(path);
+        _name = new FileInfo(_uri.LocalPath).Name;
+
+        if (!deferMetadata)
+        {
+            LoadMetadata();
+        }
+    }
+
+    private void LoadMetadata()
+    {
         _metadataMediaToolkit = GetMetadata();
         if (_metadataMediaToolkit != null)
         {
@@ -283,19 +322,29 @@ public class VideoItem : UIElement, INotifyPropertyChanged
             _audioBitRate = 0;
             _audioChanelOutput = string.Empty;
         }
-        AutoSetSubtitle(path);
     }
 
     /// <summary>
-    /// Initialize a new instance of the VideoItem class with a specified media player.
+    /// Asynchronously loads metadata and updates the associated properties.
     /// </summary>
-    /// <param name="path"></param>
-    /// <param name="player"></param>
-    public VideoItem(string path, IPlayer player)
-        : this(path)
+    /// <remarks>This method retrieves metadata in a background task and updates the  <see cref="Duration"/>,
+    /// <see cref="Format"/>, <see cref="Fps"/>, and  <see cref="FrameSize"/> properties upon completion. It is designed
+    /// to  avoid blocking the calling thread.</remarks>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    public async Task LoadMetadataAsync()
     {
-        _player = player;
+        await Task.Run(() =>
+        {
+            LoadMetadata();
+        });
+
+        // Aktualizuj UI po zako�czeniu
+        OnPropertyChanged(nameof(Duration));
+        OnPropertyChanged(nameof(Format));
+        OnPropertyChanged(nameof(Fps));
+        OnPropertyChanged(nameof(FrameSize));
     }
+
 
     /// <summary>
     /// Dispose the media item and release resources.

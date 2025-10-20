@@ -1,4 +1,4 @@
-// Version: 0.1.10.25
+// Version: 0.1.10.43
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -65,7 +65,7 @@ public partial class ProgressBarView : UserControl, INotifyPropertyChanged
             PopupText = previewTime.ToString(@"hh\:mm\:ss");
             _popup.IsOpen = true;
             _popup.HorizontalOffset = position.X;
-            _rectangleMouseOverPoint.Margin = new Thickness(position.X - 2, 0, 0, 0);  // Œrodek indicatora
+            _rectangleMouseOverPoint.Margin = new Thickness(position.X - 2, 0, 0, 0);  // ï¿½rodek indicatora
         };
 
         _progressBar.MouseDown += (s, e) =>

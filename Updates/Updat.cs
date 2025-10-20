@@ -1,5 +1,5 @@
 // Updater.cs
-// Version: 0.1.17.82
+// Version: 0.1.18.0
 using System;
 using System.Diagnostics;
 using System.IO;

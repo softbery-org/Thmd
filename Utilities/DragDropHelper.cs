@@ -1,4 +1,4 @@
-// Version: 0.1.7.51
+// Version: 0.1.7.69
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,7 +43,7 @@ namespace Thmd.Utilities
                 // Opcjonalnie: Dodaj eventy DragEnter/DragLeave dla automatyzacji
                 element.DragEnter += (s, args) => SetIsDragOver(d, true);
                 element.DragLeave += (s, args) => SetIsDragOver(d, false);
-                element.DragOver += (s, args) => { /* Obs³uga w C# PlaylistView */ };
+                element.DragOver += (s, args) => { /* Obsï¿½uga w C# PlaylistView */ };
             }
         }
     }

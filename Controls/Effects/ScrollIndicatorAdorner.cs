@@ -1,4 +1,5 @@
-﻿using System;
+// Version: 0.1.0.18
+using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;

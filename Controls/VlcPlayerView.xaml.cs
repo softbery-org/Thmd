@@ -1,4 +1,4 @@
-// Version: 0.1.8.85
+// Version: 0.1.9.3
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,6 +15,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 
 using LibVLCSharp.Shared;
 
@@ -60,7 +61,15 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     [DllImport("kernel32.dll", SetLastError = true)]
     private static extern uint SetThreadExecutionState(uint esFlags);
 
+    [DllImport("kernel32.dll")]
+    private static extern IntPtr GetConsoleWindow();
+
     private VLCState _state;
+
+    public static bool IsConsole()
+    {
+        return GetConsoleWindow() != IntPtr.Zero;
+    }
 
     /// <summary>
     /// Gets or sets the current status of the media player.
@@ -335,7 +344,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         _mouseNotMoveWorker.DoWork += MouseNotMoveWorker_DoWork;
         _mouseNotMoveWorker.RunWorkerAsync();
 
-        LoadPlaylistConfig();
+        LoadPlaylistConfig_Question();
         LoadOpenAiConfig();
         SaveUpdateConfig();
         LoadUpdateConfig();
@@ -380,34 +389,70 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <summary>
     /// Loads the playlist configuration from JSON file and applies it to the player.
     /// </summary>
-    public void LoadPlaylistConfig()
+    public void LoadPlaylistConfig_Question()
     {
-        try
+        Loaded += async (s, e) =>
         {
-            var pl = Configuration.Config.LoadFromJsonFile<PlaylistConfig>("config/playlist.json");
+            //Startup with question to load previous playlist
+            //if (!Config.Instance.Question_AutoLoadPlaylist)
+            //    return;
 
-            _controlBar.RepeatMode = pl.Repeat;
+            //if (!IsConsole())
+            //{
+            //    var result = MessageBox.Show("Do you want to load the previous playlist?", "Load Playlist", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            //    if (result == MessageBoxResult.Yes)
+            //    {
+            //        await LoadPlaylistConfigAsync();
+            //    }
+            //}
+            //else
+            //    await LoadPlaylistConfigAsync();
 
-            for (int i = 0; i < pl.MediaList.Count; i++)
+            // Directly load playlist without question
+            await LoadPlaylistConfigAsync();
+        };
+    }
+
+    private async Task LoadPlaylistConfigAsync()
+    {
+        await Task.Run(() =>
+        {
+            try
             {
-                var media = new VideoItem(pl.MediaList[i]);
-                media.SubtitlePath = pl.Subtitles[i];
-                media.Indents = pl.Indents;
-                _playlist.AddAsync(media);
-            }
-            _playlist.Width = pl.Size.Width;
-            _playlist.Height = pl.Size.Height;
-            _playlist.CurrentIndex = pl.Current;
-            _playlist.SelectedIndex = pl.Current;
-            _playlist.Margin = new Thickness(pl.Position.X, pl.Position.Y, 0, 0);
-            _playlist.Visibility = pl.SubtitleVisible ? Visibility.Visible : Visibility.Hidden;
+                var pl = Configuration.Config.LoadFromJsonFile<PlaylistConfig>("config/playlist.json");
 
-            this.WriteLine($"Playlist config was read succesfull");
-        }
-        catch (Exception ex)
-        {
-            this.WriteLine($"{ex.Message}");
-        }
+                Dispatcher.Invoke(async() =>
+                {
+                    _controlBar.RepeatMode = pl.Repeat;
+
+                    for (int i = 0; i < pl.MediaList.Count; i++)
+                    {
+                        var item = new VideoItem(pl.MediaList[i], deferMetadata: true);
+                        var media = new VideoItem(pl.MediaList[i]);
+                        media.SubtitlePath = pl.Subtitles[i];
+                        media.Indents = pl.Indents;
+                        //_playlist.AddAsync(media);
+                        await _playlist.AddAsync(item);
+                    }
+
+                    _playlist.Width = pl.Size.Width;
+                    _playlist.Height = pl.Size.Height;
+                    _playlist.CurrentIndex = pl.Current;
+                    _playlist.SelectedIndex = pl.Current;
+                    _playlist.Margin = new Thickness(pl.Position.X, pl.Position.Y, 0, 0);
+                    _playlist.Visibility = pl.SubtitleVisible ? Visibility.Visible : Visibility.Hidden;
+
+                    this.WriteLine("Playlist config loaded successfully (async).");
+                });
+            }
+            catch (Exception ex)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    this.WriteLine($"Error loading playlist config: {ex.Message}");
+                });
+            }
+        });
     }
 
     /// <summary>

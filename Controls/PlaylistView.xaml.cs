@@ -1,4 +1,4 @@
-// Version: 0.1.13.53
+// Version: 0.1.13.73
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -63,7 +63,6 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
 
     private Configuration.Config _config = new Thmd.Configuration.Config();
 
-    //private TimeSpan _currentPosition;
     #endregion
 
     #region Commands
@@ -101,22 +100,6 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     #endregion
 
     #region Public properties
-
-    /*public TimeSpan CurrentPosition
-    {
-        get => _currentPosition;
-        set
-        {
-            if (_currentPosition != value)
-            {
-                _currentPosition = value;
-                OnPropertyChanged(nameof(CurrentPosition));
-                OnPropertyChanged(nameof(CurrentPositionText));
-            }
-        }
-    }
-
-    public string CurrentPositionText => _currentPosition.ToString(@"hh\:mm\:ss");*/
 
     /// <summary>
     /// Config
@@ -570,7 +553,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         _draggedContainer = draggedContainer;  // Przechowaj dla OnDragOver
 
         // Snapshot wizualny
-        RenderTargetBitmap bitmap = new RenderTargetBitmap(
+        /*RenderTargetBitmap bitmap = new RenderTargetBitmap(
             (int)draggedContainer.ActualWidth,
             (int)draggedContainer.ActualHeight,
             96, 96,
@@ -586,14 +569,14 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         };
 
         _dragAdorner = new DragShadowAdorner(this, shadowImage);
-        _adornerLayer.Add(_dragAdorner);
+        _adornerLayer.Add(_dragAdorner);*/
 
         // Fix: Subskrybuj globalny Mouse.Move dla ciągłego śledzenia (płynność)
-        if (!_isMouseSubscribed)
-        {
-            this.MouseMove += OnGlobalMouseMove;  // Globalny event – działa w całej app
-            _isMouseSubscribed = true;
-        }
+        //if (!_isMouseSubscribed)
+        //{
+        //    this.MouseMove += OnGlobalMouseMove;  // Globalny event – działa w całej app
+        //    _isMouseSubscribed = true;
+        //}
 
         // Fix: IDataObject z ComTypes dla kompatybilności OLE (zapobiega null w OleDoDragDrop)
         var dataObject = new DataObject();
@@ -610,7 +593,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         catch (NullReferenceException ex) when (ex.Message.Contains("OleDoDragDrop"))  // Catch specyficzny
         {
             // Graceful handling: Log lub fallback (np. anuluj drag)
-            System.Diagnostics.Debug.WriteLine($"Drag-drop crash: {ex}");
+            this.WriteLine($"Drag-drop crash: {ex}");
             // Opcjonalnie: MessageBox.Show("Błąd drag-drop: Operacja anulowana.");
         }
         finally
@@ -895,11 +878,11 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     /// </summary>
     /// <param name="parameter">Command parameter (unused).</param>
     /// <remarks>
-    /// Invokes the player's LoadPlaylistConfig method to restore the playlist.
+    /// Invokes the player's LoadPlaylistConfig_Question method to restore the playlist.
     /// </remarks>
     public void LoadPlaylist(object parameter)
     {
-        _player.LoadPlaylistConfig();
+        _player.LoadPlaylistConfig_Question();
     }
 
     /// <summary>
@@ -1019,10 +1002,27 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
             media.SetPlayer(_player);
             media.PositionChanged += Video_PositionChanged;
             media.MouseDown += Video_MouseDoubleClick;
+
             Dispatcher.Invoke(() => Videos.Add(media));
+
+            // 🔹 Uruchom doczytywanie metadanych w tle bez blokowania UI
+            _ = media.LoadMetadataAsync();
+
             this.WriteLine($"PlaylistView: Added video {media.Name}");
         });
     }
+    /*public Task AddAsync(VideoItem media)
+    {
+        return Task.Run(() =>
+        {
+            if (media == null || Contains(media)) return;
+            media.SetPlayer(_player);
+            media.PositionChanged += Video_PositionChanged;
+            media.MouseDown += Video_MouseDoubleClick;
+            Dispatcher.Invoke(() => Videos.Add(media));
+            this.WriteLine($"PlaylistView: Added video {media.Name}");
+        });
+    }*/
 
     /// <summary>
     /// Adds multiple videos to the playlist and sets up their player and event handlers in a background task.
@@ -1270,400 +1270,5 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
             remove { CommandManager.RequerySuggested -= value; }
         }
     }
-
     #endregion
 }
-
-
-
-
-/*public PlaylistView()
-{
-    InitializeComponent();
-
-    base.DataContext = this;
-    base.ItemsSource = Videos;
-
-    // Enable drag-and-drop
-    AllowDrop = true;
-
-    // Initialize commands
-    AddCommand = new RelayCommand(Add);
-    RemoveCommand = new RelayCommand(Remove);
-    EditCommand = new RelayCommand(Edit);
-    CloseCommand = new RelayCommand(Close);
-    SavePlaylistCommand = new RelayCommand(SavePlaylist);
-    LoadPlaylistCommand = new RelayCommand(LoadPlaylist);
-
-    // Initialize the context menu
-    _rightClickMenu = new ContextMenu();
-    MenuItem playItem = new MenuItem { Header = "Play" };
-    MenuItem removeItem = new MenuItem { Header = "Remove" };
-    MenuItem moveToTopItem = new MenuItem { Header = "Move to Top" };
-    MenuItem moveUpper = new MenuItem { Header = "Move Upper" };
-    MenuItem moveLower = new MenuItem { Header = "Move Lower" };
-    _rightClickMenu.Items.Add(playItem);
-    _rightClickMenu.Items.Add(removeItem);
-    _rightClickMenu.Items.Add(moveUpper);
-    _rightClickMenu.Items.Add(moveLower);
-    _rightClickMenu.Items.Add(moveToTopItem);
-
-    // Event handlers for menu items
-    playItem.Click += MenuItemPlay_Click;
-    removeItem.Click += MenuItemRemove_Click;
-    moveToTopItem.Click += MenuItemMoveToTop_Click;
-    moveUpper.Click += MenuItemMoveUpper_Click;
-    moveLower.Click += MenuItemMoveLower_Click;
-
-    // Set the context menu for the ListView
-    this.ContextMenu = _rightClickMenu;
-
-    // Subscribe to mouse events
-    this.MouseDoubleClick += Video_MouseDoubleClick;
-}*/
-
-/*/// <summary>
-/// Overrides the PreviewMouseLeftButtonDown event to capture the start of a potential drag operation.
-/// </summary>
-/// <param name="e">The mouse button event arguments.</param>
-/// <remarks>
-/// Identifies the ListViewItem under the mouse and stores the dragged VideoItem and its index.
-/// </remarks>
-protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)
-{
-    base.OnPreviewMouseLeftButtonDown(e);
-    var listViewItem = FindAncestor<ListViewItem>((DependencyObject)e.OriginalSource);
-    if (listViewItem != null)
-    {
-        _draggedItem = (VideoItem)listViewItem.DataContext;
-        _draggedIndex = Videos.IndexOf(_draggedItem);
-    }
-}
-
-/// <summary>
-/// Overrides the MouseMove event to initiate drag-and-drop if the left button is pressed and an item is selected.
-/// </summary>
-/// <param name="e">The mouse event arguments.</param>
-/// <remarks>
-/// Starts the drag operation using DragDrop.DoDragDrop with Move effect.
-/// </remarks>
-protected override void OnMouseMove(MouseEventArgs e)
-{
-    if (e.LeftButton == MouseButtonState.Pressed && _draggedItem != null)
-    {
-        // Znajdź ScrollViewer (kontener ListView) dla AdornerLayer
-        _adornerLayer = AdornerLayer.GetAdornerLayer(this);
-        if (_adornerLayer == null)
-            _adornerLayer = AdornerLayer.GetAdornerLayer(Parent as UIElement);
-
-        // Stwórz kopię przeciąganego ListViewItem
-        var draggedContainer = ItemContainerGenerator.ContainerFromItem(_draggedItem) as ListViewItem;
-        if (draggedContainer != null)
-        {
-            var childCopy = new ListViewItem { DataContext = _draggedItem };  // Kopia z tym samym DataContext
-            childCopy.Content = draggedContainer.Content;  // Skopiuj wizualnie
-            _dragAdorner = new DragShadowAdorner(this, childCopy);  // Adorner z cieniem
-            _adornerLayer.Add(_dragAdorner);  // Dodaj do warstwy
-        }
-
-        var data = new DataObject(typeof(VideoItem), _draggedItem);
-        DragDrop.DoDragDrop(this, data, DragDropEffects.Move);
-    }
-    base.OnMouseMove(e);
-}
-
-/// <summary>
-/// Overrides the DragOver event to handle real-time reordering during drag.
-/// </summary>
-/// <param name="e">The drag event arguments.</param>
-/// <remarks>
-/// Calculates the target item under the mouse, moves the dragged item if different,
-/// and sets visual feedback (IsDragOver) on the target ListViewItem.
-/// </remarks>
-protected override void OnDragOver(DragEventArgs e)
-{
-    base.OnDragOver(e);
-    e.Effects = DragDropEffects.None;
-
-    // Reset IsDragOver dla wszystkich elementów
-    foreach (var item in Items)
-    {
-        if (ItemContainerGenerator.ContainerFromItem(item) is ListViewItem listViewItem)
-        {
-            DragDropHelper.SetIsDragOver(listViewItem, false);
-        }
-    }
-
-    if (e.Data.GetDataPresent(typeof(VideoItem)))
-    {
-        var targetPoint = e.GetPosition(this);
-        var (targetItem, insertAfter) = GetItemAtPoint(targetPoint);
-        if (targetItem != null)
-        {
-            int targetIndex = Videos.IndexOf(targetItem);
-            if (targetIndex >= 0 && targetIndex != _lastTargetIndex && targetIndex != _draggedIndex)
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    Videos.Move(_draggedIndex, targetIndex);
-                    _draggedIndex = targetIndex;
-                    _lastTargetIndex = targetIndex;
-                });
-            }
-            // Ustaw IsDragOver na elemencie docelowym
-            var listViewItem = FindAncestor<ListViewItem>((DependencyObject)VisualTreeHelper.HitTest(this, targetPoint)?.VisualHit);
-            if (listViewItem != null)
-            {
-                DragDropHelper.SetIsDragOver(listViewItem, true);
-            }
-            e.Effects = DragDropEffects.Move;
-        }
-    }
-    e.Handled = true;
-}
-
-/// <summary>
-/// Overrides the DragLeave event to reset visual feedback on all items.
-/// </summary>
-/// <param name="e">The drag event arguments.</param>
-/// <remarks>
-/// Clears IsDragOver state when the drag leaves the ListView bounds.
-/// </remarks>
-protected override void OnDragLeave(DragEventArgs e)
-{
-    foreach (var item in Items)
-    {
-        if (ItemContainerGenerator.ContainerFromItem(item) is ListViewItem listViewItem)
-        {
-            DragDropHelper.SetIsDragOver(listViewItem, false);
-        }
-    }
-    if (_dragAdorner != null && _adornerLayer != null)
-    {
-        _adornerLayer.Remove(_dragAdorner);
-        _dragAdorner = null;
-        _adornerLayer = null;
-    }
-    e.Handled = true;
-    base.OnDragLeave(e);
-}
-
-/// <summary>
-/// Overrides the Drop event to finalize the reorder operation.
-/// </summary>
-/// <param name="e">The drag event arguments.</param>
-/// <remarks>
-/// Calculates the final drop position, moves the item if needed, resets drag state, and logs the action.
-/// </remarks>
-protected override void OnDrop(DragEventArgs e)
-{
-    base.OnDrop(e);
-    foreach (var item in Items)
-    {
-        if (ItemContainerGenerator.ContainerFromItem(item) is ListViewItem listViewItem)
-        {
-            DragDropHelper.SetIsDragOver(listViewItem, false);
-        }
-    }
-    if (e.Data.GetDataPresent(typeof(VideoItem)))
-    {
-        var droppedItem = (VideoItem)e.Data.GetData(typeof(VideoItem));
-        var targetPoint = e.GetPosition(this);
-        var (targetItem, insertAfter) = GetItemAtPoint(targetPoint);
-        if (targetItem != null)
-        {
-            int targetIndex = Videos.IndexOf(targetItem);
-            if (targetIndex >= 0 && targetIndex != _draggedIndex)
-            {
-                if (_draggedIndex != -1)
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        Videos.Move(_draggedIndex, targetIndex);
-                        this.WriteLine($"PlaylistView: Moved video {droppedItem.Name}:{_draggedIndex} to index {targetIndex}");
-                    });
-                }
-            }
-        }
-    }
-    if (_dragAdorner != null && _adornerLayer != null)
-    {
-        _adornerLayer.Remove(_dragAdorner);
-        _dragAdorner = null;
-        _adornerLayer = null;
-    }
-    _draggedItem = null;
-    _draggedIndex = -1;
-    _lastTargetIndex = -1;
-    e.Handled = true;
-}*/
-/*
-/// <summary>
-/// Determines the target item and insert position (before/after) based on the drop point.
-/// </summary>
-/// <param name="point">The point in ListView coordinates to test.</param>
-/// <returns>A tuple containing the target VideoItem and a bool indicating if insertion is after the item.</returns>
-private (VideoItem, bool) GetItemAtPoint(Point point)
-{
-    var hitTestResult = VisualTreeHelper.HitTest(this, point);
-    if (hitTestResult != null)
-    {
-        var listViewItem = FindAncestor<ListViewItem>((DependencyObject)hitTestResult.VisualHit);
-        if (listViewItem != null)
-        {
-            var item = (VideoItem)listViewItem.DataContext;
-            if (item != null && Videos.Contains(item))
-            {
-                // Oblicz pozycję kursora względem ListViewItem
-                var relativePoint = point;
-                var scrollViewer = FindAncestor<ScrollViewer>(this);
-                if (scrollViewer != null)
-                {
-                    relativePoint = this.TranslatePoint(point, listViewItem);
-                }
-                var itemHeight = listViewItem.ActualHeight;
-                bool insertAfter = relativePoint.Y > itemHeight / 2;
-                return (item, insertAfter);
-            }
-        }
-    }
-    return (null, false);
-}
-
-/// <summary>
-/// Recursively finds the ancestor of the specified type in the visual tree.
-/// </summary>
-/// <typeparam name="T">The type of ancestor to find (e.g., ListViewItem).</typeparam>
-/// <param name="current">The starting DependencyObject to search from.</param>
-/// <returns>The ancestor of type T, or null if not found.</returns>
-private static T FindAncestor<T>(DependencyObject current) where T : DependencyObject
-{
-    while (current != null && !(current is T))
-    {
-        current = VisualTreeHelper.GetParent(current);
-    }
-    return current as T;
-}
-
-/// <summary>
-/// Gets the insert index based on drop position.
-/// </summary>
-/// <param name="position">The drop position in ListView coordinates.</param>
-/// <returns>The zero-based index where the item should be inserted.</returns>
-private int GetInsertIndex(Point position)
-{
-    if (Videos == null || Videos.Count == 0) return 0;
-    HitTestResult hitTest = VisualTreeHelper.HitTest(this, position);
-    ListViewItem item = FindAncestor<ListViewItem>((DependencyObject)hitTest.VisualHit);
-    if (item != null)
-    {
-        return ItemContainerGenerator.IndexFromContainer(item);
-    }
-    return Videos.Count;
-}
-
-/// <summary>
-/// Checks if the file path represents a supported media format.
-/// </summary>
-/// <param name="filePath">The file path to validate.</param>
-/// <returns>True if the extension matches a supported video format; otherwise, false.</returns>
-private bool IsSupportedMediaFile(string filePath)
-{
-    if (string.IsNullOrEmpty(filePath)) return false;
-    string[] supportedExtensions = { ".mp4", ".mkv", ".avi", ".mov", ".flv", ".wmv", ".m4v", ".webm" };
-    string extension = System.IO.Path.GetExtension(filePath)?.ToLowerInvariant();
-    return supportedExtensions.Contains(extension);
-}
-
-/// <summary>
-/// Handles the MouseLeave event to reset the dragging state and remove the adorner.
-/// </summary>
-/// <param name="sender">The event sender.</param>
-/// <param name="e">The mouse event arguments.</param>
-private void OnMouseLeave(object sender, MouseEventArgs e)
-{
-    if (e.LeftButton == MouseButtonState.Pressed && _isDragging)
-    {
-        _isDragging = false;
-    }
-    _draggedItem = null;
-    _draggedIndex = -1;
-    _lastTargetIndex = -1;
-}*/
-/*
-/// <summary>
-/// Handles the Click event for the "Play" context menu item.
-/// </summary>
-/// <param name="sender">The event sender (MenuItem).</param>
-/// <param name="e">The routed event arguments.</param>
-private void MenuItemPlay_Click(object sender, RoutedEventArgs e)
-{
-    if (SelectedItem != null)
-        PlayVideo(SelectedItem as VideoItem);
-}
-
-/// <summary>
-/// Handles the Click event for the "Move to Top" context menu item.
-/// </summary>
-/// <param name="sender">The event sender (MenuItem).</param>
-/// <param name="e">The routed event arguments.</param>
-private void MenuItemMoveToTop_Click(object sender, RoutedEventArgs e)
-{
-    if (SelectedItem != null)
-        MoveVideoToTop(SelectedItem as VideoItem);
-}
-
-/// <summary>
-/// Handles the Click event for the "Remove" context menu item.
-/// </summary>
-/// <param name="sender">The event sender (MenuItem).</param>
-/// <param name="e">The routed event arguments.</param>
-private void MenuItemRemove_Click(object sender, RoutedEventArgs e)
-{
-    if (SelectedItem != null)
-        RemoveVideo(SelectedItem as VideoItem);
-}
-
-/// <summary>
-/// Handles the Click event for the "Move Upper" context menu item.
-/// </summary>
-/// <param name="sender">The event sender (MenuItem).</param>
-/// <param name="e">The routed event arguments.</param>
-/// <remarks>
-/// Moves the selected item up one position if not already at the top.
-/// </remarks>
-private void MenuItemMoveUpper_Click(object sender, RoutedEventArgs e)
-{
-    if (SelectedItem != null)
-    {
-        VideoItem video = SelectedItem as VideoItem;
-        int currentIndex = Videos.IndexOf(video);
-        if (currentIndex > 0)
-        {
-            Dispatcher.Invoke(() => Videos.Move(currentIndex, currentIndex - 1));
-            this.WriteLine($"PlaylistView: Moved video {video.Name} upper");
-        }
-    }
-}
-
-/// <summary>
-/// Handles the Click event for the "Move Lower" context menu item.
-/// </summary>
-/// <param name="sender">The event sender (MenuItem).</param>
-/// <param name="e">The routed event arguments.</param>
-/// <remarks>
-/// Moves the selected item down one position if not already at the bottom.
-/// </remarks>
-private void MenuItemMoveLower_Click(object sender, RoutedEventArgs e)
-{
-    if (SelectedItem != null)
-    {
-        VideoItem video = SelectedItem as VideoItem;
-        int currentIndex = Videos.IndexOf(video);
-        if (currentIndex < Videos.Count - 1)
-        {
-            Dispatcher.Invoke(() => Videos.Move(currentIndex, currentIndex + 1));
-            this.WriteLine($"PlaylistView: Moved video {video.Name} lower");
-        }
-    }
-}*/

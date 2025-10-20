@@ -1,4 +1,4 @@
-// Version: 0.1.0.95
+// Version: 0.1.1.13
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -158,6 +158,28 @@ namespace Thmd.Controls.Effects
             }*/
 
             // 5. Rotacja
+            BeatRotate.Angle = Math.Sin(_time * PRIMARY_BEAT_FREQUENCY * Math.PI) * 5;
+        }
+
+        public void ForceUpdate(double deltaTime)
+        {
+            _time += deltaTime;
+
+            double primaryBeat = Math.Abs(Math.Sin(_time * PRIMARY_BEAT_FREQUENCY * Math.PI));
+            double secondaryBeat = Math.Abs(Math.Sin(_time * SECONDARY_BEAT_FREQUENCY * Math.PI));
+            double combinedBeat = (primaryBeat * 0.7 + secondaryBeat * 0.3);
+            double scaleFactor = 1.0 + Math.Pow(combinedBeat, 1.5) * 0.08;
+
+            BeatScale.ScaleX = scaleFactor;
+            BeatScale.ScaleY = scaleFactor;
+
+            double pulseVibration = Math.Pow(primaryBeat, 3) * 4;
+            BeatTranslate.X = Math.Sin(_time * 15) * pulseVibration;
+            BeatTranslate.Y = Math.Cos(_time * 18) * pulseVibration;
+
+            BeatSkew.AngleX = combinedBeat * 2.5;
+            BeatSkew.AngleY = combinedBeat * 1.5;
+
             BeatRotate.Angle = Math.Sin(_time * PRIMARY_BEAT_FREQUENCY * Math.PI) * 5;
         }
     }

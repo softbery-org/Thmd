@@ -1,4 +1,4 @@
-// Version: 0.2.0.1
+// Version: 0.2.0.19
 
 using System;
 using System.IO;
@@ -44,6 +44,7 @@ public sealed class Config
     public bool EnableLibVlc { get; set; } = true;
     public bool EnableConsoleLogging { get; set; } = true;
     public LogLevel LogLevel { get; set; } = LogLevel.Info;
+    public bool Question_AutoLoadPlaylist { get; set; } = true;
     public SubtitleConfig SubtitleConfig { get; set; } = new(24.0, "Arial", System.Windows.Media.Brushes.WhiteSmoke, true);
 
     public IPlaylistConfig PlaylistConfig
