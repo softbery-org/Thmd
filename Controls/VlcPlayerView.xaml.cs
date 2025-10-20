@@ -427,12 +427,11 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
 
                     for (int i = 0; i < pl.MediaList.Count; i++)
                     {
-                        var item = new VideoItem(pl.MediaList[i], deferMetadata: true);
-                        var media = new VideoItem(pl.MediaList[i]);
+                        var media = new VideoItem(pl.MediaList[i], deferMetadata: true);
                         media.SubtitlePath = pl.Subtitles[i];
                         media.Indents = pl.Indents;
-                        //_playlist.AddAsync(media);
-                        await _playlist.AddAsync(item);
+                        
+                        await _playlist.AddAsync(media);
                     }
 
                     _playlist.Width = pl.Size.Width;
