@@ -1,4 +1,4 @@
-// Version: 0.1.0.18
+// Version: 0.1.0.19
 using System;
 using System.Collections.Generic;
 using System.IO.Ports;

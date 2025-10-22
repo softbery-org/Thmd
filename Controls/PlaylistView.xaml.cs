@@ -1,4 +1,4 @@
-// Version: 0.1.13.73
+// Version: 0.1.13.74
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -1011,18 +1011,6 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
             this.WriteLine($"PlaylistView: Added video {media.Name}");
         });
     }
-    /*public Task AddAsync(VideoItem media)
-    {
-        return Task.Run(() =>
-        {
-            if (media == null || Contains(media)) return;
-            media.SetPlayer(_player);
-            media.PositionChanged += Video_PositionChanged;
-            media.MouseDown += Video_MouseDoubleClick;
-            Dispatcher.Invoke(() => Videos.Add(media));
-            this.WriteLine($"PlaylistView: Added video {media.Name}");
-        });
-    }*/
 
     /// <summary>
     /// Adds multiple videos to the playlist and sets up their player and event handlers in a background task.

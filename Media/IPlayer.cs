@@ -1,4 +1,4 @@
-// Version: 0.1.17.6
+// Version: 0.1.17.7
 using System;
 using System.ComponentModel;
 using System.Windows;

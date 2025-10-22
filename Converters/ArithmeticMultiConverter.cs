@@ -47,4 +47,4 @@ public class ArithmeticMultiConverter : IMultiValueConverter
         return null; // For one-way operations
     }
 }
-// Version: 0.1.0.33
+// Version: 0.1.0.34
