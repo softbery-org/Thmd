@@ -65,6 +65,7 @@ public partial class ProgressBarView : UserControl, INotifyPropertyChanged
     /// </remarks>
     public ProgressBarView()
     {
+        Core.Initialize();
         InitializeComponent();
 
         DataContext = this;
@@ -89,7 +90,6 @@ public partial class ProgressBarView : UserControl, INotifyPropertyChanged
                 if (frame != null)
                 {
                     _popupImage.Source = BitmapHelper.BitmapToImageSource(frame);
-                    //_previewImage.Visibility = Visibility.Visible;
                 }
             }
         };
@@ -109,7 +109,6 @@ public partial class ProgressBarView : UserControl, INotifyPropertyChanged
     private void Popup_MouseLeave(object sender, MouseEventArgs e)
     {
         _popup.IsOpen = false;
-        //_previewImage.Visibility = Visibility.Collapsed;
     }
 
     /// <summary>
@@ -215,17 +214,10 @@ public partial class ProgressBarView : UserControl, INotifyPropertyChanged
             "--intf", "dummy",
             "--no-sout-display-video",
             "--no-osd",
+            "--network-caching=100",
             "--avcodec-hw=none"
         );
             using var media = new LibVLCSharp.Shared.Media(lib, _player.Playlist.Current.Uri.LocalPath, FromType.FromPath);
-            media.AddOption(":no-video-title-show");
-            media.AddOption(":no-audio");
-            media.AddOption(":vout=dummy");            // <-- kluczowy parametr
-            media.AddOption(":no-xlib");
-            media.AddOption(":no-sout-display-video");
-            media.AddOption(":avcodec-hw=none");
-            media.AddOption(":network-caching=100");
-
             using var previewPlayer = new MediaPlayer(media);
 
             var tcs = new TaskCompletionSource<bool>();
