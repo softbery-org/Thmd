@@ -19,4 +19,4 @@ namespace Thmd.Configuration
         }
     }
 }
-// Version: 0.1.5.31
+// Version: 0.1.5.32

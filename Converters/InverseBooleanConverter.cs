@@ -32,4 +32,4 @@ public static class InverseBooleanConverter
         return Convert(value, targetType, parameter, culture);
     }
 }
-// Version: 0.1.0.35
+// Version: 0.1.0.36

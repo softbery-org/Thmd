@@ -1,4 +1,4 @@
-// Version: 0.1.9.6
+// Version: 0.1.9.7
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

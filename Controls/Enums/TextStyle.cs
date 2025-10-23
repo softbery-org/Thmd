@@ -23,4 +23,4 @@ namespace Thmd.Controls.Enums
         BoldItalic
     }
 }
-// Version: 0.1.1.81
+// Version: 0.1.1.82

@@ -1,4 +1,4 @@
-// Version: 0.1.17.13
+// Version: 0.1.17.14
 namespace Thmd.Logs;
 
 public enum LoggerLevel

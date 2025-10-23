@@ -1,4 +1,4 @@
-// Version: 0.2.0.21
+// Version: 0.2.0.23
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +15,11 @@ public static class Logger
 {
     private static readonly List<string> _categories = new() { "Console", "File" };
     private static AsyncLogger _log = new();
-    public static Config Config { get; set; } = Config.Instance;
+    public static Config Config
+    { 
+        get; 
+        set;
+    } = Config.Instance;
 
     /// <summary>
     /// Zwraca instancj� loggera asynchronicznego.
