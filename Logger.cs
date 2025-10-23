@@ -1,4 +1,4 @@
-// Version: 0.2.0.23
+// Version: 0.2.0.24
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +15,9 @@ public static class Logger
 {
     private static readonly List<string> _categories = new() { "Console", "File" };
     private static AsyncLogger _log = new();
+    /// <summary>
+    /// Zwraca lub ustawia instancję konfiguracji aplikacji.
+    /// </summary>
     public static Config Config
     { 
         get; 
