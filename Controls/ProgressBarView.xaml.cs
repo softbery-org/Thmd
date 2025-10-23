@@ -1,8 +1,11 @@
-// Version: 0.1.10.46
+// Version: 0.1.10.60
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
+using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,8 +13,11 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 
+using LibVLCSharp.Shared;
+
 using Newtonsoft.Json.Linq;
 
+using Thmd.Images;
 using Thmd.Media;
 
 namespace Thmd.Controls;
@@ -27,11 +33,18 @@ public partial class ProgressBarView : UserControl, INotifyPropertyChanged
     /// Backing field for the total media duration.
     /// </summary>
     private TimeSpan _duration;
-
+    /// <summary>
+    /// Backing field for the current progress value (in milliseconds).
+    /// </summary>
+    private double _value = 0.0;
     /// <summary>
     /// Backing field for the buffering progress value (0-100 scale).
     /// </summary>
     private double _bufforBarValue;
+
+    [System.Runtime.InteropServices.DllImport("gdi32.dll")]
+    [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
+    private static extern bool DeleteObject(IntPtr hObject);
 
     /// <summary>
     /// Reference to the associated media player for synchronization and seek operations.
@@ -53,19 +66,32 @@ public partial class ProgressBarView : UserControl, INotifyPropertyChanged
     public ProgressBarView()
     {
         InitializeComponent();
+
         DataContext = this;
         _progressBar.ValueChanged += ProgressBar_ValueChanged;
         _popup.IsOpen = false;
         _popup.MouseLeave += Popup_MouseLeave;
 
-        _progressBar.MouseMove += (s, e) =>
+        _progressBar.MouseMove += async(s, e) =>
         {
             var position = e.GetPosition(_progressBar);
             var previewTime = TimeSpan.FromMilliseconds(position.X / _progressBar.ActualWidth * _progressBar.Maximum);
+
             PopupText = previewTime.ToString(@"hh\:mm\:ss");
             _popup.IsOpen = true;
             _popup.HorizontalOffset = position.X;
-            _rectangleMouseOverPoint.Margin = new Thickness(position.X - 2, 0, 0, 0);  // �rodek indicatora
+            _rectangleMouseOverPoint.Margin = new Thickness(position.X - 2, 0, 0, 0);
+
+            // Pobranie miniatury z danego czasu
+            if (_player != null)
+            {
+                var frame = await GetFrameAtAsync(previewTime);
+                if (frame != null)
+                {
+                    _popupImage.Source = BitmapHelper.BitmapToImageSource(frame);
+                    //_previewImage.Visibility = Visibility.Visible;
+                }
+            }
         };
 
         _progressBar.MouseDown += (s, e) =>
@@ -83,6 +109,7 @@ public partial class ProgressBarView : UserControl, INotifyPropertyChanged
     private void Popup_MouseLeave(object sender, MouseEventArgs e)
     {
         _popup.IsOpen = false;
+        //_previewImage.Visibility = Visibility.Collapsed;
     }
 
     /// <summary>
@@ -170,10 +197,84 @@ public partial class ProgressBarView : UserControl, INotifyPropertyChanged
         }
     }
 
-    /// <summary>
-    /// Backing field for the current progress value (in milliseconds).
-    /// </summary>
-    private double _value = 0.0;
+    public async Task<Bitmap?> GetFrameAtAsync(TimeSpan time, CancellationToken token = default)
+    {
+        if (string.IsNullOrEmpty(_player.Playlist.Current.Uri.LocalPath))
+            return null;
+
+        string tempPath = Path.Combine(Path.GetTempPath(), $"vlc_thumb_{Guid.NewGuid():N}.png");
+
+        try
+        {
+            var lib = new LibVLCSharp.Shared.LibVLC(
+            "--no-xlib",
+            "--vout=dummy",
+            "--aout=dummy",
+            "--no-video-title-show",
+            "--no-sub-autodetect-file",
+            "--intf", "dummy",
+            "--no-sout-display-video",
+            "--no-osd",
+            "--avcodec-hw=none"
+        );
+            using var media = new LibVLCSharp.Shared.Media(lib, _player.Playlist.Current.Uri.LocalPath, FromType.FromPath);
+            media.AddOption(":no-video-title-show");
+            media.AddOption(":no-audio");
+            media.AddOption(":vout=dummy");            // <-- kluczowy parametr
+            media.AddOption(":no-xlib");
+            media.AddOption(":no-sout-display-video");
+            media.AddOption(":avcodec-hw=none");
+            media.AddOption(":network-caching=100");
+
+            using var previewPlayer = new MediaPlayer(media);
+
+            var tcs = new TaskCompletionSource<bool>();
+
+            void SnapshotTaken(object? sender, MediaPlayerSnapshotTakenEventArgs e)
+            {
+                if (File.Exists(e.Filename))
+                    tcs.TrySetResult(true);
+            }
+
+            previewPlayer.SnapshotTaken += SnapshotTaken;
+
+            previewPlayer.Play();
+
+            // Poczekaj aż się rozpocznie odtwarzanie
+            while (previewPlayer.Length <= 0 && !token.IsCancellationRequested)
+                await Task.Delay(50, token);
+
+            if (previewPlayer.Length > 0)
+            {
+                double pos = time.TotalMilliseconds / previewPlayer.Length;
+                previewPlayer.Position = (float)Math.Clamp(pos, 0f, 1f);
+            }
+
+            // Daj LibVLC chwilę na wyrenderowanie
+            await Task.Delay(200, token);
+
+            previewPlayer.TakeSnapshot(0, tempPath, 320, 180);
+
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(token);
+            var completed = await Task.WhenAny(tcs.Task, Task.Delay(2000, cts.Token));
+            if (completed != tcs.Task)
+                return null;
+
+            if (!File.Exists(tempPath))
+                return null;
+
+            using var bmp = new Bitmap(tempPath);
+            return new Bitmap(bmp);
+        }
+        catch
+        {
+            return null;
+        }
+        finally
+        {
+            try { File.Delete(tempPath); } catch { }
+        }
+    }
 
     /// <summary>
     /// Gets or sets the current playback position value (in milliseconds).

@@ -1,7 +1,9 @@
-// Version: 0.1.9.7
+// Version: 0.1.9.14
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -52,9 +54,12 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <returns>The previous execution state.</returns>
     [DllImport("kernel32.dll", SetLastError = true)]
     private static extern uint SetThreadExecutionState(uint esFlags);
-
     [DllImport("kernel32.dll")]
     private static extern IntPtr GetConsoleWindow();
+    [NonSerialized]
+    private DateTime _lastClickTime = DateTime.MinValue;
+    [NonSerialized]
+    private System.Windows.Point _lastClickPosition;
 
     private VLCState _state;
 
@@ -321,7 +326,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         _mediaPlayer.Volume = (int)_volume;
 
         _videoView.MediaPlayer = _mediaPlayer;
-        _videoView.Background = Brushes.Black;
+        _videoView.Background = System.Windows.Media.Brushes.Black;
 
         // Resize helpers for control bar and playlist
         var resizer1 = new ResizeControlHelper(_controlBar);
@@ -465,9 +470,9 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
             //    pl.Indents.Add(new VideoIndent() { Id = 0, Name = "Jump", Start = TimeSpan.Parse("00:01:16"), End = TimeSpan.Parse("00:01:25") });
             //}
         }
-        pl.Size = new Size(Playlist.Width, Playlist.Height);
+        pl.Size = new System.Windows.Size(Playlist.Width, Playlist.Height);
         pl.Current = _playlist.CurrentIndex;
-        pl.Position = new Point(Playlist.Margin.Left, Playlist.Margin.Top);
+        pl.Position = new System.Windows.Point(Playlist.Margin.Left, Playlist.Margin.Top);
         Configuration.Config.SaveToFile("config/playlist.json", pl);
 
         this.WriteLine($"Save playlist in config/playlist.json");
@@ -477,7 +482,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// Applies a grayscale effect to the specified image.
     /// </summary>
     /// <param name="image">The image to apply the effect to.</param>
-    public void ApplyGrayscaleEffect(Image image)
+    public void ApplyGrayscaleEffect(System.Windows.Controls.Image image)
     {
         // Tworzenie bitmapy na podstawie wymiar�w odtwarzacza
         WriteableBitmap bitmap = new WriteableBitmap((int)image.Width, (int)image.Height, 96, 96, PixelFormats.Bgra32, BitmapPalettes.Gray256Transparent);
@@ -506,6 +511,70 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         // Przypisanie do kontrolki Image w XAML
         image.Source = bitmap;
     }
+
+    /// <summary>
+    /// Gets a video frame at the specified time as a Bitmap.
+    /// </summary>
+    /// <param name="time">time span</param>
+    /// <returns>bitmap on time</returns>
+    public Bitmap GetFrameAt(TimeSpan time)
+    {
+        /*if (string.IsNullOrEmpty(_playlist.Current.Uri.LocalPath))
+            return null;
+
+        string tempPath = Path.Combine(Path.GetTempPath(), $"vlc_thumb_{Guid.NewGuid():N}.png");
+
+        try
+        {
+            // 🔸 Tworzymy media z parametrem "--vout=dummy" (bez okna!)
+            using var media = new LibVLCSharp.Shared.Media(_libVLC, _playlist.Current.Uri.LocalPath, FromType.FromPath);
+            media.AddOption(":vout=dummy");            // brak okna wideo
+            media.AddOption(":no-video-title-show");   // brak tytułu
+            media.AddOption(":no-sout-display-video"); // nie pokazuj wyjścia
+            media.AddOption(":avcodec-hw=none");       // bez akceleracji GPU (szybciej dla 1 frame)
+
+            using var previewPlayer = new LibVLCSharp.Shared.MediaPlayer(media);
+
+            // 🔸 Start odtwarzania (bez obrazu)
+            previewPlayer.Play();
+
+            // Poczekaj na inicjalizację
+            System.Threading.Thread.Sleep(300);
+
+            // Oblicz pozycję względem długości filmu
+            double position = 0;
+            if (media.Duration > 0)
+                position = time.TotalMilliseconds / media.Duration;
+            previewPlayer.Position = (float)Math.Min(1.0, Math.Max(0.0, position));
+
+            // Poczekaj na wyrenderowanie klatki (LibVLC działa asynchronicznie)
+            System.Threading.Thread.Sleep(150);
+
+            // 🔸 Snapshot do pliku (bez wyświetlania)
+            previewPlayer.TakeSnapshot(0, tempPath, 320, 180);
+
+            // Poczekaj aż VLC zapisze plik
+            int tries = 10;
+            while (!File.Exists(tempPath) && tries-- > 0)
+                System.Threading.Thread.Sleep(50);
+
+            if (!File.Exists(tempPath))
+                return null;
+
+            using var bmp = new Bitmap(tempPath);
+            return new Bitmap(bmp); // zwracamy kopię (bo zaraz usuniemy plik)
+        }
+        catch
+        {
+            return null;
+        }
+        finally
+        {
+            try { File.Delete(tempPath); } catch { }
+        }*/
+        return null;
+    }
+
 
     /// <summary>
     /// Captures the current video frame as a BitmapSource.
@@ -570,7 +639,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
 
             if (success)
             {
-                MessageBox.Show("Klatka przrekazana ");
+                MessageBox.Show("Klatka przekazana ");
             }
             else
             {
@@ -663,11 +732,6 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         base.OnMouseDoubleClick(e);
     }
 
-
-    [NonSerialized]
-    private DateTime _lastClickTime = DateTime.MinValue;
-    [NonSerialized]
-    private Point _lastClickPosition;
     /// <summary>
     /// Handles left mouse button down events, including double-click detection and play/pause toggle.
     /// </summary>
@@ -675,10 +739,10 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
     {
         DateTime now = DateTime.Now;
-        Point pos = e.GetPosition(this);
+        System.Windows.Point pos = e.GetPosition(this);
         if ((now - _lastClickTime).TotalMilliseconds < System.Windows.Forms.SystemInformation.DoubleClickTime &&
-            Math.Abs(pos.X - _lastClickPosition.X) <= 4 &&
-            Math.Abs(pos.Y - _lastClickPosition.Y) <= 4)
+            System.Math.Abs(pos.X - _lastClickPosition.X) <= 4 &&
+            System.Math.Abs(pos.Y - _lastClickPosition.Y) <= 4)
         {
             OnMouseDoubleClick(e);
             e.Handled = true;
@@ -868,7 +932,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     {
         return new Action(() =>
         {
-            _videoView.Background = Brushes.Black;
+            _videoView.Background = System.Windows.Media.Brushes.Black;
             _fullscreen = ScreenHelper.IsFullscreen;
         });
     }
@@ -942,7 +1006,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         if (DesignerProperties.GetIsInDesignMode(this))
             return;
 
-        Point mousePosition = e.GetPosition(_controlBar.SliderVolume);
+        System.Windows.Point mousePosition = e.GetPosition(_controlBar.SliderVolume);
         double width = _controlBar.SliderVolume.ActualWidth;
         if (width <= 0) return;
 
@@ -975,7 +1039,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         if (DesignerProperties.GetIsInDesignMode(this))
             return;
 
-        Point mousePosition = e.GetPosition(_controlBar.SliderVolume);
+        System.Windows.Point mousePosition = e.GetPosition(_controlBar.SliderVolume);
         double width = _controlBar.SliderVolume.ActualWidth;
         if (width <= 0) return;
 
@@ -1136,7 +1200,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         if (DesignerProperties.GetIsInDesignMode(this))
             return;
 
-        Point mousePosition = e.GetPosition(_progressBar);
+        System.Windows.Point mousePosition = e.GetPosition(_progressBar);
         double actualWidth = _progressBar.ActualWidth;
         if (actualWidth <= 0) return;
 
@@ -1173,7 +1237,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         if (DesignerProperties.GetIsInDesignMode(this))
             return;
 
-        Point mousePosition = e.GetPosition(_progressBar);
+        System.Windows.Point mousePosition = e.GetPosition(_progressBar);
         double width = _progressBar.ActualWidth;
         if (width <= 0) return;
 

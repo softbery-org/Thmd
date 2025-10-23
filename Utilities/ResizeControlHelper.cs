@@ -1,4 +1,4 @@
-// Version: 0.1.10.25
+// Version: 0.1.10.26
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -145,14 +145,14 @@ public class ResizeControlHelper
             }
 
             // Minimalny rozmiar
-            newWidth = Math.Max(newWidth, _element.MinWidth);
-            newHeight = Math.Max(newHeight, _element.MinHeight);
+            newWidth = System.Math.Max(newWidth, _element.MinWidth);
+            newHeight = System.Math.Max(newHeight, _element.MinHeight);
             // Granice okna
             double maxWidth = window.ActualWidth - newMargin.Left;
             double maxHeight = window.ActualHeight - newMargin.Top;
 
-            newWidth = Math.Min(newWidth, maxWidth);
-            newHeight = Math.Min(newHeight, maxHeight);
+            newWidth = System.Math.Min(newWidth, maxWidth);
+            newHeight = System.Math.Min(newHeight, maxHeight);
 
             // Nie pozwalamy na ujemne marginesy
             if (newMargin.Left < 0)
@@ -198,8 +198,8 @@ public class ResizeControlHelper
             double maxLeft = window.ActualWidth - _element.ActualWidth;
             double maxTop = window.ActualHeight - _element.ActualHeight;
 
-            newMargin.Left = Math.Max(0, Math.Min(maxLeft, newMargin.Left));
-            newMargin.Top = Math.Max(0, Math.Min(maxTop, newMargin.Top));
+            newMargin.Left = System.Math.Max(0, System.Math.Min(maxLeft, newMargin.Left));
+            newMargin.Top = System.Math.Max(0, System.Math.Min(maxTop, newMargin.Top));
 
             _element.Margin = newMargin;
             _lastMousePosition = currentPosition;

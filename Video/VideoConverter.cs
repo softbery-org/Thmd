@@ -1,4 +1,4 @@
-// Version: 0.1.17.15
+// Version: 0.1.17.16
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -144,7 +144,7 @@ namespace Thmd.Video
             if (match.Success && double.TryParse(match.Groups[1].Value, out double outTimeMs))
             {
                 double currentSeconds = outTimeMs / 1_000_000.0;
-                int percent = (int)Math.Min((currentSeconds / totalDuration) * 100, 100);
+                int percent = (int)System.Math.Min((currentSeconds / totalDuration) * 100, 100);
                 ProgressChanged?.Invoke(percent);
             }
         }

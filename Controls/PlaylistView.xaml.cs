@@ -1,4 +1,4 @@
-// Version: 0.1.13.76
+// Version: 0.1.13.77
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -477,8 +477,8 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
             Point pos = e.GetPosition(this);
             Vector diff = _startPoint - pos;
 
-            if (Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
-                Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)
+            if (System.Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
+                System.Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)
             {
                 // 🔹 Sprawdź, czy mysz znajduje się nad elementem listy
                 var sourceElement = e.OriginalSource as DependencyObject;
@@ -960,7 +960,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
                     }
                     else if (index == CurrentIndex && Videos.Count > 0)
                     {
-                        CurrentIndex = Math.Min(CurrentIndex, Videos.Count - 1);
+                        CurrentIndex = System.Math.Min(CurrentIndex, Videos.Count - 1);
                     }
                     else if (Videos.Count == 0)
                     {
@@ -1137,7 +1137,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         else
         {
             _scrollVelocity *= ScrollDamping;
-            if (Math.Abs(_scrollVelocity) < 0.1)
+            if (System.Math.Abs(_scrollVelocity) < 0.1)
             {
                 _scrollTimer.Stop();
                 HideIndicator(top: true);
@@ -1162,10 +1162,10 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         if (_scrollViewer == null)
             return;
 
-        if (Math.Abs(_scrollVelocity) > 0.05)
+        if (System.Math.Abs(_scrollVelocity) > 0.05)
         {
             _scrollViewer.ScrollToVerticalOffset(
-                Math.Max(0, _scrollViewer.VerticalOffset + _scrollVelocity));
+                System.Math.Max(0, _scrollViewer.VerticalOffset + _scrollVelocity));
             _scrollVelocity *= ScrollDamping;
         }
         else

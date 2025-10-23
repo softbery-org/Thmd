@@ -1,4 +1,4 @@
-// Version: 0.1.17.14
+// Version: 0.1.17.15
 using System;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -79,8 +79,8 @@ public static class WindowPropertiesExtensions
 			Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
 		}
 		W32Rect monitor = monInfo.WorkArea;
-		double offsetX = Math.Round(window.Width / 2.0);
-		double offsetY = Math.Round(window.Height / 2.0);
+		double offsetX = System.Math.Round(window.Width / 2.0);
+		double offsetY = System.Math.Round(window.Height / 2.0);
 		double top = pt.Y - offsetY;
 		double left = pt.X - offsetX;
 		Rect screen = new Rect(new Point(monitor.Left, monitor.Top), new Point(monitor.Right, monitor.Bottom));
@@ -91,7 +91,7 @@ public static class WindowPropertiesExtensions
 		{
 			if (wnd.Top < screen.Top)
 			{
-				double diff = Math.Abs(screen.Top - wnd.Top);
+				double diff = System.Math.Abs(screen.Top - wnd.Top);
 				window.Top = wnd.Top + diff;
 			}
 			if (wnd.Bottom > screen.Bottom)
@@ -101,7 +101,7 @@ public static class WindowPropertiesExtensions
 			}
 			if (wnd.Left < screen.Left)
 			{
-				double diff3 = Math.Abs(screen.Left - wnd.Left);
+				double diff3 = System.Math.Abs(screen.Left - wnd.Left);
 				window.Left = wnd.Left + diff3;
 			}
 			if (wnd.Right > screen.Right)

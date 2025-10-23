@@ -135,9 +135,12 @@
                PlacementTarget="{Binding ElementName=_progressBar}" 
                Placement="Top" 
                AllowsTransparency="True">
-            <TextBlock x:Name="_popupText" 
+            <StackPanel Background="#222" Orientation="Vertical">
+                <Image x:Name="_popupImage" Width="160" Height="90" Stretch="UniformToFill" Visibility="Visible"/>
+                <TextBlock x:Name="_popupText" 
                        Text="{Binding PopupText, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                        Style="{StaticResource PopupTextStyle}"/>
+            </StackPanel>
         </Popup>
     </Grid>
 </UserControl>

@@ -1,12 +1,10 @@
-// Version: 0.1.14.27
+// Version: 0.1.14.28
 using System;
 
-namespace Thmd.Converters
-{
     /// <summary>
     /// Static math class
     /// </summary>
-    public static class MathClampConverter
+    public static class Math
     {
         /// <summary>
         /// Clamps the specified value to be within the inclusive range defined by the minimum and maximum values.
@@ -35,4 +33,3 @@ namespace Thmd.Converters
             return System.Math.Max(min, System.Math.Min(max, value));
         }
     }
-}

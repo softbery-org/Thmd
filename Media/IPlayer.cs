@@ -1,4 +1,4 @@
-// Version: 0.1.17.9
+// Version: 0.1.17.10
 using System;
 using System.ComponentModel;
 using System.Windows;
@@ -8,6 +8,7 @@ using Thmd.Repeats;
 
 using LibVLCSharp.Shared;
 using System.Windows.Media.Imaging;
+using System.Drawing;
 
 namespace Thmd.Media
 {
@@ -134,6 +135,13 @@ namespace Thmd.Media
         /// </summary>
         /// <returns>The current video frame.</returns>
         BitmapSource GetCurrentFrame();
+
+        /// <summary>
+        /// Gets the video frame at the specified time as a <see cref="Bitmap"/>.
+        /// </summary>
+        /// <param name="time">Time span</param>
+        /// <returns>bitmap from time span</returns>
+        Bitmap GetFrameAt(TimeSpan time);
 
         /// <summary>
         /// Releases all resources used by the player.
