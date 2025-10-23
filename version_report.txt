@@ -1,0 +1,2 @@
+F:\dev\Thmd\Thmd\version_report.txt -> 1.0.0.1
+F:\dev\Thmd\Thmd\obj\Release\net48\.NETFramework,Version=v4.8.AssemblyAttributes.cs -> 1.0.0.1

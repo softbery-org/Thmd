@@ -45,4 +45,4 @@ public static class PercentageConverter
         return 0.0;
     }
 }
-// Version: 0.1.0.34
+// Version: 0.1.0.35

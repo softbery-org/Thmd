@@ -1,27 +1,21 @@
-// Version: 0.1.9.4
+// Version: 0.1.9.6
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 using LibVLCSharp.Shared;
 
-using Microsoft.VisualBasic;
 using Microsoft.Win32;
-using Microsoft.Xaml.Behaviors;
 
 using Thmd.Configuration;
 using Thmd.Consolas;
@@ -29,8 +23,6 @@ using Thmd.Converters;
 using Thmd.Devices.Keyboards;
 using Thmd.Media;
 using Thmd.Utilities;
-
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace Thmd.Controls;
 
