@@ -1,4 +1,4 @@
-// Version: 0.1.13.77
+// Version: 0.1.13.81
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -10,7 +10,6 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
 using Thmd.Configuration;
@@ -96,6 +95,11 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     /// Gets the command to load a playlist from configuration.
     /// </summary>
     public ICommand LoadPlaylistCommand { get; private set; }
+
+    /// <summary>
+    /// Gets the command to clear all videos from the playlist.
+    /// </summary>
+    public ICommand ClearPlaylistCommand { get; private set; }
 
     #endregion
 
@@ -314,7 +318,6 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     /// Occurs when a property value changes, used for data binding.
     /// </summary>
     public event PropertyChangedEventHandler PropertyChanged;
-
     #endregion
 
     #region Constructor
@@ -333,6 +336,9 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     public PlaylistView()
     {
         InitializeComponent();
+
+        InitCommands();
+
         DataContext = this;
         ItemsSource = Videos;
         AllowDrop = true;
@@ -805,7 +811,32 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
 
     #endregion
 
-    #region Methods
+    #region Methods for Commands
+
+    private void InitCommands()
+    {
+        AddCommand = new RelayCommand(
+            execute: Add,
+            canExecute: _ => true);
+        RemoveCommand = new RelayCommand(
+            execute: Remove,
+            canExecute: _ => this._videos.Count > 0);
+        EditCommand = new RelayCommand(
+            execute: Edit,
+            canExecute: _ => this._videos.Count > 0);
+        CloseCommand = new RelayCommand(
+            execute: Close,
+            canExecute: _ => true);
+        SavePlaylistCommand = new RelayCommand(
+            execute: SavePlaylist,
+            canExecute: _ => this._videos.Count > 0);
+        LoadPlaylistCommand = new RelayCommand(
+            execute: LoadPlaylist,
+            canExecute: _ => true);
+        ClearPlaylistCommand = new RelayCommand(
+            execute: _ => ClearTracksAsync(),
+            canExecute: _ => this._videos.Count > 0);
+    }
 
     /// <summary>
     /// Handles the Add command execution.
@@ -819,7 +850,22 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         // Logika dla dodawania elementu do playlisty
         //MessageBox.Show("Dodawanie nowego elementu do playlisty.");
         _player.GetCurrentFrame();
+        var ofd = new Microsoft.Win32.OpenFileDialog
+        {
+            Title = "Select Media File",
+            Filter = "Media Files|*.mp4;*.mkv;*.avi;*.mov;*.wmv;*.flv;*.mp3;*.wav;*.flac;*.ts|All Files|*.*",
+            Multiselect = true
+        };
 
+        bool? result = ofd.ShowDialog();
+        if (result == true)
+        {
+            foreach (string filename in ofd.FileNames)
+            {
+                var video = new VideoItem(filename);
+                this.AddAsync(video);
+            }
+        }
     }
 
     /// <summary>

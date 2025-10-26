@@ -1,4 +1,4 @@
-// Version: 0.1.17.16
+// Version: 0.1.17.17
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -16,17 +16,17 @@ namespace Thmd.Video
         /// <summary>
         /// Occurs when the conversion progress changes (in percent).
         /// </summary>
-        public event Action<int>? ProgressChanged;
+        public event Action<int> ProgressChanged;
 
         /// <summary>
         /// Occurs when the conversion process completes successfully.
         /// </summary>
-        public event Action<string>? ConversionCompleted;
+        public event Action<string> ConversionCompleted;
 
         /// <summary>
         /// Occurs when the conversion process fails.
         /// </summary>
-        public event Action<string>? ConversionFailed;
+        public event Action<string> ConversionFailed;
 
         private readonly string _ffmpegPath;
         private readonly string _ffprobePath;
@@ -114,7 +114,7 @@ namespace Thmd.Video
 
                 process.Start();
 
-                string? output = await process.StandardOutput.ReadToEndAsync();
+                string output = await process.StandardOutput.ReadToEndAsync();
                 await Task.Run(() => process.WaitForExit());
 
                 if (double.TryParse(output, NumberStyles.Any, CultureInfo.InvariantCulture, out double duration))
@@ -134,7 +134,7 @@ namespace Thmd.Video
         /// </summary>
         /// <param name="data">A line of text from FFmpeg's stderr stream.</param>
         /// <param name="totalDuration">The total duration of the video in seconds.</param>
-        private void ParseProgress(string? data, double totalDuration)
+        private void ParseProgress(string data, double totalDuration)
         {
             if (string.IsNullOrWhiteSpace(data))
                 return;

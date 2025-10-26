@@ -392,6 +392,7 @@
                     <Button Content="Edit" Command="{Binding EditCommand, RelativeSource={RelativeSource AncestorType={x:Type local:PlaylistView}}}" Style="{StaticResource ToolBarButtonStyle}"/>
                     <Button Content="Save" Command="{Binding SavePlaylistCommand, RelativeSource={RelativeSource AncestorType={x:Type local:PlaylistView}}}" Style="{StaticResource ToolBarButtonStyle}"/>
                     <Button Content="Load" Command="{Binding LoadPlaylistCommand, RelativeSource={RelativeSource AncestorType={x:Type local:PlaylistView}}}" Style="{StaticResource ToolBarButtonStyle}"/>
+                    <Button Content="Clear" Command="{Binding ClearPlaylistCommand, RelativeSource={RelativeSource AncestorType={x:Type local:PlaylistView}}}" Style="{StaticResource ToolBarButtonStyle}"/>
                     <StackPanel/>
                     <Button Content="X" Command="{Binding CloseCommand, RelativeSource={RelativeSource AncestorType={x:Type local:PlaylistView}}}" Style="{StaticResource ToolBarButtonStyle}" HorizontalAlignment="Right"/>
                 </DockPanel>

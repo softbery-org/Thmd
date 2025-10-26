@@ -1,0 +1,74 @@
+[
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Controls\\PlaylistView.xaml.cs",
+    "OldVersion": "0.1.13.79",
+    "NewVersion": "0.1.13.80",
+    "Date": "2025-10-26T20:37:17.0633286Z"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\obj\\Debug\\net48\\.NETFramework,Version=v4.8.AssemblyAttributes.cs",
+    "OldVersion": "none",
+    "NewVersion": "1.0.0.1",
+    "Date": "2025-10-26T20:37:18.5618286Z"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Video\\VideoConverter.cs",
+    "OldVersion": "0.1.17.16",
+    "NewVersion": "0.1.17.17",
+    "Date": "2025-10-26T20:41:11.4897511Z"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Controls\\VlcPlayerView.xaml.cs",
+    "OldVersion": "0.1.9.18",
+    "NewVersion": "0.1.9.19",
+    "Date": "2025-10-26T20:51:33.471083Z"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Media\\IPlayer.cs",
+    "OldVersion": "0.1.17.10",
+    "NewVersion": "0.1.17.11",
+    "Date": "2025-10-26T20:51:33.5246452Z"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Controls\\PlaylistView.xaml.cs",
+    "OldVersion": "0.1.13.80",
+    "NewVersion": "0.1.13.81",
+    "Date": "2025-10-26T21:00:37.1496292Z"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Controls\\PlaylistView.xaml.cs",
+    "OldVersion": "0.1.13.81",
+    "NewVersion": "0.1.13.82",
+    "Date": "2025-10-26T21:05:29.1754005Z"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Controls\\PlaylistView.xaml.cs",
+    "OldVersion": "0.1.13.82",
+    "NewVersion": "0.1.13.83",
+    "Date": "2025-10-26T21:11:48.4937888Z"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Controls\\VlcPlayerView.xaml.cs",
+    "OldVersion": "0.1.9.19",
+    "NewVersion": "0.1.9.20",
+    "Date": "2025-10-26T21:11:48.5591523Z"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Controls\\PlaylistView.xaml.cs",
+    "OldVersion": "0.1.13.80",
+    "NewVersion": "0.1.13.81",
+    "Date": "2025-10-26T21:14:31.3228602Z"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Controls\\VlcPlayerView.xaml.cs",
+    "OldVersion": "0.1.9.18",
+    "NewVersion": "0.1.9.19",
+    "Date": "2025-10-26T21:14:31.3325339Z"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Controls\\VlcPlayerView.xaml.cs",
+    "OldVersion": "0.1.9.19",
+    "NewVersion": "0.1.9.20",
+    "Date": "2025-10-26T21:15:53.669428Z"
+  }
+]

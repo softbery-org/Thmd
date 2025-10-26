@@ -1,3 +1,0 @@
-F:\dev\Thmd\Thmd\Controls\ProgressBarView.xaml.cs -> 0.1.10.60
-
-=== Overall Project Version: 0.1.10.60 ===

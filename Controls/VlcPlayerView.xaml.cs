@@ -1,4 +1,4 @@
-// Version: 0.1.9.14
+// Version: 0.1.9.20
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -292,8 +292,8 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// </summary>
     public VlcPlayerView()
     {
-        InitializeComponent();
         Core.Initialize();
+        InitializeComponent();
 
         // Set player references for controls
         _controlBar.SetPlayer(this);
@@ -412,10 +412,11 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
 
     private async Task LoadPlaylistConfigAsync()
     {
-        await Task.Run(() =>
+        try
         {
-            try
-            {
+            await Task.Run(() =>
+        {
+            
                 var pl = Configuration.Config.LoadFromJsonFile<PlaylistConfig>("config/playlist.json");
 
                 Dispatcher.Invoke(async() =>
@@ -440,15 +441,15 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
 
                     this.WriteLine("Playlist config loaded successfully (async).");
                 });
-            }
-            catch (Exception ex)
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    this.WriteLine($"Error loading playlist config: {ex.Message}");
-                });
-            }
         });
+        }
+        catch (Exception ex)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                this.WriteLine($"Error loading playlist config: {ex.Message}");
+            });
+        }
     }
 
     /// <summary>

@@ -1,4 +1,4 @@
-// Version: 0.1.10.60
+// Version: 0.1.10.68
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,6 +17,7 @@ using LibVLCSharp.Shared;
 
 using Newtonsoft.Json.Linq;
 
+using Thmd.Converters;
 using Thmd.Images;
 using Thmd.Media;
 
@@ -56,6 +57,10 @@ public partial class ProgressBarView : UserControl, INotifyPropertyChanged
     /// </summary>
     private readonly StringBuilder _sb = new StringBuilder();
 
+    private bool _isDragging = false;
+    private CancellationTokenSource? _dragCts;
+    private const int DragUpdateIntervalMs = 50; // częstotliwość aktualizacji pozycji (20x/s)
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ProgressBarView"/> class.
     /// </summary>
@@ -92,13 +97,52 @@ public partial class ProgressBarView : UserControl, INotifyPropertyChanged
                     _popupImage.Source = BitmapHelper.BitmapToImageSource(frame);
                 }
             }
+            // Jeśli trzymamy lewy przycisk — rozpocznij dynamiczne przewijanie
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                ProgressBar_MouseDown(s, e);
+            }
         };
 
+        
+        /*
         _progressBar.MouseDown += (s, e) =>
         {
-            var position = e.GetPosition(_progressBar);
-            Value = position.X / _progressBar.ActualWidth * _progressBar.Maximum;  // Trigger seek
-        };
+            ProgressBar_MouseDown(s, e);
+        };*/
+    }
+
+    private void ProgressBar_MouseDown(object sender, MouseEventArgs e)
+    {
+        var position = e.GetPosition(this);
+        Value = position.X / this.ActualWidth * this.Maximum;  // Trigger seek
+        ProgressBarMouseEventHandler(this, e);
+    }
+
+    /// <summary>
+    /// Common handler for progress bar mouse events to perform seeking.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The mouse event arguments.</param>
+    private void ProgressBarMouseEventHandler(object sender, MouseEventArgs e)
+    {
+        /*
+        if (DesignerProperties.GetIsInDesignMode(this))
+            return;
+        */
+        System.Windows.Point mousePosition = e.GetPosition(this);
+        double width = _progressBar.ActualWidth;
+        if (width <= 0) return;
+
+        // Calculate the corresponding time from the mouse position using the forward converter
+        var time = TimeToPositionConverter.Convert(mousePosition.X, width, _progressBar.Maximum);
+
+        // Set the progress bar value to the milliseconds (as long) and seek the player
+        _progressBar.Value = (long)time.TotalMilliseconds;
+        _player.Position = time;
+
+        // Update the visual indicator for the mouse position
+        _rectangleMouseOverPoint.Margin = new Thickness(mousePosition.X - (_rectangleMouseOverPoint.Width / 2), 0, 0, 0);
     }
 
     /// <summary>
