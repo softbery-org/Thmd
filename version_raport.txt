@@ -1,6 +1,6 @@
-F:\dev\Thmd\Thmd\Controls\VlcPlayerView.xaml.cs -> 0.1.9.20
+F:\dev\Thmd\Thmd\Controls\Effects\BeatsEffect.xaml.cs -> 0.1.1.22
 
 === Version Statistics ===
-Total files processed: 109
+Total files processed: 110
 Files updated: 1
 Average project version: 0.0.10.26

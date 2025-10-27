@@ -3,72 +3,147 @@
     "File": "F:\\dev\\Thmd\\Thmd\\Controls\\PlaylistView.xaml.cs",
     "OldVersion": "0.1.13.79",
     "NewVersion": "0.1.13.80",
-    "Date": "2025-10-26T20:37:17.0633286Z"
+    "Date": "2025-10-26T20:37:17.0633286Z",
+    "Type": "auto"
   },
   {
     "File": "F:\\dev\\Thmd\\Thmd\\obj\\Debug\\net48\\.NETFramework,Version=v4.8.AssemblyAttributes.cs",
     "OldVersion": "none",
     "NewVersion": "1.0.0.1",
-    "Date": "2025-10-26T20:37:18.5618286Z"
+    "Date": "2025-10-26T20:37:18.5618286Z",
+    "Type": "auto"
   },
   {
     "File": "F:\\dev\\Thmd\\Thmd\\Video\\VideoConverter.cs",
     "OldVersion": "0.1.17.16",
     "NewVersion": "0.1.17.17",
-    "Date": "2025-10-26T20:41:11.4897511Z"
+    "Date": "2025-10-26T20:41:11.4897511Z",
+    "Type": "auto"
   },
   {
     "File": "F:\\dev\\Thmd\\Thmd\\Controls\\VlcPlayerView.xaml.cs",
     "OldVersion": "0.1.9.18",
     "NewVersion": "0.1.9.19",
-    "Date": "2025-10-26T20:51:33.471083Z"
+    "Date": "2025-10-26T20:51:33.471083Z",
+    "Type": "auto"
   },
   {
     "File": "F:\\dev\\Thmd\\Thmd\\Media\\IPlayer.cs",
     "OldVersion": "0.1.17.10",
     "NewVersion": "0.1.17.11",
-    "Date": "2025-10-26T20:51:33.5246452Z"
+    "Date": "2025-10-26T20:51:33.5246452Z",
+    "Type": "auto"
   },
   {
     "File": "F:\\dev\\Thmd\\Thmd\\Controls\\PlaylistView.xaml.cs",
     "OldVersion": "0.1.13.80",
     "NewVersion": "0.1.13.81",
-    "Date": "2025-10-26T21:00:37.1496292Z"
+    "Date": "2025-10-26T21:00:37.1496292Z",
+    "Type": "auto"
   },
   {
     "File": "F:\\dev\\Thmd\\Thmd\\Controls\\PlaylistView.xaml.cs",
     "OldVersion": "0.1.13.81",
     "NewVersion": "0.1.13.82",
-    "Date": "2025-10-26T21:05:29.1754005Z"
+    "Date": "2025-10-26T21:05:29.1754005Z",
+    "Type": "auto"
   },
   {
     "File": "F:\\dev\\Thmd\\Thmd\\Controls\\PlaylistView.xaml.cs",
     "OldVersion": "0.1.13.82",
     "NewVersion": "0.1.13.83",
-    "Date": "2025-10-26T21:11:48.4937888Z"
+    "Date": "2025-10-26T21:11:48.4937888Z",
+    "Type": "auto"
   },
   {
     "File": "F:\\dev\\Thmd\\Thmd\\Controls\\VlcPlayerView.xaml.cs",
     "OldVersion": "0.1.9.19",
     "NewVersion": "0.1.9.20",
-    "Date": "2025-10-26T21:11:48.5591523Z"
+    "Date": "2025-10-26T21:11:48.5591523Z",
+    "Type": "auto"
   },
   {
     "File": "F:\\dev\\Thmd\\Thmd\\Controls\\PlaylistView.xaml.cs",
     "OldVersion": "0.1.13.80",
     "NewVersion": "0.1.13.81",
-    "Date": "2025-10-26T21:14:31.3228602Z"
+    "Date": "2025-10-26T21:14:31.3228602Z",
+    "Type": "auto"
   },
   {
     "File": "F:\\dev\\Thmd\\Thmd\\Controls\\VlcPlayerView.xaml.cs",
     "OldVersion": "0.1.9.18",
     "NewVersion": "0.1.9.19",
-    "Date": "2025-10-26T21:14:31.3325339Z"
+    "Date": "2025-10-26T21:14:31.3325339Z",
+    "Type": "auto"
   },
   {
     "File": "F:\\dev\\Thmd\\Thmd\\Controls\\VlcPlayerView.xaml.cs",
     "OldVersion": "0.1.9.19",
     "NewVersion": "0.1.9.20",
-    "Date": "2025-10-26T21:15:53.669428Z"
+    "Date": "2025-10-26T21:15:53.669428Z",
+    "Type": "auto"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Controls\\VlcPlayerView.xaml.cs",
+    "OldVersion": "0.1.9.20",
+    "NewVersion": "0.1.9.21",
+    "Date": "2025-10-26T22:29:35.8984956Z",
+    "Type": "auto"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Configuration\\Config.cs",
+    "OldVersion": "0.2.0.22",
+    "NewVersion": "0.2.0.23",
+    "Date": "2025-10-27T03:15:09.6592572Z",
+    "Type": "auto"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Controls\\VlcPlayerView.xaml.cs",
+    "OldVersion": "0.1.9.21",
+    "NewVersion": "0.1.9.22",
+    "Date": "2025-10-27T03:15:09.850263Z",
+    "Type": "auto"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Utilities\\EscapeKeyHandler.cs",
+    "OldVersion": "none",
+    "NewVersion": "1.0.0.1",
+    "Date": "2025-10-27T03:15:10.5532421Z",
+    "Type": "auto"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Controls\\Effects\\BeatsEffect.xaml.cs",
+    "OldVersion": "0.1.1.17",
+    "NewVersion": "0.1.1.18",
+    "Date": "2025-10-27T03:18:33.0519197Z",
+    "Type": "auto"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Controls\\Effects\\BeatsEffect.xaml.cs",
+    "OldVersion": "0.1.1.18",
+    "NewVersion": "0.1.1.19",
+    "Date": "2025-10-27T03:19:00.5890472Z",
+    "Type": "auto"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Controls\\Effects\\BeatsEffect.xaml.cs",
+    "OldVersion": "0.1.1.19",
+    "NewVersion": "0.1.1.20",
+    "Date": "2025-10-27T03:21:30.0112196Z",
+    "Type": "auto"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Controls\\Effects\\BeatsEffect.xaml.cs",
+    "OldVersion": "0.1.1.20",
+    "NewVersion": "0.1.1.21",
+    "Date": "2025-10-27T03:23:44.3695286Z",
+    "Type": "auto"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Controls\\Effects\\BeatsEffect.xaml.cs",
+    "OldVersion": "0.1.1.21",
+    "NewVersion": "0.1.1.22",
+    "Date": "2025-10-27T03:37:34.1040752Z",
+    "Type": "auto"
   }
 ]

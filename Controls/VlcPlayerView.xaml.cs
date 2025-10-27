@@ -1,4 +1,4 @@
-// Version: 0.1.9.20
+// Version: 0.1.9.22
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 using LibVLCSharp.Shared;
 
@@ -25,6 +26,8 @@ using Thmd.Converters;
 using Thmd.Devices.Keyboards;
 using Thmd.Media;
 using Thmd.Utilities;
+
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Thmd.Controls;
 
@@ -514,70 +517,6 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     }
 
     /// <summary>
-    /// Gets a video frame at the specified time as a Bitmap.
-    /// </summary>
-    /// <param name="time">time span</param>
-    /// <returns>bitmap on time</returns>
-    public Bitmap GetFrameAt(TimeSpan time)
-    {
-        /*if (string.IsNullOrEmpty(_playlist.Current.Uri.LocalPath))
-            return null;
-
-        string tempPath = Path.Combine(Path.GetTempPath(), $"vlc_thumb_{Guid.NewGuid():N}.png");
-
-        try
-        {
-            // 🔸 Tworzymy media z parametrem "--vout=dummy" (bez okna!)
-            using var media = new LibVLCSharp.Shared.Media(_libVLC, _playlist.Current.Uri.LocalPath, FromType.FromPath);
-            media.AddOption(":vout=dummy");            // brak okna wideo
-            media.AddOption(":no-video-title-show");   // brak tytułu
-            media.AddOption(":no-sout-display-video"); // nie pokazuj wyjścia
-            media.AddOption(":avcodec-hw=none");       // bez akceleracji GPU (szybciej dla 1 frame)
-
-            using var previewPlayer = new LibVLCSharp.Shared.MediaPlayer(media);
-
-            // 🔸 Start odtwarzania (bez obrazu)
-            previewPlayer.Play();
-
-            // Poczekaj na inicjalizację
-            System.Threading.Thread.Sleep(300);
-
-            // Oblicz pozycję względem długości filmu
-            double position = 0;
-            if (media.Duration > 0)
-                position = time.TotalMilliseconds / media.Duration;
-            previewPlayer.Position = (float)Math.Min(1.0, Math.Max(0.0, position));
-
-            // Poczekaj na wyrenderowanie klatki (LibVLC działa asynchronicznie)
-            System.Threading.Thread.Sleep(150);
-
-            // 🔸 Snapshot do pliku (bez wyświetlania)
-            previewPlayer.TakeSnapshot(0, tempPath, 320, 180);
-
-            // Poczekaj aż VLC zapisze plik
-            int tries = 10;
-            while (!File.Exists(tempPath) && tries-- > 0)
-                System.Threading.Thread.Sleep(50);
-
-            if (!File.Exists(tempPath))
-                return null;
-
-            using var bmp = new Bitmap(tempPath);
-            return new Bitmap(bmp); // zwracamy kopię (bo zaraz usuniemy plik)
-        }
-        catch
-        {
-            return null;
-        }
-        finally
-        {
-            try { File.Delete(tempPath); } catch { }
-        }*/
-        return null;
-    }
-
-
-    /// <summary>
     /// Captures the current video frame as a BitmapSource.
     /// </summary>
     /// <returns>The captured frame or null if capture fails.</returns>
@@ -789,20 +728,21 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         base.OnKeyDown(e);
         var keyBindingList = new List<ShortcutKeyBinding>
             {
+                new ShortcutKeyBinding { MainKey = Key.Escape, ModifierKey = null, Shortcut = "Escape", Description = "Change full screen on/off or double press will clear focus and set on video window", RunAction = ToggleFullscreenOrClearFocus() },
                 new ShortcutKeyBinding { MainKey = Key.Space, ModifierKey = null, Shortcut = "Space", Description = "Pause and play media", RunAction = TogglePlayPause() },
                 new ShortcutKeyBinding { MainKey = Key.F, ModifierKey = null, Shortcut = "F", Description = "Toggle fullscreen", RunAction = ToggleFullscreen() },
                 new ShortcutKeyBinding { MainKey = Key.H, ModifierKey = null, Shortcut = "H", Description = "Toggle help window", RunAction = ToggleHelpWindow() },
                 new ShortcutKeyBinding { MainKey = Key.P, ModifierKey = null, Shortcut = "P", Description = "Toggle playlist", RunAction = TogglePlaylist() },
                 new ShortcutKeyBinding { MainKey = Key.S, ModifierKey = null, Shortcut = "S", Description = "Toggle subtitle", RunAction = ToggleSubtitle() },
-                new ShortcutKeyBinding { MainKey = Key.Left, ModifierKey = null, Shortcut = "Left", Description = "Move media backward 5 seconds", RunAction = () => Seek(TimeSpan.FromSeconds(5), SeekDirection.Backward) },
-                new ShortcutKeyBinding { MainKey = Key.Right, ModifierKey = null, Shortcut = "Right", Description = "Move media forward 5 seconds", RunAction = () => Seek(TimeSpan.FromSeconds(5), SeekDirection.Forward) },
+                new ShortcutKeyBinding { MainKey = Key.Left, ModifierKey = null, Shortcut = "Left", Description = "Move media backward 5 seconds", RunAction = () => { Seek(TimeSpan.FromSeconds(5), SeekDirection.Backward); e.Handled = true; } },
+                new ShortcutKeyBinding { MainKey = Key.Right, ModifierKey = null, Shortcut = "Right", Description = "Move media forward 5 seconds", RunAction = () => { Seek(TimeSpan.FromSeconds(5), SeekDirection.Forward); e.Handled = true; } },
                 new ShortcutKeyBinding { MainKey = Key.Left, ModifierKey = ModifierKeys.Control, Shortcut = "Ctrl+Left", Description = "Move media backward 5 minutes", RunAction = MoveBackwardMinutes() },
                 new ShortcutKeyBinding { MainKey = Key.Right, ModifierKey = ModifierKeys.Control, Shortcut = "Ctrl+Right", Description = "Move media forward 5 minutes", RunAction = MoveForwardMinutes() },
                 new ShortcutKeyBinding { MainKey = Key.Up, ModifierKey = null, Shortcut = "Up", Description = "Increase volume by 2", RunAction = () => Volume += 2 },
                 new ShortcutKeyBinding { MainKey = Key.Down, ModifierKey = null, Shortcut = "Down", Description = "Decrease volume by 2", RunAction = () => Volume -= 2 },
                 new ShortcutKeyBinding { MainKey = Key.M, ModifierKey = null, Shortcut = "M", Description = "Toggle mute_txt", RunAction = () => isMute = !isMute },
                 new ShortcutKeyBinding { MainKey = Key.L, ModifierKey = null, Shortcut = "L", Description = "Toggle lector if subtitles are available", RunAction = ToggleLector() },
-                new ShortcutKeyBinding { MainKey = Key.Escape, ModifierKey = null, Shortcut = "Esc", Description = "Clear focus, minimize fullscreen", RunAction = ClearFocus() },
+                //new ShortcutKeyBinding { MainKey = Key.Escape, ModifierKey = null, Shortcut = "Esc", Description = "Clear focus, minimize fullscreen", RunAction = ClearFocus() },
                 new ShortcutKeyBinding { MainKey = Key.N, ModifierKey = null, Shortcut = "N", Description = "Play next video", RunAction = () => Next() },
                 new ShortcutKeyBinding { MainKey = Key.P, ModifierKey = ModifierKeys.Control, Shortcut = "Ctrl+P", Description = "Play previous video", RunAction = () => Preview() },
             };
@@ -876,14 +816,44 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     }
 
     /// <summary>
-    /// Clears focus on the player.
+    /// Clears focus on double press of the ESC key.
     /// </summary>
-    /// <returns>An action to clear focus.</returns>
-    private Action ClearFocus()
+    /// <returns>An action to clear focus and change it to Video View.</returns>
+    private Action DoublePressESC()
     {
         return new Action(() =>
         {
-            this.Focus();
+            // clear focus from all controls
+            Keyboard.ClearFocus();
+
+            // set focus on video view
+            this.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                Keyboard.Focus(_videoView);
+            }), DispatcherPriority.Input);
+        });
+    }
+
+    /// <summary>
+    /// Handles single press of the ESC key to exit fullscreen mode.
+    /// </summary>
+    /// <returns>An action for on/off full screen</returns>
+    private Action SinglePressESC()
+    {
+        return new Action(() =>
+        {
+            if (ScreenHelper.IsFullscreen)
+            {
+                Fullscreen = !Fullscreen;
+            }
+        });
+    }
+
+    private Action ToggleFullscreenOrClearFocus()
+    {
+        return new Action(() =>
+        {
+            Utilities.EscapeKeyHandler.Attach(Application.Current.MainWindow, SinglePressESC(), DoublePressESC(), _videoView, 500);
         });
     }
 
@@ -1151,7 +1121,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <param name="e">The media changed event arguments.</param>
     private void OnMediaChanged(object sender, MediaPlayerMediaChangedEventArgs e)
     {
-
+        _progressBar.Dispose();
     }
 
     /// <summary>
@@ -1184,8 +1154,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
                         break;
                     }
                 }
-            }
-            
+            }            
         });
     }
     #endregion
@@ -1328,7 +1297,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     {
         OpenFileDialog openFileDialog = new OpenFileDialog
         {
-            Filter = "VideoItem files|*.mp4;*.mkv;*.avi;*.mov;*.flv;*.wmv|All files|*.*",
+            Filter = "VideoItem files|*.mp4;*.mkv;*.avi;*.mov;*.flv;*.wmv;*.ts|All files|*.*",
             Multiselect = true
         };
         if (openFileDialog.ShowDialog() == true)
@@ -1435,7 +1404,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[VlcPlayerView]: {ex.Message}");
+            this.WriteLine($"{ex.Message}");
         }
     }
 
@@ -1458,7 +1427,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[VlcPlayerView]: {ex.Message}");
+            this.WriteLine($"{ex.Message}");
         }
     }
 
@@ -1525,7 +1494,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     {
         if (Playlist.Current == null)
         {
-            Console.WriteLine($"[VlcPlayerView]: Playlist is empty or current media is not set.");
+            this.WriteLine($"Playlist is empty or current media is not set.");
             return;
         }
 
@@ -1566,7 +1535,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[VlcPlayerView]: Error while playing media: {ex.Message}");
+            this.WriteLine($"Error while playing media: {ex.Message}");
         }
     }
 
@@ -1781,6 +1750,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     public void Dispose()
     {
         _mediaPlayer?.Dispose();
+        _progressBar.Dispose();
         SavePlaylistConfig();
         _libVLC?.Dispose();
         SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);

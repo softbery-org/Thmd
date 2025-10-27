@@ -754,8 +754,12 @@
     <Folder Include="Devices\Mouses\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Controls\Effects\Image\alien_skeleton.png" />
-    <Resource Include="Controls\Effects\Image\green_lava.png" />
+    <Resource Include="Controls\Effects\Image\alien_skeleton.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Controls\Effects\Image\green_lava.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <Target Name="UpdateAssemblyVersion" BeforeTargets="BeforeBuild">
     <Message Importance="high" Text="PostBuild: $(TargetPath)" />

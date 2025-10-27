@@ -1,4 +1,4 @@
-// Version: 0.1.1.17
+// Version: 0.1.1.22
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -76,8 +76,8 @@ namespace Thmd.Controls.Effects
             Name = this.GetType().Name;
             DataContext = this;
             _lastFrameTime = DateTime.Now;
-            BackgroundImageSource = LoadImageFromResource("pack://Thmd:,,,/Image/alien_skeleton.png");
-            ImageSource = LoadImageFromResource("pack://Thmd:,,,/Image/alien_skeleton.png");
+            BackgroundImageSource = LoadImageFromResource("pack://application:,,,/Image/alien_skeleton.png");
+            ImageSource = LoadImageFromResource("pack://application:,,,/Image/alien_skeleton.png");
             CompositionTarget.Rendering += CompositionTarget_Rendering;
 
             // Dynamiczne centrowanie transformów po załadowaniu
@@ -102,6 +102,10 @@ namespace Thmd.Controls.Effects
         }
 
         // Wywołaj to też w SizeChanged event, jeśli UserControl zmienia rozmiar
+        /// <summary>
+        /// Obsługuje zmianę rozmiaru kontrolki i aktualizuje centra transformacji.
+        /// </summary>
+        /// <param name="sizeInfo">nowa wielkość</param>
         protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
         {
             base.OnRenderSizeChanged(sizeInfo);
@@ -113,18 +117,33 @@ namespace Thmd.Controls.Effects
         {
             try
             {
-                var uri = new Uri(resourcePath, UriKind.Relative);
-                var bitmap = new BitmapImage();
-                bitmap.BeginInit();
-                bitmap.UriSource = uri;
-                bitmap.EndInit();
+                // 1️⃣ Najpierw próbujemy jako zasób WPF (Resource)
+                var uri = new Uri(resourcePath, UriKind.Absolute);
+                var bitmap = new BitmapImage(uri);
                 return bitmap;
             }
-            catch(Exception ex)
+            catch
             {
-                this.WriteLine($"[{ex.HResult}]: {ex.Message}");
-                return null; // Obsługa błędów (np. brak pliku)
+                try
+                {
+                    // 2️⃣ Jeśli nie działa — spróbujmy jako Content (plik w katalogu aplikacji)
+                    string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, resourcePath.Replace('/', '\\'));
+                    if (System.IO.File.Exists(path))
+                    {
+                        var bitmap = new BitmapImage();
+                        bitmap.BeginInit();
+                        bitmap.UriSource = new Uri(path, UriKind.Absolute);
+                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmap.EndInit();
+                        return bitmap;
+                    }
+                }
+                catch (Exception ex2)
+                {
+                    this.WriteLine($"[{ex2.HResult}]: {ex2.Message}");
+                }
             }
+            return null;
         }
 
         private void CompositionTarget_Rendering(object sender, EventArgs e)
