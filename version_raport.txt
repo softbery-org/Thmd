@@ -1,6 +1,6 @@
-F:\dev\Thmd\Thmd\Controls\Effects\BeatsEffect.xaml.cs -> 0.1.1.22
+F:\dev\Thmd\Thmd\Creators\HlsCreator.cs -> 0.0.0.3
 
 === Version Statistics ===
-Total files processed: 110
+Total files processed: 117
 Files updated: 1
-Average project version: 0.0.10.26
+Average project version: 0.0.9.24

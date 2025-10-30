@@ -9,7 +9,8 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <vlc:VideoView x:Name="_videoView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Black">
         <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-            <local:SubtitleControl x:Name="_subtitleControl" VerticalAlignment="Bottom" Margin="0,0,0,20"  Height="105"/>
+            <local:InfoBox x:Name="_infoBox" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,80,20,0" Width="auto" Height="auto"/>
+            <local:SubtitleControl x:Name="_subtitleControl" VerticalAlignment="Top" Margin="0,280,0,0"  Height="150"/>
             <local:PlaylistView x:Name="_playlist" Width="400" Height="250" VerticalAlignment="Top" HorizontalAlignment="Left"/>
             <local:ControlBar x:Name="_controlBar" HorizontalAlignment="Left" VerticalAlignment="Top"/>
             <local:ProgressBarView x:Name="_progressBar" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" ProgressText="00:00:00"/>

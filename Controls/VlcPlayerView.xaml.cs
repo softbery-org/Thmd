@@ -1,8 +1,7 @@
-// Version: 0.1.9.22
+// Version: 0.1.9.38
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -27,7 +26,8 @@ using Thmd.Devices.Keyboards;
 using Thmd.Media;
 using Thmd.Utilities;
 
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using Controls;
+using Elements;
 
 namespace Thmd.Controls;
 
@@ -65,7 +65,13 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     private System.Windows.Point _lastClickPosition;
 
     private VLCState _state;
+    private KeybordKeyFocusManager _focusManager;
+    private EditControl _editControl = new EditControl();
 
+    /// <summary>
+    /// Determines if the application is running in a console window.
+    /// </summary>
+    /// <returns>True if running in a console window; otherwise, false.</returns>
     public static bool IsConsole()
     {
         return GetConsoleWindow() != IntPtr.Zero;
@@ -84,6 +90,30 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
                 _playlist = new PlaylistView(this);
             }
             _playlist = value;
+        }
+    }
+    /// <summary>
+    /// Gets the information box for displaying messages.
+    /// </summary>
+    public InfoBox InfoBox
+    {
+        get => _infoBox;
+        private set
+        {
+            _infoBox = value;
+            OnPropertyChanged(nameof(InfoBox), ref _infoBox, value);
+        }
+    }
+    /// <summary>
+    /// Gets the video item edit control for editing video properties.
+    /// </summary>
+    public EditControl EditControl
+    {
+        get => _editControl;
+        private set
+        {
+            _editControl = value;
+            OnPropertyChanged(nameof(EditControl), ref _editControl, value);
         }
     }
     /// <summary>
@@ -177,7 +207,11 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <summary>
     /// Gets or sets the visibility of subtitles.
     /// </summary>
-    public Visibility SubtitleVisibility { get => _subtitleVisibility; set => _subtitleVisibility = value; }
+    public Visibility SubtitleVisibility
+    {
+        get => _subtitleVisibility;
+        set => _subtitleVisibility = value;
+    }
     /// <summary>
     /// Gets or sets the volume level of the media player (0 to 100).
     /// </summary>
@@ -248,7 +282,6 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
             OnPropertyChanged(nameof(State));
         }
     }
-
     /// <summary>
     /// Gets or sets whether upscale is enabled for low-resolution media.
     /// </summary>
@@ -266,9 +299,21 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// Occurs when a property value changes, used for data binding.
     /// </summary>
     public event PropertyChangedEventHandler PropertyChanged;
+    /// <summary>
+    /// Occurs when media starts playing.
+    /// </summary>
     public event EventHandler<EventArgs> Playing;
+    /// <summary>
+    /// Occurs when media is paused.
+    /// </summary>
     public event EventHandler<EventArgs> Stopped;
+    /// <summary>
+    /// Occurs when media is paused.
+    /// </summary>
     public event EventHandler<EventArgs> LengthChanged;
+    /// <summary>
+    /// Occurs when media is paused.
+    /// </summary>
     public event EventHandler<MediaPlayerTimeChangedEventArgs> TimeChanged;
 
     private LibVLC _libVLC;
@@ -302,6 +347,14 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         _controlBar.SetPlayer(this);
         _playlist.SetPlayer(this);
         _progressBar.SetPlayer(this);
+        
+        // Set parent for info box
+        //_infoBox.SetParent(this);
+        _infoBox.DrawText = ("Themedit Player initialized.");
+        _infoBox.BackgroundColor = Colors.Transparent;
+        _infoBox.TextColor = Colors.Red;
+        _infoBox.TextFontFamily = new FontFamily("Calibri");
+        _infoBox.TextShadow = true;
 
         _controlBar.SliderVolume.MouseDown += ControlBar_SliderVolume_MouseDown;
         _controlBar.SliderVolume.MouseMove += ControlBar_SliderVolume_MouseMove;
@@ -310,6 +363,32 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         _progressBar.MouseDown += ProgressBar_MouseDown;
         _progressBar.MouseMove += ProgressBar_MouseMove;
 
+        VLCInitialize();
+        FocusKeyInitialize();
+
+        // Resize helpers for control bar and playlist
+        var resizer1 = new ResizeControlHelper(_controlBar);
+        var resizer2 = new ResizeControlHelper(_playlist);
+        //var resizer3 = new ResizeControlHelper(_addStreamView);
+
+        //Windowses.WindowPropertiesExtensions.GetWindowDpi(_mediaPlayer.Hwnd, 0, 0);
+
+        // Buttons event handlers
+        ControlBarButtonEvent();
+
+        // Mouse not moving worker
+        _mouseNotMoveWorker = new BackgroundWorker();
+        _mouseNotMoveWorker.DoWork += MouseNotMoveWorker_DoWork;
+        _mouseNotMoveWorker.RunWorkerAsync();
+
+        LoadPlaylistConfig_Question();
+        LoadOpenAiConfig();
+        SaveUpdateConfig();
+        LoadUpdateConfig();
+    }
+
+    private void VLCInitialize()
+    {
         // VlcControl events and values
         string[] mediaOptions = new string[] { "--no-video-title-show", "--no-sub-autodetect-file" };//,"--verbose=2","--aout=any" };
         _libVLC = new LibVLC(mediaOptions);
@@ -330,24 +409,15 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
 
         _videoView.MediaPlayer = _mediaPlayer;
         _videoView.Background = System.Windows.Media.Brushes.Black;
+    }
 
-        // Resize helpers for control bar and playlist
-        var resizer1 = new ResizeControlHelper(_controlBar);
-        var resizer2 = new ResizeControlHelper(_playlist);
-        //var resizer3 = new ResizeControlHelper(_addStreamView);
-
-        // Buttons event handlers
-        ControlBarButtonEvent();
-
-        // Mouse not moving worker
-        _mouseNotMoveWorker = new BackgroundWorker();
-        _mouseNotMoveWorker.DoWork += MouseNotMoveWorker_DoWork;
-        _mouseNotMoveWorker.RunWorkerAsync();
-
-        LoadPlaylistConfig_Question();
-        LoadOpenAiConfig();
-        SaveUpdateConfig();
-        LoadUpdateConfig();
+    private void FocusKeyInitialize()
+    {
+        _focusManager = new Thmd.Utilities.KeybordKeyFocusManager(Application.Current.MainWindow, this, Key.Escape)
+        {
+            HighlightColor = Colors.LightSkyBlue,  // kolor mignięcia
+            HighlightDuration = 0.4                // czas animacji
+        };
     }
 
     /// <summary>
@@ -433,6 +503,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
                         media.Indents = pl.Indents;
                         
                         await _playlist.AddAsync(media);
+                        _infoBox.DrawText = $"Add to playlist: {media.Name}";
                     }
 
                     _playlist.Width = pl.Size.Width;
@@ -443,6 +514,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
                     _playlist.Visibility = pl.SubtitleVisible ? Visibility.Visible : Visibility.Hidden;
 
                     this.WriteLine("Playlist config loaded successfully (async).");
+                    _infoBox.DrawText = ("Playlist config loaded successfully (async).");
                 });
         });
         }
@@ -450,7 +522,9 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         {
             Dispatcher.Invoke(() =>
             {
-                this.WriteLine($"Error loading playlist config: {ex.Message}");
+                var txt = $"Error loading playlist config: {ex.Message}";
+                this.WriteLine(txt);
+                _infoBox.DrawText = txt;
             });
         }
     }
@@ -522,7 +596,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <returns>The captured frame or null if capture fails.</returns>
     public BitmapSource GetCurrentFrame()
     {
-        /*if (_mediaPlayer == null || !_mediaPlayer.IsPlaying)
+        if (_mediaPlayer == null || !_mediaPlayer.IsPlaying)
         {
             return null; // Brak danych, jeśli nie odtwarza
         }
@@ -533,8 +607,8 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
             {
                 // Pobranie rozmiaru okna wideo
                 //var windowSize = _videoView.Width;
-                uint actualWidth = (uint)Math.Round(_videoView.Width);  // Konwersja double na int z zaokrągleniem
-                uint height = (uint)Math.Round(_videoView.Height); // Konwersja double na int z zaokrągleniem
+                uint actualWidth = (uint)System.Math.Round(_videoView.Width);  // Konwersja double na int z zaokrągleniem
+                uint height = (uint)System.Math.Round(_videoView.Height); // Konwersja double na int z zaokrągleniem
 
                 // Walidacja rozmiaru
                 if (actualWidth <= 0 || height <= 0)
@@ -566,34 +640,32 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
                     BitmapCreateOptions.None,
                     BitmapCacheOption.OnLoad
                 );
-                _image.Source = bitmapFrame;
+                //_image.Source = bitmapFrame;
                 return bitmapFrame;
-            }*/
-        if (_mediaPlayer.IsPlaying)
-        {
-            // Opcje: szerokość, wysokość, ścieżka (domyślnie bieżący katalog), format (png/jpg)
-            var result = _playlist.Current.FrameSize.Split('x');
-            var width = uint.Parse(result[0]);
-            var height = uint.Parse(result[1]);
-            bool success = _mediaPlayer.TakeSnapshot(0, null, width, height);
+            }
+            /*if (_mediaPlayer.IsPlaying)
+            {
+                // Opcje: szerokość, wysokość, ścieżka (domyślnie bieżący katalog), format (png/jpg)
+                var result = _playlist.Current.FrameSize.Split('x');
+                var width = uint.Parse(result[0]);
+                var height = uint.Parse(result[1]);
+                bool success = _mediaPlayer.TakeSnapshot(0, null, width, height);
 
-            if (success)
-            {
-                MessageBox.Show("Klatka przekazana ");
-            }
-            else
-            {
-                MessageBox.Show("Błąd przechwytywania – sprawdź, czy wideo jest odtwarzane.");
-            }
-            /*
-        }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Błąd pobierania klatki: {ex.Message}");
-                return null;
+                if (success)
+                {
+                    MessageBox.Show("Klatka przekazana ");
+                }
+                else
+                {
+                    MessageBox.Show("Błąd przechwytywania – sprawdź, czy wideo jest odtwarzane.");
+                }
             }*/
         }
-        return null;
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Błąd pobierania klatki: {ex.Message}");
+            return null;
+        }
     }
 
     #region Mouse events
@@ -734,13 +806,13 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
                 new ShortcutKeyBinding { MainKey = Key.H, ModifierKey = null, Shortcut = "H", Description = "Toggle help window", RunAction = ToggleHelpWindow() },
                 new ShortcutKeyBinding { MainKey = Key.P, ModifierKey = null, Shortcut = "P", Description = "Toggle playlist", RunAction = TogglePlaylist() },
                 new ShortcutKeyBinding { MainKey = Key.S, ModifierKey = null, Shortcut = "S", Description = "Toggle subtitle", RunAction = ToggleSubtitle() },
-                new ShortcutKeyBinding { MainKey = Key.Left, ModifierKey = null, Shortcut = "Left", Description = "Move media backward 5 seconds", RunAction = () => { Seek(TimeSpan.FromSeconds(5), SeekDirection.Backward); e.Handled = true; } },
-                new ShortcutKeyBinding { MainKey = Key.Right, ModifierKey = null, Shortcut = "Right", Description = "Move media forward 5 seconds", RunAction = () => { Seek(TimeSpan.FromSeconds(5), SeekDirection.Forward); e.Handled = true; } },
+                new ShortcutKeyBinding { MainKey = Key.Left, ModifierKey = null, Shortcut = "Left", Description = "Move media backward 5 seconds", RunAction = () => Seek(TimeSpan.FromSeconds(5), SeekDirection.Backward) },
+                new ShortcutKeyBinding { MainKey = Key.Right, ModifierKey = null, Shortcut = "Right", Description = "Move media forward 5 seconds", RunAction = () => Seek(TimeSpan.FromSeconds(5), SeekDirection.Forward) },
                 new ShortcutKeyBinding { MainKey = Key.Left, ModifierKey = ModifierKeys.Control, Shortcut = "Ctrl+Left", Description = "Move media backward 5 minutes", RunAction = MoveBackwardMinutes() },
                 new ShortcutKeyBinding { MainKey = Key.Right, ModifierKey = ModifierKeys.Control, Shortcut = "Ctrl+Right", Description = "Move media forward 5 minutes", RunAction = MoveForwardMinutes() },
                 new ShortcutKeyBinding { MainKey = Key.Up, ModifierKey = null, Shortcut = "Up", Description = "Increase volume by 2", RunAction = () => Volume += 2 },
                 new ShortcutKeyBinding { MainKey = Key.Down, ModifierKey = null, Shortcut = "Down", Description = "Decrease volume by 2", RunAction = () => Volume -= 2 },
-                new ShortcutKeyBinding { MainKey = Key.M, ModifierKey = null, Shortcut = "M", Description = "Toggle mute_txt", RunAction = () => isMute = !isMute },
+                new ShortcutKeyBinding { MainKey = Key.M, ModifierKey = null, Shortcut = "M", Description = "Toggle mute", RunAction = () => isMute = !isMute },
                 new ShortcutKeyBinding { MainKey = Key.L, ModifierKey = null, Shortcut = "L", Description = "Toggle lector if subtitles are available", RunAction = ToggleLector() },
                 //new ShortcutKeyBinding { MainKey = Key.Escape, ModifierKey = null, Shortcut = "Esc", Description = "Clear focus, minimize fullscreen", RunAction = ClearFocus() },
                 new ShortcutKeyBinding { MainKey = Key.N, ModifierKey = null, Shortcut = "N", Description = "Play next video", RunAction = () => Next() },
@@ -752,10 +824,12 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
             if (e.Key == key.MainKey && key.ModifierKey == null && e.IsDown)
             {
                 key.RunAction();
+                _infoBox.DrawText = $"{key.Shortcut} - {key.Description}";
             }
             else if (e.Key == key.MainKey && key.ModifierKey == Keyboard.Modifiers && e.IsDown)
             {
                 key.RunAction();
+                _infoBox.DrawText = $"{key.Shortcut} - {key.Description}";
             }
         }
 
@@ -767,8 +841,8 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
             }
             else
                 this.WriteLine($"Pressed: [{Keyboard.Modifiers}]+ {e.Key}");
-
         }
+        e.Handled = true;
     }
 
     /// <summary>
@@ -811,7 +885,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         return new Action(() =>
         {
             // Placeholder for lector toggle functionality
-            Console.WriteLine("[VlcPlayerView]: Toggling lector (not implemented)");
+            this.WriteLine("Toggling lector (not implemented)");
         });
     }
 
@@ -853,7 +927,17 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     {
         return new Action(() =>
         {
-            Utilities.EscapeKeyHandler.Attach(Application.Current.MainWindow, SinglePressESC(), DoublePressESC(), _videoView, 500);
+            _focusManager.OnSinglePress += () =>
+                SinglePressESC()();
+
+            _focusManager.OnDoublePress += () =>
+            {
+                this.WriteLine("ESC x2 — clear all controls focus.");
+                DoublePressESC()();
+            };
+
+            _focusManager.OnTriplePress += () =>
+                this.WriteLine($"ESC x3 — fokus on {this} control");
         });
     }
 
@@ -1121,7 +1205,9 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <param name="e">The media changed event arguments.</param>
     private void OnMediaChanged(object sender, MediaPlayerMediaChangedEventArgs e)
     {
+        _infoBox.DrawText = _playlist.Current.Name;
         _progressBar.Dispose();
+        _progressBar.SetPlayer(this);
     }
 
     /// <summary>

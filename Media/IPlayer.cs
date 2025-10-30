@@ -1,4 +1,4 @@
-// Version: 0.1.17.11
+// Version: 0.1.17.14
 using System;
 using System.ComponentModel;
 using System.Windows;
@@ -9,6 +9,7 @@ using Thmd.Repeats;
 using LibVLCSharp.Shared;
 using System.Windows.Media.Imaging;
 using System.Drawing;
+using Controls;
 
 namespace Thmd.Media
 {
@@ -21,6 +22,15 @@ namespace Thmd.Media
         /// Gets the playlist view associated with the player.
         /// </summary>
         PlaylistView Playlist { get; }
+
+        /// <summary>
+        /// Gets the info box associated with the player.
+        /// </summary>
+        InfoBox InfoBox { get; }
+        /// <summary>
+        /// Gets the edit control associated with the player.
+        /// </summary>
+        EditControl EditControl { get; }
 
         /// <summary>
         /// Gets or sets the visibility of the playlist UI.

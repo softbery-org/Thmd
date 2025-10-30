@@ -1,4 +1,4 @@
-// Version: 0.1.13.81
+// Version: 0.1.13.82
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -864,6 +864,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
             {
                 var video = new VideoItem(filename);
                 this.AddAsync(video);
+                _player.InfoBox.DrawText = $"Added to playlist: {video.Name}";
             }
         }
     }
@@ -879,6 +880,19 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     {
         // Logika dla usuwania elementu z playlisty
         //NewAsync(BaseString, "");
+        if (SelectedItem is VideoItem video)
+        {
+            if (video == _player.Playlist.Current)
+            {
+                _player.Preview();
+                _player.Play();
+            }
+            this.RemoveAsync(video);
+        }
+        else
+        {
+            _player.InfoBox.DrawText = "No item selected to remove.";
+        }
     }
 
     /// <summary>
@@ -917,6 +931,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     public void SavePlaylist(object parameter)
     {
         _player.SavePlaylistConfig();
+        _player.InfoBox.DrawText = "Playlist saved.";
     }
 
     /// <summary>
@@ -929,6 +944,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     public void LoadPlaylist(object parameter)
     {
         _player.LoadPlaylistConfig_Question();
+        _player.InfoBox.DrawText = "Playlist loaded.";
     }
 
     /// <summary>
@@ -938,6 +954,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     public void SetPlayer(IPlayer player)
     {
         _player = player;
+        _player.InfoBox.DrawText = "Playlist player set.";
     }
 
     /// <summary>
@@ -962,6 +979,8 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
             {
                 Videos.Clear();
                 CurrentIndex = -1;
+                this.WriteLine("PlaylistView: Cleared all videos from playlist.");
+                _player.InfoBox.DrawText = "Playlist cleared.";
             });
         });
     }
@@ -1014,6 +1033,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
                     }
                 });
                 this.WriteLine($"PlaylistView: Removed video {item.Name} at index {index}");
+                _player.InfoBox.DrawText = $"Removed from playlist: {item.Name}";
                 return item;
             }
             return null;
@@ -1055,6 +1075,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
             _ = media.LoadMetadataAsync();
 
             this.WriteLine($"PlaylistView: Added video {media.Name}");
+            _player.InfoBox.DrawText = $"Added to playlist: {media.Name}";
         });
     }
 

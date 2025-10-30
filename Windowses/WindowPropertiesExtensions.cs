@@ -1,5 +1,6 @@
-// Version: 0.1.17.15
+// Version: 0.1.17.16
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Windows;
 
@@ -47,7 +48,10 @@ public static class WindowPropertiesExtensions
 	[DllImport("user32.dll")]
 	private static extern IntPtr MonitorFromPoint(W32Point pt, uint dwFlags);
 
-	public static bool ActivateCenteredToMouse(this Window window)
+    [DllImport("user32.dll")]
+	private static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint dwFlags);
+
+    public static bool ActivateCenteredToMouse(this Window window)
 	{
 		ComputeTopLeft(ref window);
 		return window.Activate();
@@ -111,4 +115,57 @@ public static class WindowPropertiesExtensions
 			}
 		}
 	}
+
+    public static void GetWindowDpi(IntPtr hwnd, out int dpiX, out int dpiY)
+    {
+        var handle = MonitorFromWindow(hwnd, MonitorFlag.MONITOR_DEFAULTTOPRIMARY);
+
+        GetDpiForMonitor(handle, MonitorDpiType.MDT_EFFECTIVE_DPI, out dpiX, out dpiY);
+    }
+
+    /// <summary>
+    /// Determines the function's return value if the window does not intersect any display monitor.
+    /// </summary>
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
+    [SuppressMessage("ReSharper", "UnusedMember.Local")]
+    private enum MonitorFlag : uint
+    {
+        /// <summary>Returns NULL.</summary>
+        MONITOR_DEFAULTTONULL = 0,
+        /// <summary>Returns a handle to the primary display monitor.</summary>
+        MONITOR_DEFAULTTOPRIMARY = 1,
+        /// <summary>Returns a handle to the display monitor that is nearest to the window.</summary>
+        MONITOR_DEFAULTTONEAREST = 2
+    }
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr MonitorFromWindow(IntPtr hwnd, MonitorFlag flag);
+
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
+    [SuppressMessage("ReSharper", "UnusedMember.Local")]
+    private enum MonitorDpiType
+    {
+        /// <summary>
+        /// The effective DPI.
+        /// This value should be used when determining the correct scale factor for scaling UI elements.
+        /// This incorporates the scale factor set by the user for this specific display.
+        /// </summary>
+        MDT_EFFECTIVE_DPI = 0,
+        /// <summary>
+        /// The angular DPI.
+        /// This DPI ensures rendering at a compliant angular resolution on the screen.
+        /// This does not include the scale factor set by the user for this specific display.
+        /// </summary>
+        MDT_ANGULAR_DPI = 1,
+        /// <summary>
+        /// The raw DPI.
+        /// This value is the linear DPI of the screen as measured on the screen itself.
+        /// Use this value when you want to read the pixel density and not the recommended scaling setting.
+        /// This does not include the scale factor set by the user for this specific display and is not guaranteed to be a supported DPI value.
+        /// </summary>
+        MDT_RAW_DPI = 2
+    }
+
+    [DllImport("user32.dll")]
+    private static extern bool GetDpiForMonitor(IntPtr hwnd, MonitorDpiType dpiType, out int dpiX, out int dpiY);
 }
