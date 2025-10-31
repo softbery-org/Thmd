@@ -42,4 +42,4 @@ public static class BooleanToVisibilityConverter
         return false;
     }
 }
-// Version: 0.1.0.37
+// Version: 0.1.0.38

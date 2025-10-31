@@ -5,4 +5,4 @@ namespace Thmd.Configuration
         public string OpenApiKey { get; set; }
     }
 }
-// Version: 0.1.1.91
+// Version: 0.1.1.92
