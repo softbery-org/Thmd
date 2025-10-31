@@ -754,6 +754,9 @@
     <Folder Include="Devices\Mouses\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Hlsarc\Hlsarc.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="Controls\Effects\Image\alien_skeleton.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>

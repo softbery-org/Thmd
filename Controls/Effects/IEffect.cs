@@ -11,4 +11,4 @@ namespace Thmd.Controls.Effects
         string Name { get; }
     }
 }
-// Version: 0.1.0.92
+// Version: 0.1.0.93

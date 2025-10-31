@@ -1,4 +1,4 @@
-// Version: 0.1.17.14
+// Version: 0.1.17.15
 namespace Thmd.Logs;
 
 public interface ILogFormatter

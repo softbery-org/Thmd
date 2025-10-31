@@ -523,5 +523,901 @@
     "NewVersion": "0.0.0.3",
     "Date": "2025-10-30T00:54:16.8902863Z",
     "Type": "auto"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Creators\\HlsCreator.cs",
+    "OldVersion": "0.0.0.3",
+    "NewVersion": "0.0.0.4",
+    "Date": "2025-10-30T19:55:55.6502812Z",
+    "Type": "auto"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Creators\\HlsCreator.cs",
+    "OldVersion": "0.0.0.4",
+    "NewVersion": "0.0.0.5",
+    "Date": "2025-10-30T20:02:17.6094095Z",
+    "Type": "auto"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Creators\\HlsarcReader.cs",
+    "OldVersion": "none",
+    "NewVersion": "0.0.0.1",
+    "Date": "2025-10-30T20:49:46.0389067Z",
+    "Type": "auto"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Creators\\HlsCreator.cs",
+    "OldVersion": "none",
+    "NewVersion": "0.0.0.1",
+    "Date": "2025-10-30T20:49:46.0704572Z",
+    "Type": "auto"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Creators\\HlsarcReader.cs",
+    "OldVersion": "0.1.0.4",
+    "NewVersion": "0.1.0.5",
+    "Date": "2025-10-30T21:37:58.1006671Z",
+    "Type": "auto"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Creators\\HlsCreator.cs",
+    "OldVersion": "0.1.0.4",
+    "NewVersion": "0.1.0.5",
+    "Date": "2025-10-30T21:37:58.1387548Z",
+    "Type": "auto"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Creators\\HlsarcReader.cs",
+    "OldVersion": "0.1.0.5",
+    "NewVersion": "0.1.0.6",
+    "Date": "2025-10-30T22:31:00.7464241Z",
+    "Type": "auto"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Creators\\HlsCreator.cs",
+    "OldVersion": "0.0.0.1",
+    "NewVersion": "0.0.0.2",
+    "Date": "2025-10-30T22:31:00.7728407Z",
+    "Type": "auto"
+  },
+  {
+    "File": "F:\\dev\\Thmd\\Thmd\\Utilities\\VideoTypeChecker.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T00:48:03.9862383Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Logger.cs",
+    "OldVersion": "0.2.0.24",
+    "NewVersion": "0.2.0.25",
+    "Date": "2025-10-31T13:03:32.7366776Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Configuration\\Config.cs",
+    "OldVersion": "0.2.0.23",
+    "NewVersion": "0.2.0.24",
+    "Date": "2025-10-31T13:03:32.7398927Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Configuration\\IPlaylistConfig.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:32.7421119Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Configuration\\OpenAiConfig.cs",
+    "OldVersion": "0.1.1.90",
+    "NewVersion": "0.1.1.91",
+    "Date": "2025-10-31T13:03:32.7444797Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Configuration\\PerformanceMonitorConfig.cs",
+    "OldVersion": "0.1.5.32",
+    "NewVersion": "0.1.5.33",
+    "Date": "2025-10-31T13:03:32.7605848Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Configuration\\PluginConfig.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:32.7630696Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Configuration\\Shadow.cs",
+    "OldVersion": "0.1.17.13",
+    "NewVersion": "0.1.17.14",
+    "Date": "2025-10-31T13:03:32.7649656Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Configuration\\SubtitleConfig.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:32.7668882Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Configuration\\UpdateConfig.cs",
+    "OldVersion": "0.1.17.13",
+    "NewVersion": "0.1.17.14",
+    "Date": "2025-10-31T13:03:32.7695845Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Consolas\\ConsoleWriteLine.cs",
+    "OldVersion": "0.1.7.89",
+    "NewVersion": "0.1.7.90",
+    "Date": "2025-10-31T13:03:32.7731435Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\AddStreamView.xaml.cs",
+    "OldVersion": "0.1.0.31",
+    "NewVersion": "0.1.0.32",
+    "Date": "2025-10-31T13:03:32.7773284Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.10.36",
+    "NewVersion": "0.1.10.37",
+    "Date": "2025-10-31T13:03:32.7967596Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\FFmpegPlayerView.xaml.cs",
+    "OldVersion": "0.1.0.21",
+    "NewVersion": "0.1.0.22",
+    "Date": "2025-10-31T13:03:32.798468Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\IControlBar.cs",
+    "OldVersion": "0.1.10.48",
+    "NewVersion": "0.1.10.49",
+    "Date": "2025-10-31T13:03:32.8001599Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\InfoBox.xaml.cs",
+    "OldVersion": "0.1.13.12",
+    "NewVersion": "0.1.13.13",
+    "Date": "2025-10-31T13:03:32.8185345Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\IProgressBar.cs",
+    "OldVersion": "0.1.10.48",
+    "NewVersion": "0.1.10.49",
+    "Date": "2025-10-31T13:03:32.8221587Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\LogoImage.xaml.cs",
+    "OldVersion": "0.1.0.96",
+    "NewVersion": "0.1.0.97",
+    "Date": "2025-10-31T13:03:32.8243902Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\PlaylistView.xaml.cs",
+    "OldVersion": "0.1.13.82",
+    "NewVersion": "0.1.13.83",
+    "Date": "2025-10-31T13:03:32.8484404Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\PlaylistViewBar.xaml.cs",
+    "OldVersion": "0.1.0.21",
+    "NewVersion": "0.1.0.22",
+    "Date": "2025-10-31T13:03:32.8505532Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\ProgressBarView.xaml.cs",
+    "OldVersion": "0.1.10.68",
+    "NewVersion": "0.1.10.69",
+    "Date": "2025-10-31T13:03:32.872639Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\SubtitleControl.xaml.cs",
+    "OldVersion": "0.1.5.72",
+    "NewVersion": "0.1.5.73",
+    "Date": "2025-10-31T13:03:32.8898439Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\TimerBox.xaml.cs",
+    "OldVersion": "0.1.13.39",
+    "NewVersion": "0.1.13.40",
+    "Date": "2025-10-31T13:03:32.8918596Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\VlcPlayerView.xaml.cs",
+    "OldVersion": "0.1.9.38",
+    "NewVersion": "0.1.9.39",
+    "Date": "2025-10-31T13:03:32.9195754Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\YoutubeControl.xaml.cs",
+    "OldVersion": "0.1.1.16",
+    "NewVersion": "0.1.1.17",
+    "Date": "2025-10-31T13:03:32.9228299Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Converters\\ArithmeticMultiConverter.cs",
+    "OldVersion": "0.1.0.36",
+    "NewVersion": "0.1.0.37",
+    "Date": "2025-10-31T13:03:32.9250148Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Converters\\BooleanToVisibilityConverter.cs",
+    "OldVersion": "0.1.0.36",
+    "NewVersion": "0.1.0.37",
+    "Date": "2025-10-31T13:03:32.9272567Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Converters\\DateTimeMultiConverter.cs",
+    "OldVersion": "0.1.0.36",
+    "NewVersion": "0.1.0.37",
+    "Date": "2025-10-31T13:03:32.9308261Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Converters\\EnumToBooleanConverter.cs",
+    "OldVersion": "0.1.0.36",
+    "NewVersion": "0.1.0.37",
+    "Date": "2025-10-31T13:03:32.9354128Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Converters\\InverseBooleanConverter.cs",
+    "OldVersion": "0.1.0.36",
+    "NewVersion": "0.1.0.37",
+    "Date": "2025-10-31T13:03:32.9396704Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Converters\\MathClampConverter.cs",
+    "OldVersion": "0.1.14.28",
+    "NewVersion": "0.1.14.29",
+    "Date": "2025-10-31T13:03:32.9457557Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Converters\\PercentageConverter.cs",
+    "OldVersion": "0.1.0.36",
+    "NewVersion": "0.1.0.37",
+    "Date": "2025-10-31T13:03:32.9504623Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Converters\\PercentageToWidthConverter.cs",
+    "OldVersion": "0.1.14.2",
+    "NewVersion": "0.1.14.3",
+    "Date": "2025-10-31T13:03:32.984092Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Converters\\StringFormatConverter.cs",
+    "OldVersion": "0.1.0.36",
+    "NewVersion": "0.1.0.37",
+    "Date": "2025-10-31T13:03:32.9878432Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Converters\\TimeToPositionConverter.cs",
+    "OldVersion": "0.1.0.36",
+    "NewVersion": "0.1.0.37",
+    "Date": "2025-10-31T13:03:32.9904624Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Creators\\HlsM3u8Parser.cs",
+    "OldVersion": "0.1.17.15",
+    "NewVersion": "0.1.17.16",
+    "Date": "2025-10-31T13:03:32.9939567Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Creators\\HlsSegment.cs",
+    "OldVersion": "0.0.0.1",
+    "NewVersion": "0.0.0.2",
+    "Date": "2025-10-31T13:03:32.9965507Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Images\\BitmapHelper.cs",
+    "OldVersion": "1.0.0.1",
+    "NewVersion": "1.0.0.2",
+    "Date": "2025-10-31T13:03:33.0006872Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Images\\GifExporter.cs",
+    "OldVersion": "0.1.0.19",
+    "NewVersion": "0.1.0.20",
+    "Date": "2025-10-31T13:03:33.0044608Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Logs\\AsyncLogger.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.0080271Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Logs\\CategoryFilterSink.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.0111187Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Logs\\ConsoleSink.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.0141542Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Logs\\FileSink.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.0325812Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Logs\\ILogFormatter.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.0344899Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Logs\\ILogSink.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.0367237Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Logs\\JsonFormatter.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.0391767Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Logs\\LogEntry.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.0416565Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Logs\\Logger.cs",
+    "OldVersion": "0.1.0.24",
+    "NewVersion": "0.1.0.25",
+    "Date": "2025-10-31T13:03:33.059636Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Logs\\LogLevel.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.0615982Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Logs\\Metrics.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.0756549Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Logs\\TextFormatter.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.0776098Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Logs\\XmlFormatter.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.0929099Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Media\\FileMediaStream.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.0948945Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Media\\HlsPlaylistParser.cs",
+    "OldVersion": "0.1.16.96",
+    "NewVersion": "0.1.16.97",
+    "Date": "2025-10-31T13:03:33.1147483Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Media\\HlsSegment.cs",
+    "OldVersion": "0.1.16.96",
+    "NewVersion": "0.1.16.97",
+    "Date": "2025-10-31T13:03:33.1327204Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Media\\HLSStreamer.cs",
+    "OldVersion": "0.1.16.96",
+    "NewVersion": "0.1.16.97",
+    "Date": "2025-10-31T13:03:33.1526755Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Media\\IMedia.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.1548326Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Media\\IMediaStream.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.1584626Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Media\\IPlayer.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.1630759Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Media\\MediaEditor.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.1683598Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Media\\Playlist.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.1728934Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Media\\SeekDirection.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.1764094Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Media\\VideoIndent.cs",
+    "OldVersion": "0.1.0.21",
+    "NewVersion": "0.1.0.22",
+    "Date": "2025-10-31T13:03:33.1830938Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Media\\VideoItem.cs",
+    "OldVersion": "0.1.17.1",
+    "NewVersion": "0.1.17.2",
+    "Date": "2025-10-31T13:03:33.2057302Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Properties\\AssemblyInfo.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.2082831Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Repeats\\RepeatType.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.2113814Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Subtitles\\Subtitle.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.2132683Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Subtitles\\SubtitleExtensions.cs",
+    "OldVersion": "0.1.5.31",
+    "NewVersion": "0.1.5.32",
+    "Date": "2025-10-31T13:03:33.2283026Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Subtitles\\SubtitleFontArgs.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.2302246Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Subtitles\\SubtitleLoadException.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.2329858Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Subtitles\\SubtitleManager.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.2355316Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Subtitles\\SubtitleParseException.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.2486174Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Templates\\Buttons.xaml.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.2508644Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Templates\\PlayerMainButtons.xaml.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.2641976Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Templates\\PlayerSecondButtons.xaml.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.2661149Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Templates\\ProgressBarTheme.xaml.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.268083Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Templates\\RepeatButton.xaml.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.2706229Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Templates\\ScrollViewerStyle.xaml.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.2731959Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Themes\\Generic.xaml.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.287594Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Translator\\ILanguage.cs",
+    "OldVersion": "0.1.5.30",
+    "NewVersion": "0.1.5.31",
+    "Date": "2025-10-31T13:03:33.2898667Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Translator\\Language.cs",
+    "OldVersion": "0.1.5.31",
+    "NewVersion": "0.1.5.32",
+    "Date": "2025-10-31T13:03:33.2927518Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Translator\\LanguageChanger.cs",
+    "OldVersion": "0.1.0.27",
+    "NewVersion": "0.1.0.28",
+    "Date": "2025-10-31T13:03:33.2956562Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Updates\\ProgressChangedEventArgs.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.2989802Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Updates\\Updat.cs",
+    "OldVersion": "0.1.18.3",
+    "NewVersion": "0.1.18.4",
+    "Date": "2025-10-31T13:03:33.3254059Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Updates\\UpdateAvailableEventArgs.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.3272307Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Utilities\\CommandLineHandler.cs",
+    "OldVersion": "0.1.11.78",
+    "NewVersion": "0.1.11.79",
+    "Date": "2025-10-31T13:03:33.3302666Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Utilities\\DragDropHelper.cs",
+    "OldVersion": "0.1.7.72",
+    "NewVersion": "0.1.7.73",
+    "Date": "2025-10-31T13:03:33.333379Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Utilities\\GeneratorHelper.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.3385765Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Utilities\\KeybordKeyFocusManager.cs",
+    "OldVersion": "0.0.0.1",
+    "NewVersion": "0.0.0.2",
+    "Date": "2025-10-31T13:03:33.3426994Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Utilities\\OptionHelper.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.3470415Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Utilities\\PathCheckHelper.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.3511507Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Utilities\\ResizeControlHelper.cs",
+    "OldVersion": "0.1.10.26",
+    "NewVersion": "0.1.10.27",
+    "Date": "2025-10-31T13:03:33.3847617Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Utilities\\ScreenHelper.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.3871926Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Utilities\\ShowHideControlsHelper.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.3896539Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Utilities\\StoryboardHelper.cs",
+    "OldVersion": "0.1.17.13",
+    "NewVersion": "0.1.17.14",
+    "Date": "2025-10-31T13:03:33.4098637Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Utilities\\VideoTypeChecker.cs",
+    "OldVersion": "0.1.17.15",
+    "NewVersion": "0.1.17.16",
+    "Date": "2025-10-31T13:03:33.4114853Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Utilities\\WindowLastStance.cs",
+    "OldVersion": "0.1.17.14",
+    "NewVersion": "0.1.17.15",
+    "Date": "2025-10-31T13:03:33.4250729Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Video\\VideoConverter.cs",
+    "OldVersion": "0.1.17.17",
+    "NewVersion": "0.1.17.18",
+    "Date": "2025-10-31T13:03:33.4290677Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Windowses\\WindowPropertiesExtensions.cs",
+    "OldVersion": "0.1.17.16",
+    "NewVersion": "0.1.17.17",
+    "Date": "2025-10-31T13:03:33.4324521Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Compress\\Rar\\Rarer.cs",
+    "OldVersion": "0.1.7.89",
+    "NewVersion": "0.1.7.90",
+    "Date": "2025-10-31T13:03:33.443803Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Compress\\Zip\\Zipper.cs",
+    "OldVersion": "0.1.7.89",
+    "NewVersion": "0.1.7.90",
+    "Date": "2025-10-31T13:03:33.4461842Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\ControlButtons\\PlayerButtonsControl.xaml.cs",
+    "OldVersion": "0.1.16.96",
+    "NewVersion": "0.1.16.97",
+    "Date": "2025-10-31T13:03:33.4694294Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\ControlButtons\\PlayerButtonsControlSecondRow.xaml.cs",
+    "OldVersion": "0.1.16.96",
+    "NewVersion": "0.1.16.97",
+    "Date": "2025-10-31T13:03:33.4897338Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\ControlButtons\\PlayerCloseButtonControl.xaml.cs",
+    "OldVersion": "0.1.16.96",
+    "NewVersion": "0.1.16.97",
+    "Date": "2025-10-31T13:03:33.5046518Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\Effects\\BeatsEffect.xaml.cs",
+    "OldVersion": "0.1.1.22",
+    "NewVersion": "0.1.1.23",
+    "Date": "2025-10-31T13:03:33.5206582Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\Effects\\DragShadowAdorner.cs",
+    "OldVersion": "0.1.0.21",
+    "NewVersion": "0.1.0.22",
+    "Date": "2025-10-31T13:03:33.5225117Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\Effects\\IEffect.cs",
+    "OldVersion": "0.1.0.92",
+    "NewVersion": "0.1.0.93",
+    "Date": "2025-10-31T13:03:33.5246659Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\Effects\\ScrollIndicatorAdorner.cs",
+    "OldVersion": "0.1.0.21",
+    "NewVersion": "0.1.0.22",
+    "Date": "2025-10-31T13:03:33.5270985Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\Effects\\SharpenEffect.cs",
+    "OldVersion": "0.1.14.50",
+    "NewVersion": "0.1.14.51",
+    "Date": "2025-10-31T13:03:33.5292959Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\Enums\\TextStyle.cs",
+    "OldVersion": "0.1.1.82",
+    "NewVersion": "0.1.1.83",
+    "Date": "2025-10-31T13:03:33.5311668Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Devices\\Keyboards\\ShortcutKeyBinding.cs",
+    "OldVersion": "0.1.4.50",
+    "NewVersion": "0.1.4.51",
+    "Date": "2025-10-31T13:03:33.5347791Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\Future\\Control\\AboutControl.xaml.cs",
+    "OldVersion": "0.0.0.1",
+    "NewVersion": "0.0.0.2",
+    "Date": "2025-10-31T13:03:33.6042123Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\Future\\Control\\EditControl.xaml.cs",
+    "OldVersion": "0.0.0.2",
+    "NewVersion": "0.0.0.3",
+    "Date": "2025-10-31T13:03:33.6062444Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\Future\\Control\\PlaylistControl.xaml.cs",
+    "OldVersion": "0.0.0.1",
+    "NewVersion": "0.0.0.2",
+    "Date": "2025-10-31T13:03:33.6085892Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\Future\\Control\\SettingsControl.xaml.cs",
+    "OldVersion": "0.0.0.1",
+    "NewVersion": "0.0.0.2",
+    "Date": "2025-10-31T13:03:33.6114245Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\Future\\Control\\SubtitleControl.xaml.cs",
+    "OldVersion": "0.0.0.1",
+    "NewVersion": "0.0.0.2",
+    "Date": "2025-10-31T13:03:33.6140947Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\Future\\Elements\\ControlBarElement.xaml.cs",
+    "OldVersion": "0.0.0.1",
+    "NewVersion": "0.0.0.2",
+    "Date": "2025-10-31T13:03:33.6171328Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\Future\\Elements\\ProgressBarElement.xaml.cs",
+    "OldVersion": "0.0.0.1",
+    "NewVersion": "0.0.0.2",
+    "Date": "2025-10-31T13:03:33.6204657Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\obj\\Debug\\net48\\.NETFramework,Version=v4.8.AssemblyAttributes.cs",
+    "OldVersion": "1.0.0.1",
+    "NewVersion": "1.0.0.2",
+    "Date": "2025-10-31T13:03:33.6240065Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\obj\\Release\\net48\\.NETFramework,Version=v4.8.AssemblyAttributes.cs",
+    "OldVersion": "1.0.0.2",
+    "NewVersion": "1.0.0.3",
+    "Date": "2025-10-31T13:03:33.641714Z",
+    "Type": "auto"
   }
 ]
