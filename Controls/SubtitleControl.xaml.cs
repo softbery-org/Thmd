@@ -1,5 +1,5 @@
 // SubtitleControl.xaml.cs
-// Version: 0.1.5.74
+// Version: 0.1.5.79
 // A custom user control for displaying subtitles from an SRT file with support for formatting tags
 // such as <i>, <b>, <u>, <font color="...">, and <font size="...">.
 // Enhanced with AI-powered subtitle translation and subtitle buffering for performance optimization.
@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
+using System.Speech.Synthesis;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -389,7 +390,24 @@ public partial class SubtitleControl : UserControl, INotifyPropertyChanged
     {
         InitializeComponent();
         // AI Setup: Load API key from config if available
-        _openAiApiKey = Thmd.Configuration.Config.Instance.OpenAiConfig.OpenApiKey ?? string.Empty; // Assume Config has OpenAiApiKey property added
+        _openAiApiKey = Thmd.Configuration.Config.Conf.AiConfig.OpenApiKey ?? string.Empty; // Assume Config has OpenAiApiKey property added
+    }
+
+    private bool _lectoreOnOff = false;
+    private Lectors.VideoLectore _lectore;
+    /// <summary>
+    /// Zmienia stan _lectoreOnOff na true, ustawia _lectore na zainstalowanym języku.
+    /// Domyślnie:
+    ///     "Microsoft Paulina Desktop"
+    /// </summary>
+    public void StartLectore()
+    {
+        _lectoreOnOff = true;
+
+        if (_lectoreOnOff)
+        {
+            _lectore = new Lectors.VideoLectore("Microsoft Paulina Desktop");
+        }
     }
 
     /// <summary>
@@ -441,6 +459,10 @@ public partial class SubtitleControl : UserControl, INotifyPropertyChanged
                     {
                         _subtitleTextBlock.Inlines.Clear();
                         ProcessSubtitleText(textToProcess);
+                        if (_lectoreOnOff)
+                        {
+                            _lectore.LectoreRead(textToProcess);
+                        }
                     });
 
                     _subtitleCache.TryAdd(time, textToProcess);
@@ -535,6 +557,157 @@ public partial class SubtitleControl : UserControl, INotifyPropertyChanged
             _apiSemaphore.Release();
         }
     }
+
+    public string _geminiApiKey = Thmd.Configuration.Config.Conf.AiConfig.GeminiApiKey ?? string.Empty;
+
+    /// <summary>
+    /// Translates text using Google Gemini API with rate limiting.
+    /// </summary>
+    private async Task<string> TranslateWithGeminiAiAsync(string text)
+    {
+        if (string.IsNullOrEmpty(_geminiApiKey))
+        {
+            this.WriteLine("Gemini API key is not set. Skipping translation.");
+            return text;
+        }
+
+        // Rate limit
+        var timeSinceLastCall = (DateTime.Now - _lastApiCall).TotalMilliseconds;
+        if (timeSinceLastCall < MinIntervalMs)
+        {
+            await Task.Delay((int)(MinIntervalMs - timeSinceLastCall));
+        }
+
+        try
+        {
+            await _apiSemaphore.WaitAsync();
+            _lastApiCall = DateTime.Now;
+
+            using (var client = new HttpClient())
+            {
+                var url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={_geminiApiKey}";
+
+                var requestBody = new
+                {
+                    contents = new[]
+                    {
+                    new
+                    {
+                        parts = new[]
+                        {
+                            new { text = $"Translate the following text to {_targetLanguage}:\n{text}" }
+                        }
+                    }
+                }
+                };
+
+                var content = new StringContent(
+                    JsonConvert.SerializeObject(requestBody),
+                    Encoding.UTF8,
+                    "application/json");
+
+                var response = await client.PostAsync(url, content);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    this.WriteLine($"Gemini Translation failed: {response.StatusCode} - {response.ReasonPhrase}");
+                    return text;
+                }
+
+                var responseString = await response.Content.ReadAsStringAsync();
+                var json = JObject.Parse(responseString);
+
+                var translation = json["candidates"]?[0]?["content"]?["parts"]?[0]?["text"]?.ToString();
+
+                return string.IsNullOrWhiteSpace(translation) ? text : translation;
+            }
+        }
+        catch (Exception ex)
+        {
+            this.WriteLine($"Gemini Translation exception: {ex.Message}");
+            return text;
+        }
+        finally
+        {
+            _apiSemaphore.Release();
+        }
+    }
+
+    /// <summary>
+    /// Translates text using Gemini 2.0 Flash API with rate limiting.
+    /// </summary>
+    /// <param name="text">The text to translate.</param>
+    /// <returns>The translated text or original if translation fails.</returns>
+    private async Task<string> TranslateWithGemini2_0AiAsync(string text)
+    {
+        if (string.IsNullOrEmpty(_geminiApiKey))
+        {
+            this.WriteLine("Gemini API key is not set. Skipping translation.");
+            return text;
+        }
+
+        // Rate limit
+        var timeSinceLastCall = (DateTime.Now - _lastApiCall).TotalMilliseconds;
+        if (timeSinceLastCall < MinIntervalMs)
+        {
+            await Task.Delay((int)(MinIntervalMs - timeSinceLastCall));
+        }
+
+        try
+        {
+            await _apiSemaphore.WaitAsync();
+            _lastApiCall = DateTime.Now;
+
+            using var client = new HttpClient();
+
+            var url =
+                $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={_geminiApiKey}";
+
+            var requestBody = new
+            {
+                contents = new[]
+                {
+                new
+                {
+                    parts = new[]
+                    {
+                        new { text = $"Translate to {_targetLanguage}:\n{text}" }
+                    }
+                }
+            }
+            };
+
+            var content = new StringContent(
+                JsonConvert.SerializeObject(requestBody),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await client.PostAsync(url, content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                this.WriteLine($"Gemini Translation failed: {response.StatusCode} - {response.ReasonPhrase}");
+                return text;
+            }
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            var json = JObject.Parse(responseString);
+
+            var translation = json["candidates"]?[0]?["content"]?["parts"]?[0]?["text"]?.ToString();
+
+            return string.IsNullOrWhiteSpace(translation) ? text : translation;
+        }
+        catch (Exception ex)
+        {
+            this.WriteLine($"Gemini Translation exception: {ex.Message}");
+            return text;
+        }
+        finally
+        {
+            _apiSemaphore.Release();
+        }
+    }
+
 
     /// <summary>
     /// Processes subtitle text to apply formatting based on tags such as <i>, <b>, <u>, 

@@ -1,4 +1,4 @@
-// Version: 0.1.10.70
+// Version: 0.1.10.73
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -103,13 +103,6 @@ public partial class ProgressBarView : UserControl, INotifyPropertyChanged
                 ProgressBar_MouseDown(s, e);
             }
         };
-
-        
-        /*
-        _progressBar.MouseDown += (s, e) =>
-        {
-            ProgressBar_MouseDown(s, e);
-        };*/
     }
 
     private void ProgressBar_MouseDown(object sender, MouseEventArgs e)
@@ -240,8 +233,10 @@ public partial class ProgressBarView : UserControl, INotifyPropertyChanged
         }
     }
 
-    public async Task<Bitmap?> GetFrameAtAsync(TimeSpan time, CancellationToken token = default)
+    public async Task<Bitmap> GetFrameAtAsync(TimeSpan time, CancellationToken token = default)
     {
+        if (_player.Playlist.Current==null)
+            return null;
         if (string.IsNullOrEmpty(_player.Playlist.Current.Uri.LocalPath))
             return null;
 

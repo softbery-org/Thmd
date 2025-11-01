@@ -1,4 +1,4 @@
-// Version: 0.1.9.40
+// Version: 0.1.9.98
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -28,6 +28,7 @@ using Thmd.Utilities;
 
 using Controls;
 using Elements;
+using LibVLCSharp.WPF;
 
 namespace Thmd.Controls;
 
@@ -36,7 +37,7 @@ namespace Thmd.Controls;
 /// Represents a WPF UserControl that integrates a VLC media player for video playback with controls, playlist, and subtitle support.
 /// Implements IPlayer interface for media operations and INotifyPropertyChanged for data binding.
 /// </summary>
-public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChanged
+public partial class VlcPlayerView : VideoView, IPlayer, INotifyPropertyChanged
 {
     // System execution state flags to prevent system sleep during playback.
     private const uint ES_CONTINUOUS = 2147483648u;
@@ -67,6 +68,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     private VLCState _state;
     private KeybordKeyFocusManager _focusManager;
     private EditControl _editControl = new EditControl();
+    private bool _lectoreOnOff = false;
 
     /// <summary>
     /// Determines if the application is running in a console window.
@@ -80,14 +82,14 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <summary>
     /// Gets or sets the current status of the media player.
     /// </summary>
-    public PlaylistView Playlist
+    public Playlist Playlist
     {
         get => _playlist;
         private set
         {
             if (_playlist == null)
             {
-                _playlist = new PlaylistView(this);
+                _playlist = new Playlist(this);
             }
             _playlist = value;
         }
@@ -182,7 +184,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <summary>
     /// Indicates whether media playback is currently stopped.
     /// </summary>
-    public bool isStoped
+    public bool isStopped
     {
         get => _stopped;
         set
@@ -193,7 +195,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
                 _paused = false;
                 _playing = false;
             }
-            OnPropertyChanged(nameof(isStoped), ref _stopped, value);
+            OnPropertyChanged(nameof(isStopped), ref _stopped, value);
         }
     }
     /// <summary>
@@ -224,7 +226,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
             else if (value > 100.0) value = 100.0;
             _volume = value;
             _controlBar.SliderVolume.Value = value;
-            _mediaPlayer.Volume = (int)value; // Ensure this is applied
+            this.MediaPlayer.Volume = (int)value; // Ensure this is applied
             OnPropertyChanged(nameof(Volume), ref _volume, value);
         }
     }
@@ -239,12 +241,12 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
             if (value)
             {
                 _muted = true;
-                _mediaPlayer.Mute = true;
+                this.MediaPlayer.Mute = true;
             }
             else
             {
                 _muted = false;
-                _mediaPlayer.Mute = false;
+                this.MediaPlayer.Mute = false;
             }
             OnPropertyChanged("isMute", ref _muted, value);
         }
@@ -268,7 +270,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     public VideoItem Media { get => _playlist.Current; }
 
     /// <summary>
-    /// Mouse sleep, time with controls like ControlBar or ProgressBar are hide.
+    /// Mouse sleep, time with controls like Controlbar or ProgressBar are hide.
     /// </summary>
     public double MouseSleeps { get; private set; } = 7;
     /// <summary>
@@ -276,7 +278,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// </summary>
     public VLCState State
     {
-        get => _mediaPlayer.State;
+        get => this.MediaPlayer.State;
         set
         {
             OnPropertyChanged(nameof(State));
@@ -317,13 +319,13 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     public event EventHandler<MediaPlayerTimeChangedEventArgs> TimeChanged;
 
     private LibVLC _libVLC;
-    private LibVLCSharp.Shared.MediaPlayer _mediaPlayer;
     private double _volume = 100.0;
     private bool _muted;
     private bool _playing;
     private bool _paused;
     private bool _stopped;
     private bool _fullscreen = false;
+    private Hlsarc.Core.HlsarcReader _hlsarc;
     private TimeSpan _position;
     private readonly Random _random = new Random();
     private VideoItem _media;
@@ -334,13 +336,14 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     private BackgroundWorker _mouseNotMoveWorker;
     private bool _isUpscale = false;
 
+    #region Initialize class
     /// <summary>
     /// Initialize class
     /// Initializes the VLC player view, sets up controls, events, and loads configurations.
     /// </summary>
     public VlcPlayerView()
     {
-        Core.Initialize();
+        //Core.Initialize();
         InitializeComponent();
 
         // Set player references for controls
@@ -367,48 +370,65 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         FocusKeyInitialize();
 
         // Resize helpers for control bar and playlist
-        var resizer1 = new ResizeControlHelper(_controlBar);
-        var resizer2 = new ResizeControlHelper(_playlist);
-        //var resizer3 = new ResizeControlHelper(_addStreamView);
-
-        //Windowses.WindowPropertiesExtensions.GetWindowDpi(_mediaPlayer.Hwnd, 0, 0);
+        ControlControllerHelper.Attach(_controlBar);
+        ControlControllerHelper.Attach(_playlist);
+        //var resizer1 = new ControlControllerHelper(_controlBar);
+        //var resizer2 = new ControlControllerHelper(_playlist);
+        //var resizer3 = new ControlControllerHelper(_addStreamView);
+        //var x = 0;
+        //var y = 0;
+        //Windowses.WindowPropertiesExtensions.GetWindowDpi(this.MediaPlayer.Hwnd, out x, out y);
+        //this.WriteLine($"DPI X: {x}, DPI Y: {y}");
 
         // Buttons event handlers
         ControlBarButtonEvent();
 
         // Mouse not moving worker
-        _mouseNotMoveWorker = new BackgroundWorker();
+        _mouseNotMoveWorker = new BackgroundWorker
+        {
+            WorkerSupportsCancellation = true
+        };
         _mouseNotMoveWorker.DoWork += MouseNotMoveWorker_DoWork;
         _mouseNotMoveWorker.RunWorkerAsync();
 
         LoadPlaylistConfig_Question();
-        LoadOpenAiConfig();
+        LoadAiConfig();
         SaveUpdateConfig();
         LoadUpdateConfig();
     }
 
+    /// <summary>
+    /// Initializes a new instance of the VlcPlayerView class with an empty playlist.
+    /// </summary>
+    /// <param name="videoItem">The initial video item to add to the playlist.</param>
+    public VlcPlayerView(VideoItem videoItem) : this()
+    {
+        _playlist.AddAsync(videoItem);
+    }
+    #endregion
+
+    #region Initialize methods
     private void VLCInitialize()
     {
         // VlcControl events and values
-        string[] mediaOptions = new string[] { "--no-video-title-show", "--no-sub-autodetect-file" };//,"--verbose=2","--aout=any" };
+        string[] mediaOptions = new string[] { "--no-video-title-show", "--no-sub-autodetect-file" ,"--verbose=2","--aout=any" };
         _libVLC = new LibVLC(mediaOptions);
-        _mediaPlayer = new LibVLCSharp.Shared.MediaPlayer(_libVLC);
-        _mediaPlayer.EnableHardwareDecoding = false;
-        _mediaPlayer.EnableKeyInput = false;
-        _mediaPlayer.EnableMouseInput = false;
-        _mediaPlayer.TimeChanged += OnTimeChanged;
-        _mediaPlayer.EndReached += OnEndReached;
-        _mediaPlayer.Playing += OnPlaying;
-        _mediaPlayer.Stopped += OnStopped;
-        _mediaPlayer.Paused += OnPaused;
-        _mediaPlayer.Buffering += OnBuffering;
-        _mediaPlayer.MediaChanged += OnMediaChanged;
-        _mediaPlayer.VolumeChanged += OnVolumeChanged;
+        this.MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(_libVLC);
+        this.MediaPlayer.EnableHardwareDecoding = true;
+        this.MediaPlayer.EnableKeyInput = false;
+        this.MediaPlayer.EnableMouseInput = false;
+        this.MediaPlayer.TimeChanged += OnTimeChanged;
+        this.MediaPlayer.EndReached += OnEndReached;
+        this.MediaPlayer.Playing += OnPlaying;
+        this.MediaPlayer.Stopped += OnStopped;
+        this.MediaPlayer.Paused += OnPaused;
+        this.MediaPlayer.Buffering += OnBuffering;
+        this.MediaPlayer.MediaChanged += OnMediaChanged;
+        this.MediaPlayer.VolumeChanged += OnVolumeChanged;
 
-        _mediaPlayer.Volume = (int)_volume;
-
-        _videoView.MediaPlayer = _mediaPlayer;
-        _videoView.Background = System.Windows.Media.Brushes.Black;
+        this.MediaPlayer.Mute = false;
+        this.MediaPlayer.Volume = (int)_volume;
+        this.Background = Brushes.Black;
     }
 
     private void FocusKeyInitialize()
@@ -423,10 +443,10 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <summary>
     /// Loads the OpenAI configuration from JSON file.
     /// </summary>
-    public void LoadOpenAiConfig()
+    public void LoadAiConfig()
     {
-        var ai = Configuration.Config.LoadFromJsonFile<OpenAiConfig>("config/openai.json");
-        Config.Instance.OpenAiConfig = ai;
+        var ai = Configuration.Config.LoadFromJsonFile<AiConfig>("config/ai.json");
+        Config.Conf.AiConfig = ai;
     }
 
     /// <summary>
@@ -435,7 +455,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     public void LoadUpdateConfig()
     {
         var up = Configuration.Config.LoadFromJsonFile<UpdateConfig>("config/update.json");
-        Config.Instance.UpdateConfig = up;
+        Config.Conf.UpdateConfig = up;
     }
 
     /// <summary>
@@ -448,7 +468,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         up.UpdateUrl = "http://thmdplayer.softbery.org/themedit.zip";
         up.UpdatePath = "update";
         up.UpdateFileName = "themedit.zip";
-        up.Version = "4.0.0";
+        up.Version = "1.0.0";
         up.VersionUrl = "http://thmdplayer.softbery.org/version.txt";
         up.UpdateInterval = 86400;
         up.UpdateTimeout = 30;
@@ -464,7 +484,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         Loaded += async (s, e) =>
         {
             //Startup with question to load previous playlist
-            //if (!Config.Instance.Question_AutoLoadPlaylist)
+            //if (!Config.Conf.Question_AutoLoadPlaylist)
             //    return;
 
             //if (!IsConsole())
@@ -487,12 +507,12 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     {
         try
         {
-            await Task.Run(() =>
+            await Task.Run((Action)(() =>
         {
             
                 var pl = Configuration.Config.LoadFromJsonFile<PlaylistConfig>("config/playlist.json");
 
-                Dispatcher.Invoke(async() =>
+            Dispatcher.InvokeAsync(async() =>
                 {
                     _controlBar.RepeatMode = pl.Repeat;
 
@@ -516,18 +536,16 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
                     this.WriteLine("Playlist config loaded successfully (async).");
                     _infoBox.DrawText = ("Playlist config loaded successfully (async).");
                 });
-        });
+        }));
         }
         catch (Exception ex)
         {
-            Dispatcher.Invoke(() =>
-            {
                 var txt = $"Error loading playlist config: {ex.Message}";
                 this.WriteLine(txt);
                 _infoBox.DrawText = txt;
-            });
         }
     }
+    #endregion
 
     /// <summary>
     /// Saves the current playlist configuration to JSON file.
@@ -551,9 +569,19 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         pl.Size = new System.Windows.Size(Playlist.Width, Playlist.Height);
         pl.Current = _playlist.CurrentIndex;
         pl.Position = new System.Windows.Point(Playlist.Margin.Left, Playlist.Margin.Top);
-        Configuration.Config.SaveToFile("config/playlist.json", pl);
+        Configuration.Config.SaveToFile(Config.PlaylistConfigPath, pl);
 
-        this.WriteLine($"Save playlist in config/playlist.json");
+        this.WriteLine($"Save playlist in {Config.PlaylistConfigPath}");
+    }
+
+    /// <summary>
+    /// Saves the main window configuration to JSON file.
+    /// </summary>
+    public void SaveConfig()
+    {
+        var cfg = new Configuration.Config();
+        cfg.MainWindow = Application.Current.MainWindow;
+        Configuration.Config.SaveToFile(Config.ConfigPath, cfg);
     }
 
     /// <summary>
@@ -562,10 +590,10 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <param name="image">The image to apply the effect to.</param>
     public void ApplyGrayscaleEffect(System.Windows.Controls.Image image)
     {
-        // Tworzenie bitmapy na podstawie wymiar�w odtwarzacza
+        // Tworzenie bitmapy na podstawie wymiarów odtwarzacza
         WriteableBitmap bitmap = new WriteableBitmap((int)image.Width, (int)image.Height, 96, 96, PixelFormats.Bgra32, BitmapPalettes.Gray256Transparent);
 
-        // Przyk�adowa modyfikacja pikseli (np. konwersja do szaro�ci)
+        // Przykładowa modyfikacja pikseli (np. konwersja do szarości)
         bitmap.Lock();
         unsafe
         {
@@ -579,7 +607,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
                     pixels[index] = gray;     // B
                     pixels[index + 1] = gray; // G
                     pixels[index + 2] = gray; // R
-                                              // pixels[index + 3] = alfa (pozostawiamy bez zmian)
+                    // pixels[index + 3] = alfa (pozostawiamy bez zmian)
                 }
             }
         }
@@ -596,7 +624,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <returns>The captured frame or null if capture fails.</returns>
     public BitmapSource GetCurrentFrame()
     {
-        if (_mediaPlayer == null || !_mediaPlayer.IsPlaying)
+        if (this.MediaPlayer == null || !this.MediaPlayer.IsPlaying)
         {
             return null; // Brak danych, jeśli nie odtwarza
         }
@@ -606,9 +634,9 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
             using (var ms = new MemoryStream())
             {
                 // Pobranie rozmiaru okna wideo
-                //var windowSize = _videoView.Width;
-                uint actualWidth = (uint)System.Math.Round(_videoView.Width);  // Konwersja double na int z zaokrągleniem
-                uint height = (uint)System.Math.Round(_videoView.Height); // Konwersja double na int z zaokrągleniem
+                //var windowSize = this.Width;
+                uint actualWidth = (uint)System.Math.Round(this.Width);  // Konwersja double na int z zaokrągleniem
+                uint height = (uint)System.Math.Round(this.Height); // Konwersja double na int z zaokrągleniem
 
                 // Walidacja rozmiaru
                 if (actualWidth <= 0 || height <= 0)
@@ -618,8 +646,8 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
                 }
 
                 // Pobranie snapshotu do strumienia
-                var result = _mediaPlayer.TakeSnapshot(
-                    (uint)_mediaPlayer.Hwnd,          // Strumień do zapisu
+                var result = this.MediaPlayer.TakeSnapshot(
+                    (uint)this.MediaPlayer.Hwnd,          // Strumień do zapisu
                     null,
                     (uint)actualWidth,       // Szerokość w pikselach
                     (uint)height       // Wysokość w pikselach
@@ -643,13 +671,13 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
                 //_image.Source = bitmapFrame;
                 return bitmapFrame;
             }
-            /*if (_mediaPlayer.IsPlaying)
+            /*if (this.MediaPlayer.IsPlaying)
             {
                 // Opcje: szerokość, wysokość, ścieżka (domyślnie bieżący katalog), format (png/jpg)
                 var result = _playlist.Current.FrameSize.Split('x');
                 var width = uint.Parse(result[0]);
                 var height = uint.Parse(result[1]);
-                bool success = _mediaPlayer.TakeSnapshot(0, null, width, height);
+                bool success = this.MediaPlayer.TakeSnapshot(0, null, width, height);
 
                 if (success)
                 {
@@ -676,15 +704,22 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <param name="e">The event arguments.</param>
     private async void MouseNotMoveWorker_DoWork(object sender, DoWorkEventArgs e)
     {
-        bool val = true;
-        while (val)
+        //bool val = true;
+        /*while (!_mouseNotMoveWorker.CancellationPending)
         {
             await IfMouseMoved();
             if (e.Cancel)
             {
                 val = false;
             }
+        }*/
+        var worker = sender as BackgroundWorker;
+        while (!worker!.CancellationPending)
+        {
+            await IfMouseMoved();
         }
+
+        e.Cancel = true;
     }
 
     /// <summary>
@@ -693,7 +728,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <returns>A task representing the asynchronous operation.</returns>
     private async Task<bool> IfMouseMoved()
     {
-        _videoView.MouseMove += MouseMovedCallback;
+        this.MouseMove += MouseMovedCallback;
         bool isMouseMove;
         try
         {
@@ -702,12 +737,12 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
         finally
         {
-            _videoView.MouseMove -= MouseMovedCallback;
-            await _videoView.Dispatcher.InvokeAsync((Func<Task>)async delegate
+            this.MouseMove -= MouseMovedCallback;
+            await this.Dispatcher.InvokeAsync((Func<Task>)async delegate
             {
                 await ControlBar.HideByStoryboard((Storyboard)ControlBar.FindResource("fadeOutControlBar"));
                 await ProgressBar.HideByStoryboard((Storyboard)ProgressBar.FindResource("fadeOutProgressBar"));
-                _videoView.Cursor = Cursors.None;
+                this.Cursor = Cursors.None;
             });
             _isMouseMove = false;
         }
@@ -727,7 +762,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     {
         await ControlBar.ShowByStoryboard((Storyboard)ControlBar.FindResource("fadeInControlBar"));
         await ProgressBar.ShowByStoryboard((Storyboard)ProgressBar.FindResource("fadeInProgressBar"));
-        _videoView.Cursor = Cursors.Arrow;
+        this.Cursor = Cursors.Arrow;
     }
 
     /// <summary>
@@ -738,8 +773,11 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     {
         if (e.ChangedButton == MouseButton.Left)
         {
-            // Double-click to toggle fullscreen
-            Fullscreen = !Fullscreen;
+            Dispatcher.InvokeAsync(() =>
+            {
+                // Double-click to toggle fullscreen
+                Fullscreen = !Fullscreen;
+            });
         }
         base.OnMouseDoubleClick(e);
     }
@@ -750,23 +788,26 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <param name="e">The mouse button event arguments.</param>
     protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
     {
-        DateTime now = DateTime.Now;
-        System.Windows.Point pos = e.GetPosition(this);
-        if ((now - _lastClickTime).TotalMilliseconds < System.Windows.Forms.SystemInformation.DoubleClickTime &&
-            System.Math.Abs(pos.X - _lastClickPosition.X) <= 4 &&
-            System.Math.Abs(pos.Y - _lastClickPosition.Y) <= 4)
+        Dispatcher.InvokeAsync(()=>
         {
-            OnMouseDoubleClick(e);
-            e.Handled = true;
-        }
+            DateTime now = DateTime.Now;
+            System.Windows.Point pos = e.GetPosition(this);
+            if ((now - _lastClickTime).TotalMilliseconds < System.Windows.Forms.SystemInformation.DoubleClickTime &&
+                System.Math.Abs(pos.X - _lastClickPosition.X) <= 4 &&
+                System.Math.Abs(pos.Y - _lastClickPosition.Y) <= 4)
+            {
+                OnMouseDoubleClick(e);
+                e.Handled = true;
+            }
 
-        if (e.ChangedButton == MouseButton.Right)
-            TogglePlaylist()();
-        else if (e.ChangedButton == MouseButton.Left)
-            TogglePlayPause()();
+            if (e.ChangedButton == MouseButton.Right)
+                TogglePlaylist()();
+            else if (e.ChangedButton == MouseButton.Left)
+                TogglePlayPause()();
 
-        _lastClickTime = now;
-        _lastClickPosition = pos;
+            _lastClickTime = now;
+            _lastClickPosition = pos;
+        });
 
         base.OnMouseLeftButtonDown(e);
     }
@@ -786,7 +827,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         _progressBar._popup.IsOpen = true;
 
         // Show popup briefly
-        Task.Delay(1000).ContinueWith(_ => Dispatcher.Invoke(() => _progressBar._popup.IsOpen = false));
+        Task.Delay(1000).ContinueWith(_ => Dispatcher.InvokeAsync(() => _progressBar._popup.IsOpen = false));
     }
     #endregion
 
@@ -892,7 +933,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <summary>
     /// Clears focus on double press of the ESC key.
     /// </summary>
-    /// <returns>An action to clear focus and change it to Video View.</returns>
+    /// <returns>An action to clear focus and change it to Video Views.</returns>
     private Action DoublePressESC()
     {
         return new Action(() =>
@@ -903,7 +944,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
             // set focus on video view
             this.Dispatcher.BeginInvoke(new Action(() =>
             {
-                Keyboard.Focus(_videoView);
+                Keyboard.Focus(this);
             }), DispatcherPriority.Input);
         });
     }
@@ -949,18 +990,21 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     {
         return new Action(() =>
         {
-            if (isPlaying)
-            {
-                Pause();
-            }
-            else if (isPaused)
-            {
-                Play();
-            }
-            else if (!isPlaying)
-            {
-                Play(_playlist.Current);
-            }
+            Dispatcher.InvokeAsync(() =>
+            {            
+                if (isPlaying)
+                {
+                    Pause();
+                }
+                else if (isPaused)
+                {
+                    Play();
+                }
+                else if (!isPlaying)
+                {
+                    Play(_playlist.Current);
+                }
+            });
         });
     }
 
@@ -987,7 +1031,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     {
         return new Action(() =>
         {
-            _videoView.Background = System.Windows.Media.Brushes.Black;
+            this.Background = System.Windows.Media.Brushes.Black;
             _fullscreen = ScreenHelper.IsFullscreen;
         });
     }
@@ -1061,7 +1105,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         if (DesignerProperties.GetIsInDesignMode(this))
             return;
 
-        System.Windows.Point mousePosition = e.GetPosition(_controlBar.SliderVolume);
+        Point mousePosition = e.GetPosition(_controlBar.SliderVolume);
         double width = _controlBar.SliderVolume.ActualWidth;
         if (width <= 0) return;
 
@@ -1094,7 +1138,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         if (DesignerProperties.GetIsInDesignMode(this))
             return;
 
-        System.Windows.Point mousePosition = e.GetPosition(_controlBar.SliderVolume);
+        Point mousePosition = e.GetPosition(_controlBar.SliderVolume);
         double width = _controlBar.SliderVolume.ActualWidth;
         if (width <= 0) return;
 
@@ -1113,7 +1157,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <param name="e">The volume changed event arguments.</param>
     private void OnVolumeChanged(object sender, MediaPlayerVolumeChangedEventArgs e)
     {
-
+        //this.Volume = e.Volume;
     }
 
     /// <summary>
@@ -1125,7 +1169,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     {
         if (Playing != null)
         {
-            _mediaPlayer.Playing += (sender, e) =>
+            this.MediaPlayer.Playing += (sender, e) =>
             {
                 Playing?.Invoke(sender, e);
             };
@@ -1141,7 +1185,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     {
         if (Stopped != null)
         {
-            _mediaPlayer.Stopped += (sender, e) =>
+            this.MediaPlayer.Stopped += (sender, e) =>
             {
                 Stopped?.Invoke(sender, e);
             };
@@ -1157,7 +1201,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     {
         if (TimeChanged != null)
         {
-            _mediaPlayer.TimeChanged += (sender, e) =>
+            this.MediaPlayer.TimeChanged += (sender, e) =>
             {
                 TimeChanged?.Invoke(sender, e);
             };
@@ -1173,7 +1217,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     {
         if (LengthChanged != null)
         {
-            _mediaPlayer.LengthChanged += (sender, e) =>
+            this.MediaPlayer.LengthChanged += (sender, e) =>
             {
                 LengthChanged?.Invoke(sender, e);
             };
@@ -1187,12 +1231,17 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <param name="e">The event arguments.</param>
     private void OnEndReached(object sender, EventArgs e)
     {
-        _videoView.Dispatcher.InvokeAsync(() =>
+        this.Dispatcher.Invoke(() =>
         {
             ThreadPool.QueueUserWorkItem(delegate
             {
                 Stop();
             });
+            if (Playlist?.PlayNext != null)
+            {
+                Play(Playlist?.Videos[Playlist.PlayNext.Value]);
+                Playlist.PlayNext = new int();
+            }
             var repeat = ControlBar.RepeatMode;
             HandleRepeat(repeat);
         });
@@ -1206,6 +1255,14 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     private void OnMediaChanged(object sender, MediaPlayerMediaChangedEventArgs e)
     {
         _infoBox.DrawText = _playlist.Current.Name;
+        if (_hlsarc != null)
+        {
+            _hlsarc.StopServer();
+            if (_playlist.Current.IsHlsarc)
+            {
+                _hlsarc.StartServer(8080, msg => this.WriteLine($"{msg}"));
+            }
+        }
         _progressBar.Dispose();
         _progressBar.SetPlayer(this);
     }
@@ -1217,7 +1274,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <param name="e">The time changed event arguments.</param>
     private void OnTimeChanged(object sender, MediaPlayerTimeChangedEventArgs e)
     {
-        _videoView.Dispatcher.InvokeAsync(() =>
+        this.Dispatcher.InvokeAsync(() =>
         {
             _playlist.Current.Position = e.Time;
 
@@ -1244,7 +1301,6 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         });
     }
     #endregion
-
 
     /// <summary>
     /// Handles mouse move on progress bar to preview seek position.
@@ -1333,21 +1389,19 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         {
             var mute_txt = String.Empty;
 
-            if (_mediaPlayer.Mute)
+            if (this.MediaPlayer.Mute)
                 mute_txt = "On";
             else
                 mute_txt = "Off";
 
-
-
-            _volume = _mediaPlayer.Volume;
+            _volume = this.MediaPlayer.Volume;
             isMute = !isMute;
         };
         ControlBar.BtnOpen.Click += delegate
         {
             OpenMediaFile();
         };
-        // Assuming a BtnStream button exists in ControlBar for network streams
+        // Assuming a BtnStream button exists in Controlbar for network streams
         ControlBar.BtnStream.Click += delegate
         {
             ToggleStreamUrl();
@@ -1383,7 +1437,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     {
         OpenFileDialog openFileDialog = new OpenFileDialog
         {
-            Filter = "VideoItem files|*.mp4;*.mkv;*.avi;*.mov;*.flv;*.wmv;*.ts|All files|*.*",
+            Filter = "VideoItem files|*.mp4;*.mkv;*.avi;*.mov;*.flv;*.wmv;*.ts;*.m3u8;*.hlsarc|All files|*.*",
             Multiselect = true
         };
         if (openFileDialog.ShowDialog() == true)
@@ -1444,6 +1498,8 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
             {
                 SetSubtitle(path);
                 _subtitleVisibility = Visibility.Visible;
+                _lectoreOnOff = true;
+                _subtitleControl.StartLectore();
             }
         }
     }
@@ -1454,13 +1510,13 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <param name="path">The path to the subtitle file.</param>
     public void SetSubtitle(string path)
     {
-        _videoView.Dispatcher.InvokeAsync(() =>
+        this.Dispatcher.InvokeAsync(() =>
         {
             _subtitleControl.FilePath = path;
             _subtitleControl.EnableAiTranslation = true;
             _subtitleControl.TimeChanged += delegate (object sender, TimeSpan time)
             {
-                if (_videoView.MediaPlayer != null)
+                if (this.MediaPlayer != null)
                 {
                     _subtitleControl.PositionTime = time;
                 }
@@ -1475,14 +1531,14 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     {
         try
         {
-            ThreadPool.QueueUserWorkItem(delegate
+            Dispatcher.InvokeAsync(() =>
             {
                 _playing = false;
                 _paused = true;
                 _stopped = false;
-                if (_mediaPlayer.IsPlaying)
+                if (this.MediaPlayer.IsPlaying)
                 {
-                    _mediaPlayer.Pause();
+                    this.MediaPlayer.Pause();
                     this.Playlist.Current.IsPlaying = false;
                 }
                 SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
@@ -1501,14 +1557,17 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     {
         try
         {
-            ThreadPool.QueueUserWorkItem(delegate
+            Dispatcher.InvokeAsync(() =>
             {
-                _playing = false;
-                _paused = false;
-                _stopped = true;
-                _mediaPlayer.Stop();
-                this.Playlist.Current.IsPlaying = false;
-                SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
+                ThreadPool.QueueUserWorkItem(delegate
+                {
+                    _playing = false;
+                    _paused = false;
+                    _stopped = true;
+                    this.MediaPlayer.Stop();
+                    this.Playlist.Current.IsPlaying = false;
+                    SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
+                });
             });
         }
         catch (Exception ex)
@@ -1522,8 +1581,13 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// </summary>
     public void Next()
     {
-        Stop();
-        Playlist.MoveNext.Play();
+        Dispatcher.InvokeAsync(() =>
+        {
+            Stop();
+            var next = Playlist.Next;
+            Playlist.CurrentIndex = Playlist.Videos.IndexOf(Playlist.Next);
+            next.Play();
+        });
     }
 
     /// <summary>
@@ -1531,8 +1595,13 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// </summary>
     public void Preview()
     {
-        Stop();
-        Playlist.MovePrevious.Play();
+        Dispatcher.InvokeAsync(() =>
+        {
+            Stop();
+            var previous = Playlist.Previous;
+            Playlist.CurrentIndex = Playlist.Videos.IndexOf(Playlist.Previous);
+            previous.Play();
+        });
     }
 
     /// <summary>
@@ -1541,10 +1610,10 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <param name="time">The time span to seek to.</param>
     public void Seek(TimeSpan time)
     {
-        if (_mediaPlayer != null)
+        if (this.MediaPlayer != null)
         {
             ProgressBar.ShowByStoryboard((Storyboard)ProgressBar.FindResource("fadeInProgressBar")).GetAwaiter();
-            _mediaPlayer.Time = (long)time.TotalMilliseconds;
+            this.MediaPlayer.Time = (long)time.TotalMilliseconds;
         }
     }
 
@@ -1555,7 +1624,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <param name="direction">The seek direction (Forward or Backward).</param>
     public void Seek(TimeSpan time, SeekDirection direction)
     {
-        if (_mediaPlayer != null)
+        if (this.MediaPlayer != null)
         {
             ProgressBar.ShowByStoryboard((Storyboard)ProgressBar.FindResource("fadeInProgressBar")).GetAwaiter();
             switch (direction)
@@ -1567,7 +1636,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
                     this.Position -= time;
                     break;
             }
-            _mediaPlayer.Time = (long)this.Position.TotalMilliseconds;
+            this.MediaPlayer.Time = (long)this.Position.TotalMilliseconds;
         }
     }
 
@@ -1594,24 +1663,36 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
 
                 Dispatcher.Invoke(() =>
                 {
-                    if (_paused && _mediaPlayer.CanPause && _position > TimeSpan.Zero)
+                    var url = String.Empty;
+                    if (_paused && this.MediaPlayer.CanPause && _position > TimeSpan.Zero)
                     {
-                        _mediaPlayer.Play();
+                        this.MediaPlayer.Play();
                     }
                     else if (media != null)
                     {
-                        using var vlcMedia = new LibVLCSharp.Shared.Media(_libVLC, media.Uri);
+                        if (media.Extension == ".hlsarc")
+                        {
+                            _hlsarc = new Hlsarc.Core.HlsarcReader(media.Uri.AbsolutePath);
+                            _hlsarc.StartServer(8080, msg=>Console.WriteLine(msg));
+                            _hlsarc.Open();
+                            url = "http://localhost:8080";
+                        }
+
+                        LibVLCSharp.Shared.Media vlcMedia = null;
+                        if (url != String.Empty)
+                            vlcMedia = new LibVLCSharp.Shared.Media(_libVLC, url);
+                        else
+                            vlcMedia = new LibVLCSharp.Shared.Media(_libVLC, media.Uri);
 
                         if (IsLowResolution(media))
                         {
                             ConfigureRealTimeUpscale(vlcMedia);
                         }
-
-                        _mediaPlayer.Play(vlcMedia);
+                        this.MediaPlayer.Play(vlcMedia);
                     }
                     else
                     {
-                        _mediaPlayer.Play();
+                        this.MediaPlayer.Play();
                     }
 
                     this.Playlist.Current.IsPlaying = true;
@@ -1641,10 +1722,28 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     {
         if (Playlist.Current == null)
         {
-            Console.WriteLine($"[VlcPlayerView]: Playlist is empty or current media is not set.");
+            this.WriteLine($"Playlist is empty or current media is not set.");
             return;
         }
         _Play();
+    }
+
+    /// <summary>
+    /// Starts the lector functionality.
+    /// </summary>
+    /// <returns>true</returns>
+    public bool RunLectore()
+    {
+        return _lectoreOnOff = true;
+    }
+
+    /// <summary>
+    /// Stops the lector functionality.
+    /// </summary>
+    /// <returns>false</returns>
+    public bool StopLectore()
+    {
+        return _lectoreOnOff = false;
     }
 
     /// <summary>
@@ -1688,7 +1787,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
         catch
         {
-            Console.WriteLine($"[VlcPlayerView]: Failed to check resolution with mediatoolkit, upscale off");
+            this.WriteLine($"Failed to check resolution with mediatoolkit, upscale off");
             return false;
         }
     }
@@ -1742,6 +1841,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <param name="e">The event arguments.</param>
     private void OnPlaying(object sender, EventArgs e)
     {
+        isPlaying = true;
         SetThreadExecutionState(BLOCK_SLEEP_MODE);
     }
 
@@ -1752,6 +1852,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <param name="e">The event arguments.</param>
     private void OnStopped(object sender, EventArgs e)
     {
+        isStopped = true;
         SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
     }
 
@@ -1762,6 +1863,7 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
     /// <param name="e">The event arguments.</param>
     private void OnPaused(object sender, EventArgs e)
     {
+        isPaused = true;
         SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
     }
 
@@ -1830,15 +1932,63 @@ public partial class VlcPlayerView : UserControl, IPlayer, INotifyPropertyChange
         }
     }
 
-    /// <summary>
+    protected override void Dispose(bool disposing)
+    {
+        this.WriteLine("Closing background worker...");
+        if (_mouseNotMoveWorker?.IsBusy == true)
+            _mouseNotMoveWorker.CancelAsync();
+        
+        this.WriteLine("Saving playlist configuration...");
+        SavePlaylistConfig();
+
+        //this.WriteLine("Saving full configuration...");
+        //SaveConfig();
+
+        this.WriteLine("Detach controlbar and playlist:");
+        ControlControllerHelper.Detach(_controlBar);
+        this.WriteLine("Controlbar detached.");
+        ControlControllerHelper.Detach(_playlist);
+        this.WriteLine("Playlist detached.");
+
+        this.WriteLine("Disposing resources...");
+        this.MediaPlayer?.Stop();
+        this.MediaPlayer?.Dispose();
+        _progressBar.Dispose();
+        this.WriteLine("Playlist disposing:");
+        //_playlist.Dispose();
+        _libVLC?.Dispose();
+        SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
+        this.WriteLine("Disposed successfully.");
+
+        base.Dispose(disposing);
+    }
+
+    /*/// <summary>
     /// Disposes resources and saves configuration.
     /// </summary>
     public void Dispose()
     {
-        _mediaPlayer?.Dispose();
+        this.WriteLine("Detach controlbar and playlist:");
+        ControlControllerHelper.Detach(_controlBar);
+        this.WriteLine("Controlbar detached.");
+        ControlControllerHelper.Detach(_playlist);
+        this.WriteLine("Playlist detached.");
+        this.WriteLine("Playlist disposing:");
+        _playlist.Dispose();
+        this.WriteLine("Closing background worker...");
+        if (_mouseNotMoveWorker?.IsBusy == true)
+            _mouseNotMoveWorker.CancelAsync();
+        this.WriteLine("Disposing resources...");
+        //this.MediaPlayer?.Stop();
+        this.MediaPlayer?.Dispose();
         _progressBar.Dispose();
+        this.Dispose();
+        this.WriteLine("Saving playlist configuration...");
         SavePlaylistConfig();
+        this.WriteLine("Saving full configuration...");
+        SaveConfig();
         _libVLC?.Dispose();
         SetThreadExecutionState(DONT_BLOCK_SLEEP_MODE);
-    }
+        this.WriteLine("Disposed successfully.");
+    }*/
 }

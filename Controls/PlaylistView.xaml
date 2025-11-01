@@ -14,7 +14,8 @@
           ScrollViewer.CanContentScroll="True"
           VirtualizingStackPanel.IsVirtualizing="True"
           VirtualizingStackPanel.VirtualizationMode="Recycling" 
-          d:ItemsSource="{d:SampleData ItemCount=5}">
+          d:ItemsSource="{d:SampleData ItemCount=5}"
+          MinHeight="50" MinWidth="150">
     <FrameworkElement.Resources>
         <ResourceDictionary>
             <!-- Toolbar line -->

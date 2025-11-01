@@ -1,4 +1,4 @@
-// Version: 0.1.17.16
+// Version: 0.1.17.18
 using System;
 using System.ComponentModel;
 using System.Windows;
@@ -21,7 +21,7 @@ namespace Thmd.Media
         /// <summary>
         /// Gets the playlist view associated with the player.
         /// </summary>
-        PlaylistView Playlist { get; }
+        Playlist Playlist { get; }
 
         /// <summary>
         /// Gets the info box associated with the player.
@@ -65,7 +65,7 @@ namespace Thmd.Media
         /// <summary>
         /// Gets or sets whether the player is currently stopped.
         /// </summary>
-        bool isStoped { get; set; }
+        bool isStopped { get; set; }
 
         /// <summary>
         /// Gets or sets the visibility of subtitles.

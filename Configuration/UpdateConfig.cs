@@ -1,5 +1,5 @@
 // UpdateConfig.cs
-// Version: 0.1.17.15
+// Version: 0.1.17.17
 // A class representing the configuration settings for application updates.
 // Stores properties such as update check settings, URLs, file paths, version information, and timing settings.
 
@@ -10,8 +10,9 @@ namespace Thmd.Configuration;
 /// Provides properties to define whether updates are checked, the URLs for updates and version information,
 /// file paths, version details, and timing settings for update checks.
 /// </summary>
-public class UpdateConfig
+public class UpdateConfig : IConfig
 {
+    private readonly object _lock = new();
     /// <summary>
     /// Gets or sets a value indicating whether the application should check for updates.
     /// Defaults to true.
@@ -59,4 +60,34 @@ public class UpdateConfig
     /// Defaults to 30 seconds.
     /// </summary>
     public int UpdateTimeout { get; set; } = 30;
+
+    /// <summary>
+    /// Loads the update configuration from the JSON file.
+    /// </summary>
+    public void Load()
+    {
+        lock (_lock)
+        {
+            var loadedConfig = Config.LoadFromJsonFile<UpdateConfig>(Config.UpdateConfigPath);
+            CheckForUpdates = loadedConfig.CheckForUpdates;
+            UpdateUrl = loadedConfig.UpdateUrl;
+            UpdatePath = loadedConfig.UpdatePath;
+            UpdateFileName = loadedConfig.UpdateFileName;
+            Version = loadedConfig.Version;
+            VersionUrl = loadedConfig.VersionUrl;
+            UpdateInterval = loadedConfig.UpdateInterval;
+            UpdateTimeout = loadedConfig.UpdateTimeout;
+        }
+    }
+
+    /// <summary>
+    /// Saves the update configuration to the JSON file.
+    /// </summary>
+    public void Save()
+    {
+        lock (_lock)
+        {
+            Config.SaveToFile(Config.UpdateConfigPath, this);
+        }
+    }
 }
