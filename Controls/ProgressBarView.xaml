@@ -75,7 +75,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        
+
         <!-- Storyboard -->
         <Storyboard x:Key="fadeOutProgressBar" FillBehavior="HoldEnd">
             <DoubleAnimation Storyboard.TargetName="_grid"  Storyboard.TargetProperty="Opacity" To="0.0" Duration="0:0:2" />
@@ -86,25 +86,33 @@
     </UserControl.Resources>
 
     <Grid x:Name="_grid" Height="20">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="3*"/>
+        </Grid.RowDefinitions>
         <ProgressBar x:Name="_progressBar"
                      Minimum="{Binding Minimum, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                      Maximum="{Binding Maximum, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                      Value="50"
                      Style="{StaticResource DarkOrangeProgressBarStyle}"
-                     Height="20"/>
+                     HorizontalAlignment="Stretch"
+                     VerticalAlignment="Stretch"
+                     Grid.RowSpan="1" 
+                     Grid.Row="2"/>
         <TextBlock x:Name="_progressText" 
                    Text="{Binding ProgressText, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                    Foreground="{StaticResource MouseOverBrush}" 
-                   VerticalAlignment="Center" 
+                   VerticalAlignment="Top" 
                    HorizontalAlignment="Right" 
-                   Margin="0,0,10,0"/>
+                   Margin="0,2,10,0" 
+                   Grid.RowSpan="2"/>
+        
         <Rectangle Name="_rectangleBufforBar" 
-           HorizontalAlignment="Right" 
-           Width="100" 
-           Height="5" 
-           Margin="0,-30,0,0" 
-                   Opacity="0.7"
-           VerticalAlignment="Center">
+           Opacity="0.7"
+           VerticalAlignment="Stretch"
+           HorizontalAlignment="Stretch"
+           Grid.Row="0" 
+           Grid.RowSpan="1">
             <Rectangle.Fill>
                 <LinearGradientBrush StartPoint="1,0" EndPoint="0,0">
                     <GradientStop Color="#FFFF" Offset="0"/>
@@ -115,12 +123,13 @@
                 <DropShadowEffect ShadowDepth="1" BlurRadius="3" Opacity="0.3"/>
             </Rectangle.Effect>
         </Rectangle>
+
         <Rectangle Name="_rectangleMouseOverPoint" 
            HorizontalAlignment="Left" 
            Width="4" 
            Height="12" 
-           Margin="100,0,0,0" 
-           VerticalAlignment="Center">
+           Margin="100,4,0,0" 
+           VerticalAlignment="Top" Grid.RowSpan="2">
             <Rectangle.Fill>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                     <GradientStop Color="#FF4500" Offset="0"/>
@@ -134,7 +143,7 @@
         <Popup x:Name="_popup" 
                PlacementTarget="{Binding ElementName=_progressBar}" 
                Placement="Top" 
-               AllowsTransparency="True">
+               AllowsTransparency="True" Grid.RowSpan="2">
             <StackPanel Background="#222" Orientation="Vertical">
                 <Image x:Name="_popupImage" Width="160" Height="90" Stretch="UniformToFill" Visibility="Visible"/>
                 <TextBlock x:Name="_popupText" 

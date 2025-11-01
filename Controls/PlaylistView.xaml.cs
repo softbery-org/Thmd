@@ -1,4 +1,4 @@
-// Version: 0.1.13.84
+// Version: 0.1.13.87
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -956,7 +956,9 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         _player = player;
         _player.InfoBox.DrawText = "Playlist player set.";
     }
+    #endregion
 
+    #region Methods
     /// <summary>
     /// Clears all videos from the playlist and unsubscribes from their events in a background task.
     /// </summary>
@@ -1069,13 +1071,13 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
             media.PositionChanged += Video_PositionChanged;
             media.MouseDown += Video_MouseDoubleClick;
 
-            Dispatcher.Invoke(() => Videos.Add(media));
+            Dispatcher.InvokeAsync(() => Videos.Add(media));
 
             // 🔹 Uruchom doczytywanie metadanych w tle bez blokowania UI
             _ = media.LoadMetadataAsync();
 
             this.WriteLine($"PlaylistView: Added video {media.Name}");
-            _player.InfoBox.DrawText = $"Added to playlist: {media.Name}";
+            Dispatcher.InvokeAsync(() => _player.InfoBox.DrawText = $"Added to playlist: {media.Name}");
         });
     }
 

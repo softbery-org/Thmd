@@ -1419,5 +1419,61 @@
     "NewVersion": "1.0.0.3",
     "Date": "2025-10-31T13:03:33.641714Z",
     "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\InfoBox.xaml.cs",
+    "OldVersion": "0.1.13.14",
+    "NewVersion": "0.1.13.15",
+    "Date": "2025-11-01T03:23:38.0003428Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\obj\\Debug\\net48\\.NETFramework,Version=v4.8.AssemblyAttributes.cs",
+    "OldVersion": "none",
+    "NewVersion": "0.0.0.1",
+    "Date": "2025-11-01T03:23:38.8671765Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\ProgressBarView.xaml.cs",
+    "OldVersion": "0.1.10.70",
+    "NewVersion": "0.1.10.71",
+    "Date": "2025-11-01T03:34:27.2197933Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\ProgressBarView.xaml.cs",
+    "OldVersion": "0.1.10.71",
+    "NewVersion": "0.1.10.72",
+    "Date": "2025-11-01T14:00:51.5994813Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\ProgressBarView.xaml.cs",
+    "OldVersion": "0.1.10.72",
+    "NewVersion": "0.1.10.73",
+    "Date": "2025-11-01T14:02:36.9814031Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\PlaylistView.xaml.cs",
+    "OldVersion": "0.1.13.84",
+    "NewVersion": "0.1.13.85",
+    "Date": "2025-11-01T15:02:31.6265946Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\PlaylistView.xaml.cs",
+    "OldVersion": "0.1.13.85",
+    "NewVersion": "0.1.13.86",
+    "Date": "2025-11-01T15:03:39.0961374Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Controls\\PlaylistView.xaml.cs",
+    "OldVersion": "0.1.13.86",
+    "NewVersion": "0.1.13.87",
+    "Date": "2025-11-01T15:31:15.0168318Z",
+    "Type": "auto"
   }
 ]
