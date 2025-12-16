@@ -1,4 +1,4 @@
-// Version: 0.1.17.15
+// Version: 0.1.17.30
 // StoryboardHelper.cs
 // A static helper class that provides extension methods for animating the visibility of WPF controls
 // using storyboards. It supports asynchronous hiding and showing of controls with error handling
@@ -100,6 +100,9 @@ public static class StoryboardHelper
                     {
                         storyboard.AutoReverse = false;
                         storyboard.Begin(sender, HandoffBehavior.Compose, isControllable: false);
+                        Task.Delay(storyboard.Duration.TimeSpan).ContinueWith((_) => {
+                            sender.Visibility = Visibility.Collapsed;
+                        });
                     }
                 });
             }

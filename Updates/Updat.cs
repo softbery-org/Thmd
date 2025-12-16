@@ -1,5 +1,5 @@
 // Updater.cs
-// Version: 0.1.18.5
+// Version: 0.1.18.6
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -75,10 +75,10 @@ public class Updat : IDisposable
     {
         _httpClient = new HttpClient
         {
-            Timeout = TimeSpan.FromSeconds(Config.Instance.UpdateConfig.UpdateTimeout)
+            Timeout = TimeSpan.FromSeconds(Config.Conf.UpdateConfig.UpdateTimeout)
         };
         _logger = new AsyncLogger();
-        _config = Config.Instance;
+        _config = Config.Conf;
         CurrentVersion = Assembly.GetExecutingAssembly().GetName().Version ?? new Version(0, 1, 0, 99);
     }
 

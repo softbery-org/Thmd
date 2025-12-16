@@ -1,4 +1,4 @@
-// Version: 0.2.0.25
+// Version: 0.2.0.26
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +22,7 @@ public static class Logger
     { 
         get; 
         set;
-    } = Config.Instance;
+    } = Config.Conf;
 
     /// <summary>
     /// Zwraca instancj� loggera asynchronicznego.

@@ -1,4 +1,4 @@
-// Version: 0.1.7.91
+// Version: 0.1.7.92
 using System;
 using System.Reflection;
 
@@ -23,7 +23,7 @@ namespace Thmd.Consolas
         {
             if (sender == null)
                 return "Unknown";
-            return sender.GetType().FullName; // Poprawka: u�yj GetType().BaseString zamiast DeclaringType
+            return sender.GetType().FullName; // Poprawka: użyj GetType().BaseString zamiast DeclaringType
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Thmd.Consolas
         public static void WriteLine(this object sender, Exception ex)
         {
             string data = DateTime.Now.ToString("dd-MM-yyyy H:mm:ss"); // Aktualizacja daty
-            GetClassNameDelegate delegat = GetName; // U�ycie delegata
+            GetClassNameDelegate delegat = GetName; // Użycie delegata
             var class_name = delegat(sender);
 
             if (ex != null)
@@ -57,7 +57,7 @@ namespace Thmd.Consolas
         public static void WriteLine(this object sender, string msg)
         {
             string data = DateTime.Now.ToString("dd-MM-yyyy H:mm:ss"); // Aktualizacja daty
-            GetClassNameDelegate delegat = GetName; // U�ycie delegata
+            GetClassNameDelegate delegat = GetName; // Użycie delegata
             var class_name = delegat(sender);
 
             if (!string.IsNullOrEmpty(msg))

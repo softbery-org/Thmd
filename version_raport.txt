@@ -1,5 +1,7 @@
+D:\dev\Thmd\Thmd\Views\ControlBar.xaml.cs -> 0.1.10.85
+D:\dev\Thmd\Thmd\Views\ProgressBarView.xaml.cs -> 0.1.11.24
 
 === Version Statistics ===
-Total files processed: 116
-Files updated: 0
-Average project version: 0.0.10.30
+Total files processed: 140
+Files updated: 2
+Average project version: 0.0.8.29
