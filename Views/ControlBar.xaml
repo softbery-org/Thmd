@@ -51,13 +51,13 @@
         </Style>
 
         <!-- Slider style -->
-        <Style x:Key="VolumeSliderStyle" TargetType="local:ProgressBarView">
+        <Style x:Key="VolumeSliderStyle" TargetType="Slider">
             <Setter Property="Width" Value="100"/>
             <Setter Property="Height" Value="20"/>
             <Setter Property="Margin" Value="5"/>
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="local:ProgressBarView">
+                    <ControlTemplate TargetType="Slider">
                         <Grid>
                             <Border Background="{StaticResource DarkBackgroundBrush}"
                                     BorderBrush="{StaticResource DarkOrangeBrush}"
@@ -321,9 +321,9 @@
             <!-- Mute Button -->
             <Button x:Name="_muteButton" Content="🔊" Style="{StaticResource ControlButtonStyle}" ToolTip="Mute"/>
             <!-- Volume Slider -->
-            <local:ProgressBarView x:Name="_volumeSlider" 
+            <Slider x:Name="_volumeSlider" 
                     Style="{StaticResource VolumeSliderStyle}" 
-                    Value="{Binding Volume, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    Value="{Binding Volume, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"
                     ToolTip="Volume"/>
             <!-- Repeat Button -->
             <Button x:Name="_repeatButton" Content="🔁" Style="{StaticResource ControlButtonStyle}" ToolTip="Repeat Mode"/>

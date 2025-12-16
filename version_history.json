@@ -6214,5 +6214,565 @@
     "NewVersion": "0.1.11.24",
     "Date": "2025-12-16T01:38:38.3911331Z",
     "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.74",
+    "NewVersion": "0.0.1.75",
+    "Date": "2025-12-16T04:29:53.1055216Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.75",
+    "NewVersion": "0.0.1.76",
+    "Date": "2025-12-16T04:31:47.0224514Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.10.89",
+    "NewVersion": "0.1.10.90",
+    "Date": "2025-12-16T04:33:48.4211555Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.10.90",
+    "NewVersion": "0.1.10.91",
+    "Date": "2025-12-16T04:38:09.0784472Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.10.91",
+    "NewVersion": "0.1.10.92",
+    "Date": "2025-12-16T04:41:00.5662634Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.10.92",
+    "NewVersion": "0.1.10.93",
+    "Date": "2025-12-16T04:42:49.4018184Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.10.93",
+    "NewVersion": "0.1.10.94",
+    "Date": "2025-12-16T04:43:12.9985274Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.10.94",
+    "NewVersion": "0.1.10.95",
+    "Date": "2025-12-16T04:43:40.6056059Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.10.95",
+    "NewVersion": "0.1.10.96",
+    "Date": "2025-12-16T04:44:54.446273Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.10.96",
+    "NewVersion": "0.1.10.97",
+    "Date": "2025-12-16T04:48:51.8936496Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.76",
+    "NewVersion": "0.0.1.77",
+    "Date": "2025-12-16T04:49:12.2713083Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.10.97",
+    "NewVersion": "0.1.10.98",
+    "Date": "2025-12-16T04:50:25.8596222Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.10.98",
+    "NewVersion": "0.1.10.99",
+    "Date": "2025-12-16T04:50:58.1881054Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.10.99",
+    "NewVersion": "0.1.11.0",
+    "Date": "2025-12-16T04:52:26.4809962Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.0",
+    "NewVersion": "0.1.11.1",
+    "Date": "2025-12-16T04:52:53.6459321Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.1",
+    "NewVersion": "0.1.11.2",
+    "Date": "2025-12-16T04:53:29.1965062Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.2",
+    "NewVersion": "0.1.11.3",
+    "Date": "2025-12-16T04:54:34.2236742Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.3",
+    "NewVersion": "0.1.11.4",
+    "Date": "2025-12-16T04:55:02.1699381Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.4",
+    "NewVersion": "0.1.11.5",
+    "Date": "2025-12-16T04:55:32.1814127Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.5",
+    "NewVersion": "0.1.11.6",
+    "Date": "2025-12-16T04:57:21.9814895Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.6",
+    "NewVersion": "0.1.11.7",
+    "Date": "2025-12-16T04:57:47.9806174Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.7",
+    "NewVersion": "0.1.11.8",
+    "Date": "2025-12-16T05:03:14.7017647Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.7",
+    "NewVersion": "0.1.11.8",
+    "Date": "2025-12-16T05:04:13.3990829Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.8",
+    "NewVersion": "0.1.11.9",
+    "Date": "2025-12-16T05:05:25.5645225Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.77",
+    "NewVersion": "0.0.1.78",
+    "Date": "2025-12-16T05:06:34.5742622Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.78",
+    "NewVersion": "0.0.1.79",
+    "Date": "2025-12-16T05:07:20.1607118Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.9",
+    "NewVersion": "0.1.11.10",
+    "Date": "2025-12-16T05:08:10.1387809Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.10",
+    "NewVersion": "0.1.11.11",
+    "Date": "2025-12-16T05:08:37.6890968Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.10",
+    "NewVersion": "0.1.11.11",
+    "Date": "2025-12-16T05:10:10.0236044Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.11",
+    "NewVersion": "0.1.11.12",
+    "Date": "2025-12-16T05:10:45.6993257Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.12",
+    "NewVersion": "0.1.11.13",
+    "Date": "2025-12-16T05:12:11.0077707Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.79",
+    "NewVersion": "0.0.1.80",
+    "Date": "2025-12-16T05:12:11.0159654Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.13",
+    "NewVersion": "0.1.11.14",
+    "Date": "2025-12-16T05:14:40.6193081Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.80",
+    "NewVersion": "0.0.1.81",
+    "Date": "2025-12-16T05:14:40.6269202Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.14",
+    "NewVersion": "0.1.11.15",
+    "Date": "2025-12-16T05:15:15.7774215Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.81",
+    "NewVersion": "0.0.1.82",
+    "Date": "2025-12-16T05:15:49.0513882Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.15",
+    "NewVersion": "0.1.11.16",
+    "Date": "2025-12-16T05:16:32.5585071Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.82",
+    "NewVersion": "0.0.1.83",
+    "Date": "2025-12-16T05:16:32.5664748Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.16",
+    "NewVersion": "0.1.11.17",
+    "Date": "2025-12-16T05:17:50.9738489Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.17",
+    "NewVersion": "0.1.11.18",
+    "Date": "2025-12-16T05:18:26.6743444Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.18",
+    "NewVersion": "0.1.11.19",
+    "Date": "2025-12-16T05:19:14.3267099Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.19",
+    "NewVersion": "0.1.11.20",
+    "Date": "2025-12-16T05:20:46.8986704Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.20",
+    "NewVersion": "0.1.11.21",
+    "Date": "2025-12-16T05:21:23.7453492Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.83",
+    "NewVersion": "0.0.1.84",
+    "Date": "2025-12-16T05:21:51.8147977Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.21",
+    "NewVersion": "0.1.11.22",
+    "Date": "2025-12-16T05:23:10.7580015Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.22",
+    "NewVersion": "0.1.11.23",
+    "Date": "2025-12-16T05:23:39.5444059Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.84",
+    "NewVersion": "0.0.1.85",
+    "Date": "2025-12-16T05:24:19.89413Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.85",
+    "NewVersion": "0.0.1.86",
+    "Date": "2025-12-16T05:25:51.5768737Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.86",
+    "NewVersion": "0.0.1.87",
+    "Date": "2025-12-16T05:26:34.2864204Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.23",
+    "NewVersion": "0.1.11.24",
+    "Date": "2025-12-16T05:27:58.516346Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.87",
+    "NewVersion": "0.0.1.88",
+    "Date": "2025-12-16T05:27:58.5371803Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.24",
+    "NewVersion": "0.1.11.25",
+    "Date": "2025-12-16T05:29:02.2543582Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.25",
+    "NewVersion": "0.1.11.26",
+    "Date": "2025-12-16T05:30:10.6542334Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.88",
+    "NewVersion": "0.0.1.89",
+    "Date": "2025-12-16T05:30:10.6831191Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.26",
+    "NewVersion": "0.1.11.27",
+    "Date": "2025-12-16T05:33:10.6808967Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.27",
+    "NewVersion": "0.1.11.28",
+    "Date": "2025-12-16T05:33:54.2908298Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.28",
+    "NewVersion": "0.1.11.29",
+    "Date": "2025-12-16T05:34:32.1153698Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.29",
+    "NewVersion": "0.1.11.30",
+    "Date": "2025-12-16T05:35:29.3602778Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.30",
+    "NewVersion": "0.1.11.31",
+    "Date": "2025-12-16T05:36:13.9317676Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.31",
+    "NewVersion": "0.1.11.32",
+    "Date": "2025-12-16T05:36:44.156568Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.30",
+    "NewVersion": "0.1.11.31",
+    "Date": "2025-12-16T05:38:16.725709Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.31",
+    "NewVersion": "0.1.11.32",
+    "Date": "2025-12-16T13:44:45.3977779Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.89",
+    "NewVersion": "0.0.1.90",
+    "Date": "2025-12-16T13:44:45.497194Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.90",
+    "NewVersion": "0.0.1.91",
+    "Date": "2025-12-16T13:46:59.2455166Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.32",
+    "NewVersion": "0.1.11.33",
+    "Date": "2025-12-16T13:48:38.403354Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.91",
+    "NewVersion": "0.0.1.92",
+    "Date": "2025-12-16T13:48:38.4098202Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.33",
+    "NewVersion": "0.1.11.34",
+    "Date": "2025-12-16T13:50:12.393427Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.34",
+    "NewVersion": "0.1.11.35",
+    "Date": "2025-12-16T13:50:46.6165851Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.35",
+    "NewVersion": "0.1.11.36",
+    "Date": "2025-12-16T13:52:09.8073111Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\ControlBar.xaml.cs",
+    "OldVersion": "0.1.11.36",
+    "NewVersion": "0.1.11.37",
+    "Date": "2025-12-16T13:53:44.1436797Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.92",
+    "NewVersion": "0.0.1.93",
+    "Date": "2025-12-16T13:55:03.8640326Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.93",
+    "NewVersion": "0.0.1.94",
+    "Date": "2025-12-16T13:55:59.1488906Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.94",
+    "NewVersion": "0.0.1.95",
+    "Date": "2025-12-16T13:57:07.4387149Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.95",
+    "NewVersion": "0.0.1.96",
+    "Date": "2025-12-16T13:57:56.2598281Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.96",
+    "NewVersion": "0.0.1.97",
+    "Date": "2025-12-16T13:58:55.2753508Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.97",
+    "NewVersion": "0.0.1.98",
+    "Date": "2025-12-16T13:59:16.8910301Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.98",
+    "NewVersion": "0.0.1.99",
+    "Date": "2025-12-16T14:01:07.5482804Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.1.99",
+    "NewVersion": "0.0.2.0",
+    "Date": "2025-12-16T14:02:30.9925665Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.2.0",
+    "NewVersion": "0.0.2.1",
+    "Date": "2025-12-16T14:03:42.6524453Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.2.1",
+    "NewVersion": "0.0.2.2",
+    "Date": "2025-12-16T14:07:12.0815354Z",
+    "Type": "auto"
   }
 ]

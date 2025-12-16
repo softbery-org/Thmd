@@ -1,4 +1,4 @@
-// Version: 0.0.1.74
+// Version: 0.0.2.2
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -92,11 +92,10 @@ namespace Thmd.Views
                 _volume = Math.Clamp(value, 0, 100);
                 Dispatcher.Invoke(() =>
                 {
-                    _controlbar.SliderVolume.Value = _volume;
                     if (MediaPlayer != null)
                         MediaPlayer.Volume = (int)_volume;
                 });
-                OnPropertyChanged(nameof(Volume), ref _volume, value);
+                OnPropertyChanged(nameof(Volume));
             }
         }
 
@@ -205,6 +204,7 @@ namespace Thmd.Views
             _keyboardShortcuts.Visibility = Visibility.Hidden;
 
             InitializeEvents();
+            InitializeControlBarEvents();
             InitializeProgressbarEvents();
             ControlBarButtonEvent();
             InitializeKeyboardShortcuts();
@@ -238,12 +238,18 @@ namespace Thmd.Views
             MediaPlayer.EndReached += (s, e) => Dispatcher.InvokeAsync(HandleEndReached);
 
             MediaPlayer.TimeChanged += (s, e) => Dispatcher.InvokeAsync(() => UpdateUIOnTimeChanged(e.Time));
-
-            MediaPlayer.VolumeChanged += (s, e) => Dispatcher.Invoke(() =>
+            MediaPlayer.VolumeChanged += (s, e) => Dispatcher.InvokeAsync(() =>
             {
-                _volume = e.Volume;
-                _controlbar.SliderVolume.Value = e.Volume;
+                //_volume = e.Volume;
+                this.WriteLine("Volume changed to: " + (e.Volume*100));
+                _controlbar._volumeSlider.Value = e.Volume*10;
+                OnPropertyChanged(nameof(Volume), ref _volume, e.Volume);
             });
+        }
+
+        private void InitializeControlBarEvents()
+        {
+            
         }
 
         private void InitializeProgressbarEvents()
@@ -305,14 +311,16 @@ namespace Thmd.Views
                     break;
 
                 case Key.Up:
-                    //Volume += 5;
-                    MediaPlayer.Volume += 5;
+                    if (MediaPlayer != null)
+                        Volume = MediaPlayer.Volume + 5;
+                    //MediaPlayer.Volume += 5;
                     e.Handled = true;
                     break;
 
                 case Key.Down:
-                    //Volume -= 5;
-                    MediaPlayer.Volume -= 5;
+                    if (MediaPlayer!=null)
+                        Volume = MediaPlayer.Volume - 5;
+                    //MediaPlayer.Volume -= 5;
                     e.Handled = true;
                     break;
 

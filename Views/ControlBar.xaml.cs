@@ -1,4 +1,4 @@
-// Version: 0.1.10.89
+// Version: 0.1.11.37
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -9,6 +9,7 @@ using System.Windows.Threading;
 
 using LibVLCSharp.Shared;
 
+using Thmd.Consolas;
 using Thmd.Media;
 
 namespace Thmd.Views
@@ -41,8 +42,7 @@ namespace Thmd.Views
         public Button BtnOpen => _openMediaButton;
         public Button BtnPlaylist => _openPlaylistButton;
         public Button BtnStream => _streamButton;
-
-        public ProgressBarView SliderVolume => _volumeSlider;
+        public Slider SliderVolume => _volumeSlider;
 
         #endregion
 
@@ -83,6 +83,21 @@ namespace Thmd.Views
         public static readonly DependencyProperty VolumeProperty =
             DependencyProperty.Register(nameof(Volume), typeof(double), typeof(ControlBar),
                 new PropertyMetadata(100.0, OnVolumeChanged));
+
+        //private double _previousVolume = 100.0;
+        //public double PreviousVolume { 
+        //    get => _previousVolume;
+        //    set {
+        //        if (System.Math.Abs(_previousVolume - _volumeSlider.Value) < 0.001) return; // <-- kluczowe!
+
+        //        _previousVolume = Math.Clamp(_volumeSlider.Value, 0, 100);
+        //        this.WriteLine($"PreviousVolume set to {_previousVolume}");
+        //        //_previousVolume = _volumeSlider.Value;
+        //        if (_player!=null)
+        //            _player.Volume = _previousVolume;
+        //        OnPropertyChanged(nameof(PreviousVolume));
+        //    }
+        //}
 
         public bool IsMuted
         {
@@ -203,9 +218,6 @@ namespace Thmd.Views
                     RepeatMode = mode;
                 RepeatPopupVisibility = false;
             };
-
-            // Slider głośności
-            _volumeSlider.ValueChanged += (s, e) => Volume = e;
         }
 
         private void SubscribeToPlayerEvents()
@@ -216,7 +228,7 @@ namespace Thmd.Views
             _player.Playing += (s, e) => Dispatcher.Invoke(() => UpdatePlayButtonIcon(true));
             _player.Paused += (s, e) => Dispatcher.Invoke(() => UpdatePlayButtonIcon(false));
             _player.Stopped += (s, e) => Dispatcher.Invoke(() => UpdatePlayButtonIcon(false));
-            _player.VolumeChanged += (s, e) => Dispatcher.Invoke(() => Volume = _player.Volume);
+            //_player.VolumeChanged += (s, e) => Dispatcher.Invoke(() => _player.Volume = e.Volume);
         }
 
         private void SyncWithPlayer()
@@ -242,10 +254,20 @@ namespace Thmd.Views
         private static void OnVolumeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var cb = (ControlBar)d;
-            cb._volumeSlider.Value = (double)cb.Volume;
-            //var newValue = (double)e.NewValue;
+            var newValue = (double)e.NewValue * 10;
+            Console.WriteLine(cb._player.Volume + " " + newValue);
+            
+            if (cb._player != null && System.Math.Abs(cb._player.Volume - newValue) > 0.1)
+            {
+                cb._player.Volume = newValue;
+            }
 
-            //if (cb._player != null && System.Math.Abs(cb._player.Volume - newValue) > 0.001)
+            ////_controlbar._volumeSlider.Value = value;
+            //if (cb._player != null)
+            //    cb._player.Volume = cb.Volume;
+
+            //var newValue = (double)e.NewValue;
+            //if (cb._player != null && System.Math.Abs(cb._player.Volume - newValue) > 0.1)
             //{
             //    cb._player.Volume = newValue;
             //}

@@ -1,5 +1,6 @@
+D:\dev\Thmd\Thmd\Views\VlcPlayer.xaml.cs -> 0.0.2.2
 
 === Version Statistics ===
 Total files processed: 140
-Files updated: 0
-Average project version: 0.0.8.27
+Files updated: 1
+Average project version: 0.0.8.26
