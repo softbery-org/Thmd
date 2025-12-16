@@ -28,7 +28,8 @@ namespace Thmd.Converters
                     return TimeSpan.Zero;
 
                 var result = (currentPosition / width) * length;
-                return TimeSpan.FromMilliseconds(result);
+                var t = (currentPosition - width) / length;
+                return TimeSpan.FromMilliseconds(t);
             }
             return TimeSpan.Zero;
         }
@@ -42,7 +43,7 @@ namespace Thmd.Converters
         /// <param name="maximumLength">Maximum time length in milliseconds (double).</param>
         /// <param name="targetType">Target type (unused).</param>
         /// <returns>Position as double; 0.0 in case of error.</returns>
-        public static object ConvertBack<T>(object value, object totalWidth, object maximumLength, T targetType) where T : class
+        public static double ConvertBack(object value, object totalWidth, object maximumLength)
         {
             if (value is TimeSpan timeSpan && totalWidth is double width && maximumLength is double length)
             {
@@ -57,4 +58,4 @@ namespace Thmd.Converters
         }
     }
 }
-// Version: 0.1.0.38
+// Version: 0.1.0.41

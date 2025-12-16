@@ -1,4 +1,4 @@
-// Version: 0.1.10.38
+// Version: 0.1.10.50
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -23,86 +23,160 @@ public partial class ControlBar : UserControl
 {
     private IPlayer _player;
     private ObservableCollection<ILanguage> _languages;
-
+    /// <summary>
+    /// Gets the play button.
+    /// </summary>
     public Button BtnPlay => _playPauseButton;
+    /// <summary>
+    /// Gets the stop button.
+    /// </summary>
     public Button BtnStop => _stopButton;
+    /// <summary>
+    /// Gets the next button.
+    /// </summary>
     public Button BtnNext => _fastForwardButton;
+    /// <summary>
+    /// Gets the previous button.
+    /// </summary>
     public Button BtnPrevious => _rewindButton;
+    /// <summary>
+    /// Gets the mute button.
+    /// </summary>
     public Button BtnMute => _muteButton;
+    /// <summary>
+    /// Gets the subtitle button.
+    /// </summary>
     public Button BtnSubtitle => _openSubtitlesButton;
+    /// <summary>
+    /// Gets the open media button.
+    /// </summary>
     public Button BtnOpen => _openMediaButton;
+    /// <summary>
+    /// Gets the playlist button.
+    /// </summary>
     public Button BtnPlaylist => _openPlaylistButton;
+    /// <summary>
+    /// Gets the volume slider.
+    /// </summary>
     public Slider SliderVolume => _volumeSlider;
+    /// <summary>
+    /// Gets the stream button.
+    /// </summary>
     public Button BtnStream => _streamButton;
-
+    /// <summary>
+    /// Occurs when a property value changes.
+    /// </summary>
     public event PropertyChangedEventHandler PropertyChanged;
 
     // Existing properties
 
     // Property for media title
+    /// <summary>
+    /// Gets or sets the title of the currently playing media.
+    /// </summary>
     public string MediaTitle
     {
         get => (string)GetValue(MediaTitleProperty);
         set => SetValue(MediaTitleProperty, value);
     }
+    /// <summary>
+    /// Gets or sets the title of the currently playing media.
+    /// </summary>
     public static readonly DependencyProperty MediaTitleProperty =
         DependencyProperty.Register(nameof(MediaTitle), typeof(string), typeof(ControlBar), new PropertyMetadata("No Media", OnMediaTitleChanged));
 
     // New properties for timer and duration
+    /// <summary>
+    /// Gets or sets the current playback time of the media.
+    /// </summary>
     public string CurrentTime
     {
         get => (string)GetValue(CurrentTimeProperty);
         set => SetValue(CurrentTimeProperty, value);
     }
+    /// <summary>
+    /// Gets or sets the current playback time of the media.
+    /// </summary>
     public static readonly DependencyProperty CurrentTimeProperty =
         DependencyProperty.Register(nameof(Position), typeof(string), typeof(ControlBar), new PropertyMetadata("00:00", OnCurrentTimeChanged));
-
+    /// <summary>
+    /// Gets or sets the total duration of the media.
+    /// </summary>
     public string MediaDuration
     {
         get => (string)GetValue(MediaDurationProperty);
         set => SetValue(MediaDurationProperty, value);
     }
+    /// <summary>
+    /// Gets or sets the total duration of the media.
+    /// </summary>
     public static readonly DependencyProperty MediaDurationProperty =
         DependencyProperty.Register(nameof(MediaDuration), typeof(string), typeof(ControlBar), new PropertyMetadata("00:00", OnMediaDurationChanged));
 
     // Existing properties
+    /// <summary>
+    /// Gets or sets the volume level (0 to 100).
+    /// </summary>
     public double Volume
     {
         get => (double)GetValue(VolumeProperty);
         set => SetValue(VolumeProperty, value);
     }
+    /// <summary>
+    /// Gets or sets the volume level (0 to 100).
+    /// </summary>
     public static readonly DependencyProperty VolumeProperty =
-        DependencyProperty.Register(nameof(Volume), typeof(double), typeof(ControlBar), new PropertyMetadata(50.0, OnVolumeChanged));
-
+        DependencyProperty.Register(nameof(Volume), typeof(double), typeof(ControlBar), new PropertyMetadata(100.0, OnVolumeChanged));
+    /// <summary>
+    /// Gets or sets the visibility of the volume popup.
+    /// </summary>
     public bool VolumePopupVisibility
     {
         get => (bool)GetValue(VolumePopupVisibilityProperty);
         set => SetValue(VolumePopupVisibilityProperty, value);
     }
+    /// <summary>
+    /// Gets or sets the text displayed in the volume popup.
+    /// </summary>
     public static readonly DependencyProperty VolumePopupVisibilityProperty =
         DependencyProperty.Register(nameof(VolumePopupVisibility), typeof(bool), typeof(ControlBar), new PropertyMetadata(false));
-
+    /// <summary>
+    /// Gets or sets the text displayed in the volume popup.
+    /// </summary>
     public string VolumePopupText
     {
         get => (string)GetValue(VolumePopupTextProperty);
         set => SetValue(VolumePopupTextProperty, value);
     }
+    /// <summary>
+    /// Gets or sets the text displayed in the volume popup.
+    /// </summary>
     public static readonly DependencyProperty VolumePopupTextProperty =
-        DependencyProperty.Register(nameof(VolumePopupText), typeof(string), typeof(ControlBar), new PropertyMetadata("Volume: 50"));
-
+        DependencyProperty.Register(nameof(VolumePopupText), typeof(string), typeof(ControlBar), new PropertyMetadata("Volume: 100"));
+    /// <summary>
+    /// Gets or sets the playlist items.
+    /// </summary>
     public ObservableCollection<string> PlaylistItems
     {
         get => (ObservableCollection<string>)GetValue(PlaylistItemsProperty);
         set => SetValue(PlaylistItemsProperty, value);
     }
+    /// <summary>
+    /// Gets or sets the playlist items.
+    /// </summary>
     public static readonly DependencyProperty PlaylistItemsProperty =
         DependencyProperty.Register(nameof(PlaylistItems), typeof(ObservableCollection<string>), typeof(ControlBar), new PropertyMetadata(new ObservableCollection<string>()));
-
+    /// <summary>
+    /// Gets or sets the selected index in the playlist.
+    /// </summary>
     public int SelectedPlaylistIndex
     {
         get => (int)GetValue(SelectedPlaylistIndexProperty);
         set => SetValue(SelectedPlaylistIndexProperty, value);
     }
+    /// <summary>
+    /// Gets or sets the selected index in the playlist.
+    /// </summary>
     public static readonly DependencyProperty SelectedPlaylistIndexProperty =
         DependencyProperty.Register(nameof(SelectedPlaylistIndex), typeof(int), typeof(ControlBar), new PropertyMetadata(-1));
 
@@ -178,14 +252,42 @@ public partial class ControlBar : UserControl
     public static readonly DependencyProperty IsMutedProperty =
         DependencyProperty.Register(nameof(IsMuted), typeof(bool), typeof(ControlBar), new PropertyMetadata(false, OnIsMutedChanged));
 
-    public VLCState PlayerState
+    public bool IsPlaying
+    {
+        get => _player.isPlaying;
+        set
+        {
+            UpdatePlayButtonContent();
+        }
+    }
+
+    public bool IsPaused { 
+        get => _player.isPaused;
+        set
+        {
+            UpdatePlayButtonContent();
+        }
+    }
+
+    /*public bool IsPlaying
+    {
+        get => (bool)GetValue(IsPlayingProperty);
+        set => SetValue(IsPlayingProperty, value);
+    }
+    public static readonly DependencyProperty IsPlayingProperty =
+        DependencyProperty.Register(nameof(IsPlaying), typeof(bool), typeof(Controlbar), new PropertyMetadata(false, OnPlayerStateChanged));*/
+
+    /*public bool PlayerState
     {
         get => (VLCState)GetValue(IsPlayingProperty);
         set => SetValue(IsPlayingProperty, value);
     }
     public static readonly DependencyProperty IsPlayingProperty =
-        DependencyProperty.Register(nameof(PlayerState), typeof(bool), typeof(ControlBar), new PropertyMetadata(false, OnPlayerStateChanged));
+        DependencyProperty.Register(nameof(PlayerState), typeof(bool), typeof(Controlbar), new PropertyMetadata(false, OnPlayerStateChanged));*/
 
+    /// <summary>
+    /// Gets or sets the current playback position of the media.
+    /// </summary>
     public string Position
     {
         get => _position;
@@ -196,7 +298,9 @@ public partial class ControlBar : UserControl
             OnPropertyChanged(nameof(Position));
         }
     }
-
+    /// <summary>
+    /// Gets or sets the total duration of the media.
+    /// </summary>
     public string Duration
     {
         get => _duration;
@@ -208,16 +312,35 @@ public partial class ControlBar : UserControl
         }
     }
 
+    /*public bool IsPaused
+    {
+        get { return _player.isPaused; }
+        set
+        {
+            _player.isPaused = value;
+            UpdatePlayButtonContent();
+            OnPropertyChanged("IsPaused");
+        }  
+    }
+    public bool IsStopped { get; set; }*/
+
     // Store the volume before muting
     private double _previousVolume;
     private string _position = "00:00:00";
     private string _duration = "00:00:00";
     private int _scrollTextIndex = 0;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ControlBar"/> class.
+    /// </summary>
     public ControlBar()
     {
         InitializeComponent();
-
+        
+        _playPauseButton.Click += (s, e) =>
+        {
+            UpdatePlayButtonContent();
+        };
         _repeatButton.Click += (s, e) => RepeatPopupVisibility = !RepeatPopupVisibility;
         _repeatComboBox.SelectionChanged += (s, e) =>
         {
@@ -236,15 +359,22 @@ public partial class ControlBar : UserControl
 
         UpdateRepeatButtonContent();
         UpdateMuteButtonContent();
+        UpdatePlayButtonContent();
     }
-
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ControlBar"/> class with a specified media player.
+    /// </summary>
+    /// <param name="player">The media player instance to associate with the control bar.</param>
     public ControlBar(IPlayer player) : this()
     {
         _player = player;
 
         SubscribePlayerEvents();
     }
-
+    /// <summary>
+    /// Sets the media player for the control bar.
+    /// </summary>
+    /// <param name="player">The media player instance to associate with the control bar.</param>
     public void SetPlayer(IPlayer player)
     {
         _player = player;
@@ -269,38 +399,70 @@ public partial class ControlBar : UserControl
             _player.LengthChanged += (s, e) => UpdateMediaDuration((long)_player.Playlist.Current.Duration.TotalMilliseconds);
         }
     }
+    /// <summary>
+    /// Starts the scrolling animation for the media title.
+    /// </summary>
+    public void StartTitleScroll()
+    {
+        var scrollAnimation = new DoubleAnimation
+        {
+            From = 0,
+            To = -(_mediaTitleTextBlock.ActualWidth),
+            Duration = new Duration(TimeSpan.FromSeconds(10)),
+            RepeatBehavior = RepeatBehavior.Forever
+        };
+        _mediaTitleTextBlock.BeginAnimation(Canvas.LeftProperty, scrollAnimation);
+    }
+    /// <summary>
+    /// Stops the scrolling animation for the media title.
+    /// </summary>
+    public void StopTitleScroll()
+    {
+        _mediaTitleTextBlock.BeginAnimation(Canvas.LeftProperty, null);
+    }
+    /// <summary>
+    /// Closes/Hide the control bar.
+    /// </summary>
+    public void CloseControlBar()
+    {
+        this.Visibility = Visibility.Collapsed;
+    }
 
     private static void OnPlayerStateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         var control = (ControlBar)d;
         if (control._player != null)
         {
-            switch (control._player.State)
+            if (control._player.isPlaying)
             {
-                case VLCState.NothingSpecial:
-                    break;
-                case VLCState.Opening:
-                    break;
-                case VLCState.Buffering:
-                    break;
-                case VLCState.Playing:
-                    control.UpdatePlayButtonContent();
-                    break;
-                case VLCState.Paused:
-                    control.UpdatePlayButtonContent();
-                    break;
-                case VLCState.Stopped:
-                    break;
-                case VLCState.Ended:
-                    break;
-                case VLCState.Error:
-                    break;
-                default:
-                    break;
+                control.UpdatePlayButtonContent();
             }
+            //switch (control._player.State)
+            //{
+            //    case VLCState.NothingSpecial:
+            //        break;
+            //    case VLCState.Opening:
+            //        break;
+            //    case VLCState.Buffering:
+            //        break;
+            //    case VLCState.Playing:
+            //        control.UpdatePlayButtonContent();
+            //        break;
+            //    case VLCState.Paused:
+            //        control.UpdatePlayButtonContent();
+            //        break;
+            //    case VLCState.Stopped:
+            //        break;
+            //    case VLCState.Ended:
+            //        break;
+            //    case VLCState.Error:
+            //        break;
+            //    default:
+            //        break;
+            //}
         }
 
-        control.OnPropertyChanged(nameof(PlayerState));
+        control.OnPropertyChanged(nameof(IsPlaying));
     }
 
     private static void OnVolumeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -319,6 +481,20 @@ public partial class ControlBar : UserControl
         var control = (ControlBar)d;
         control.UpdateRepeatButtonContent();
         control.OnPropertyChanged(nameof(RepeatMode));
+    }
+
+    private static void OnIsPlayingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        var control = (ControlBar)d;
+        if (control._player != null)
+        {
+            control._player.isPlaying = control.IsPlaying;
+            control._player.isPaused = control.IsPaused;
+            //control._player.isStopped = control.IsStopped;
+        }
+        control.UpdateMuteButtonContent();
+        control.UpdateVolumePopupText();
+        control.OnPropertyChanged(nameof(IsMuted));
     }
 
     private static void OnIsMutedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -383,8 +559,33 @@ public partial class ControlBar : UserControl
 
     private void UpdatePlayButtonContent()
     {
-        _playPauseButton.Content = _player.State == LibVLCSharp.Shared.VLCState.Playing ? "▶" : "⏸️";
-        _playPauseButton.ToolTip = _player.State == LibVLCSharp.Shared.VLCState.Playing ? "Play" : "Pause";
+        Dispatcher.InvokeAsync(() =>
+        {
+            if (_player.isStopped)
+            {
+                _playPauseButton.Content = "▶";
+                _playPauseButton.ToolTip = "Play";
+                return;
+            }
+            if (IsPaused)
+            {
+                _playPauseButton.Content = "⏸️";
+                _playPauseButton.ToolTip = "Pause";
+                return;
+            }
+            if (IsPlaying)
+            {
+                _playPauseButton.Content = "▶";
+                _playPauseButton.ToolTip = "Play";
+                return;
+            }
+        });
+        //else if (IsStopped)
+        //{
+        //    _playPauseButton.Content = "▶";
+        //    _playPauseButton.ToolTip = "Stopped";
+        //}
+        //_playPauseButton.ToolTip = _player.isPlaying ? "Play" : "Pause";
     }
 
     private void ToggleMute()
@@ -412,6 +613,11 @@ public partial class ControlBar : UserControl
         if (_player.Playlist.Current != null)
         {
             var title = _player.Playlist.Current.Name;
+            if (_player.Playlist.Current.IsPlaying)
+            {
+                IsPlaying = true;
+            }
+
             MediaTitle = string.IsNullOrEmpty(title) ? "Unknown Title" : title;
         }
         else
@@ -438,6 +644,10 @@ public partial class ControlBar : UserControl
         return $"{time.Minutes:D2}:{time.Seconds:D2}";
     }
 
+    /// <summary>
+    /// Raises the PropertyChanged event for a specified property.
+    /// </summary>
+    /// <param name="propertyName">The name of the property that changed.</param>
     protected void OnPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

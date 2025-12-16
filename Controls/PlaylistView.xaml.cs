@@ -1,5 +1,6 @@
-// Version: 0.1.13.87
+// Version: 0.1.14.19
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -49,7 +50,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     private ScrollViewer _scrollViewer;
     private DispatcherTimer _scrollTimer;
     private double _scrollVelocity = 0;
-    private const double ScrollZone = 60.0;
+    private const double ScrollZone = 20.0;
     private const double MaxScrollSpeed = 14.0;
     private const double ScrollDamping = 0.85;
 
@@ -100,10 +101,22 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     /// Gets the command to clear all videos from the playlist.
     /// </summary>
     public ICommand ClearPlaylistCommand { get; private set; }
+    /// <summary>
+    /// Play as next media
+    /// </summary>
+    public ICommand NextPlayedCommand { get; private set; }
 
     #endregion
 
     #region Public properties
+    /// <summary>
+    /// Indicates whether the playlist contains HLSARC videos.
+    /// </summary>
+    public bool IsHlsarc
+    {
+        get; 
+        set; 
+    } = false;
 
     /// <summary>
     /// Config
@@ -129,7 +142,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
             {
                 _videos = value;
                 base.ItemsSource = _videos; ;
-                //SetValue(VideosProperty, value);
+                SetValue(VideosProperty, value);
                 OnPropertyChanged(nameof(Videos));
             });
         }
@@ -314,6 +327,8 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         get => Videos != null ? Videos.Count : 0;
     }
 
+    public int NextPlayed { get; set; }
+
     /// <summary>
     /// Occurs when a property value changes, used for data binding.
     /// </summary>
@@ -387,18 +402,21 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         _rightClickMenu = new ContextMenu();
 
         MenuItem playItem = new MenuItem { Header = "Play" };
+        MenuItem playasnext = new MenuItem { Header = "Play as next" };
         MenuItem removeItem = new MenuItem { Header = "Remove" };
         MenuItem moveUpItem = new MenuItem { Header = "Move Up" };
         MenuItem moveDownItem = new MenuItem { Header = "Move Down" };
         MenuItem moveTopItem = new MenuItem { Header = "Move To Top" };
 
         playItem.Click += MenuItemPlay_Click;
+        playasnext.Click += MenuItemPlayasnext_Click;
         removeItem.Click += MenuItemRemove_Click;
         moveUpItem.Click += MenuItemMoveUpper_Click;
         moveDownItem.Click += MenuItemMoveLower_Click;
         moveTopItem.Click += MenuItemMoveToTop_Click;
 
         _rightClickMenu.Items.Add(playItem);
+        _rightClickMenu.Items.Add(playasnext);
         _rightClickMenu.Items.Add(removeItem);
         _rightClickMenu.Items.Add(new Separator());
         _rightClickMenu.Items.Add(moveUpItem);
@@ -406,6 +424,14 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         _rightClickMenu.Items.Add(moveTopItem);
 
         ContextMenu = _rightClickMenu;
+    }
+
+    private void MenuItemPlayasnext_Click(object sender, RoutedEventArgs e)
+    {
+        if (SelectedItem is VideoItem video)
+        {
+            this.NextPlayed = Videos.IndexOf(video);
+        }
     }
 
     #endregion
@@ -416,8 +442,9 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     {
         if (SelectedItem is VideoItem video)
         {
-            _player?.Play(video);
+            PlayVideo(video);
             CurrentIndex = Videos.IndexOf(video);
+            this.WriteLine($"Context menu play {video.Name}");
         }
     }
 
@@ -471,6 +498,22 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     }
 
     /// <summary>
+    /// Double mouse click on video item
+    /// </summary>
+    /// <param name="e"></param>
+    protected override void OnMouseDoubleClick(MouseButtonEventArgs e)
+    {
+        if (SelectedItem is VideoItem video)
+        {
+            PlayVideo(video);
+            CurrentIndex = Videos.IndexOf(video);
+            this.WriteLine($"Double click on {video.Name}");
+            _ = _player.InfoBox.DrawText = $"Play {video.Name}.";
+        }
+        base.OnMouseDoubleClick(e);
+    }
+
+    /// <summary>
     /// Detects drag initiation and begins drag-and-drop operation when movement exceeds threshold.
     /// Ignores border or empty area clicks (drag only starts on ListViewItem).
     /// </summary>
@@ -505,13 +548,12 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         }
     }
 
-
     /// <summary>
     /// Handles the MouseLeave event to reset the dragging state and remove the adorner.
     /// </summary>
     /// <param name="sender">The event sender.</param>
     /// <param name="e">The mouse event arguments.</param>
-    protected void OnMouseLeave(object sender, MouseEventArgs e)
+    protected override void OnMouseLeave(MouseEventArgs e)
     {
         if (e.LeftButton == MouseButtonState.Pressed && _isDragging)
         {
@@ -520,9 +562,20 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         _draggedItem = null;
         _draggedIndex = -1;
 
-        Config.Instance.PlaylistConfig.Size = new Size(this.Width, this.Height);
-        //Config.Instance.PlaylistConfig.Position = new Point(0, 0);
+        Config.Conf.PlaylistConfig.Size = new Size(this.Width, this.Height);
+        Config.Conf.PlaylistConfig.MediaList = CreateMediaList();
+
         EndDrag();
+    }
+
+    private List<string> CreateMediaList()
+    {
+        var list = new List<string>();
+        foreach (var video in Videos)
+        {
+            list.Add(video.Name);
+        }
+        return list;
     }
 
     /// <summary>
@@ -533,7 +586,6 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     /// </summary>
     private void StartDrag(VideoItem item, MouseEventArgs e)
     {
-        // Fix: Sprawdź UI thread i STA
         if (!Dispatcher.CheckAccess())
         {
             Dispatcher.Invoke(() => StartDrag(item, e));  // Rekursja do UI thread
@@ -541,7 +593,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         }
         if (Thread.CurrentThread.GetApartmentState() != ApartmentState.STA)
         {
-            this.WriteLine(new InvalidOperationException("DragDrop wymaga STA threada."));
+            this.WriteLine(new InvalidOperationException("DragDrop need STA thread."));
         }
 
         _adornerLayer = AdornerLayer.GetAdornerLayer(this);
@@ -558,32 +610,6 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
 
         _draggedContainer = draggedContainer;  // Przechowaj dla OnDragOver
 
-        // Snapshot wizualny
-        /*RenderTargetBitmap bitmap = new RenderTargetBitmap(
-            (int)draggedContainer.ActualWidth,
-            (int)draggedContainer.ActualHeight,
-            96, 96,
-            PixelFormats.Pbgra32);
-        draggedContainer.UpdateLayout();
-        bitmap.Render(draggedContainer);
-
-        var shadowImage = new Image
-        {
-            Source = bitmap,
-            Opacity = 0.7,
-            RenderTransform = new TranslateTransform(0, 0)
-        };
-
-        _dragAdorner = new DragShadowAdorner(this, shadowImage);
-        _adornerLayer.Add(_dragAdorner);*/
-
-        // Fix: Subskrybuj globalny Mouse.Move dla ciągłego śledzenia (płynność)
-        //if (!_isMouseSubscribed)
-        //{
-        //    this.MouseMove += OnGlobalMouseMove;  // Globalny event – działa w całej app
-        //    _isMouseSubscribed = true;
-        //}
-
         // Fix: IDataObject z ComTypes dla kompatybilności OLE (zapobiega null w OleDoDragDrop)
         var dataObject = new DataObject();
         dataObject.SetData(typeof(VideoItem), item);  // Lub użyj string key: dataObject.SetData("VideoItem", item);
@@ -591,7 +617,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         try
         {
             // Fix: Wywołaj w Dispatcher dla bezpieczeństwa (choć już w UI)
-            Dispatcher.Invoke(() =>
+            Dispatcher.InvokeAsync(() =>
             {
                 DragDrop.DoDragDrop(this, dataObject, DragDropEffects.Move);
             });
@@ -820,22 +846,22 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
             canExecute: _ => true);
         RemoveCommand = new RelayCommand(
             execute: Remove,
-            canExecute: _ => this._videos.Count > 0);
+            canExecute: _ => this.Count > 0);
         EditCommand = new RelayCommand(
             execute: Edit,
-            canExecute: _ => this._videos.Count > 0);
+            canExecute: _ => this.Count > 0);
         CloseCommand = new RelayCommand(
             execute: Close,
             canExecute: _ => true);
         SavePlaylistCommand = new RelayCommand(
             execute: SavePlaylist,
-            canExecute: _ => this._videos.Count > 0);
+            canExecute: _ => this.Count > 0);
         LoadPlaylistCommand = new RelayCommand(
             execute: LoadPlaylist,
             canExecute: _ => true);
         ClearPlaylistCommand = new RelayCommand(
             execute: _ => ClearTracksAsync(),
-            canExecute: _ => this._videos.Count > 0);
+            canExecute: _ => this.Count > 0);
     }
 
     /// <summary>
@@ -849,11 +875,11 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     {
         // Logika dla dodawania elementu do playlisty
         //MessageBox.Show("Dodawanie nowego elementu do playlisty.");
-        _player.GetCurrentFrame();
+        //_player.GetCurrentFrame();
         var ofd = new Microsoft.Win32.OpenFileDialog
         {
             Title = "Select Media File",
-            Filter = "Media Files|*.mp4;*.mkv;*.avi;*.mov;*.wmv;*.flv;*.mp3;*.wav;*.flac;*.ts|All Files|*.*",
+            Filter = "Media Files|*.mp4;*.mkv;*.avi;*.mov;*.wmv;*.flv;*.mp3;*.wav;*.flac;*.ts;*.m3u8;*.hlsarc|All Files|*.*",
             Multiselect = true
         };
 
@@ -864,7 +890,8 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
             {
                 var video = new VideoItem(filename);
                 this.AddAsync(video);
-                _player.InfoBox.DrawText = $"Added to playlist: {video.Name}";
+
+                this.Dispatcher.InvokeAsync(() =>{ _player.InfoBox.DrawText = $"Added to playlist: {video.Name}"; });
             }
         }
     }
@@ -879,7 +906,6 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     public void Remove(object parameter)
     {
         // Logika dla usuwania elementu z playlisty
-        //NewAsync(BaseString, "");
         if (SelectedItem is VideoItem video)
         {
             if (video == _player.Playlist.Current)
@@ -891,7 +917,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         }
         else
         {
-            _player.InfoBox.DrawText = "No item selected to remove.";
+            this.Dispatcher.InvokeAsync(() => { _player.InfoBox.DrawText = "No item selected to remove."; });
         }
     }
 
@@ -905,7 +931,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     public void Edit(object parameter)
     {
         // Logika dla edycji elementu playlisty
-        MessageBox.Show("Edycja wybranego elementu playlisty.");
+        MessageBox.Show("Edition for selected playlisty item.");
     }
 
     /// <summary>
@@ -931,7 +957,8 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     public void SavePlaylist(object parameter)
     {
         _player.SavePlaylistConfig();
-        _player.InfoBox.DrawText = "Playlist saved.";
+
+        this.Dispatcher.InvokeAsync(() =>{ _player.InfoBox.DrawText = "Playlist saved."; });
     }
 
     /// <summary>
@@ -944,7 +971,8 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     public void LoadPlaylist(object parameter)
     {
         _player.LoadPlaylistConfig_Question();
-        _player.InfoBox.DrawText = "Playlist loaded.";
+
+        this.Dispatcher.InvokeAsync(() => { _player.InfoBox.DrawText = "Playlist loaded."; } );
     }
 
     /// <summary>
@@ -954,7 +982,8 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     public void SetPlayer(IPlayer player)
     {
         _player = player;
-        _player.InfoBox.DrawText = "Playlist player set.";
+
+        this.Dispatcher.InvokeAsync(() => { _player.InfoBox.DrawText = "Playlist player set."; });
     }
     #endregion
 
@@ -974,15 +1003,15 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
             var videosToClear = Videos.ToList();
             foreach (VideoItem video in videosToClear)
             {
-                video.PositionChanged -= Video_PositionChanged;
-                video.MouseDown -= Video_MouseDoubleClick;
+                //video.PositionChanged -= Video_PositionChanged;
             }
             Dispatcher.Invoke(() =>
             {
                 Videos.Clear();
                 CurrentIndex = -1;
                 this.WriteLine("PlaylistView: Cleared all videos from playlist.");
-                _player.InfoBox.DrawText = "Playlist cleared.";
+
+                this.Dispatcher.InvokeAsync(() => { _player.InfoBox.DrawText = "Playlist cleared."; });
             });
         });
     }
@@ -1011,14 +1040,16 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     {
         return Task.Run(() =>
         {
-            if (media == null || Videos == null) return null;
+            if (media == null || Videos == null) 
+                return null;
+
             int index = Videos.ToList().FindIndex(video => video.Uri == media.Uri);
+
             if (index >= 0)
             {
                 VideoItem item = Videos[index];
-                item.PositionChanged -= Video_PositionChanged;
-                item.MouseDown -= Video_MouseDoubleClick;
-                Dispatcher.Invoke(() =>
+                //item.PositionChanged -= Video_PositionChanged;
+                Dispatcher.InvokeAsync(() =>
                 {
                     Videos.RemoveAt(index);
                     if (index < CurrentIndex)
@@ -1034,8 +1065,11 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
                         CurrentIndex = -1;
                     }
                 });
+
                 this.WriteLine($"PlaylistView: Removed video {item.Name} at index {index}");
-                _player.InfoBox.DrawText = $"Removed from playlist: {item.Name}";
+
+                Dispatcher.InvokeAsync(() =>{ _player.InfoBox.DrawText = $"Removed from playlist: {item.Name}"; });
+
                 return item;
             }
             return null;
@@ -1068,8 +1102,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         {
             if (media == null || Contains(media)) return;
             media.SetPlayer(_player);
-            media.PositionChanged += Video_PositionChanged;
-            media.MouseDown += Video_MouseDoubleClick;
+            //media.PositionChanged += Video_PositionChanged;
 
             Dispatcher.InvokeAsync(() => Videos.Add(media));
 
@@ -1077,6 +1110,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
             _ = media.LoadMetadataAsync();
 
             this.WriteLine($"PlaylistView: Added video {media.Name}");
+
             Dispatcher.InvokeAsync(() => _player.InfoBox.DrawText = $"Added to playlist: {media.Name}");
         });
     }
@@ -1114,30 +1148,10 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
             TimeSpan position = TimeSpan.FromSeconds(newPosition);
 
             // 🔹 Zaktualizuj model danych, by UI odświeżył binding
-            //video.Position = position.TotalMilliseconds;
+            video.Position = position.TotalMilliseconds;
 
             // (Opcjonalnie logowanie diagnostyczne)
             this.WriteLine($"PlaylistView: Position updated {video.Name} -> {position}");
-        }
-    }
-
-    /// <summary>
-    /// Handles double-click events to play the selected video.
-    /// </summary>
-    /// <param name="sender">The source of the event.</param>
-    /// <param name="e">The mouse event arguments.</param>
-    /// <remarks>
-    /// Plays the selected VideoItem and logs the action.
-    /// </remarks>
-    private void Video_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-    {
-        if (e.LeftButton == MouseButtonState.Pressed && e.ClickCount >= 2)
-        {
-            if (SelectedItem is VideoItem selectedVideo)
-            {
-                PlayVideo(selectedVideo);
-                this.WriteLine($"PlaylistView: Double-clicked to play video {selectedVideo.Name}");
-            }
         }
     }
 
@@ -1151,16 +1165,10 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
     /// </remarks>
     private void PlayVideo(VideoItem video)
     {
-        this.Dispatcher.InvokeAsync(() =>
+        if (video != null && _player != null)
         {
-            if (video != null && _player != null)
-            {
-                Current?.Stop();
-                CurrentIndex = Videos.IndexOf(video);
-                _player.Play(video);
-                this.WriteLine($"PlaylistView: Context menu play video {video.Name}");
-            }
-        });
+            _player?.Play(video);
+        }
     }
 
     #endregion
@@ -1271,6 +1279,54 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         return null;
     }
 
+    #endregion
+
+    #region Disposable Support
+    private bool _disposed = false;
+    /// <summary>
+    /// Disposes resources used by the PlaylistView.
+    /// </summary>
+    public void Dispose()
+    {
+        //_scrollTimer.Stop();
+        //_scrollTimer.Tick -= OnScrollTimerTick;
+        //_scrollTimer = null;
+        //foreach (var item in Videos)
+        //{
+        //    item.PositionChanged -= Video_PositionChanged;
+        //    item.MouseDown -= Video_MouseDoubleClick;
+        //}
+
+        if (_disposed) return;
+        _disposed = true;
+
+        // 1. Stop timer
+        if (_scrollTimer != null)
+        {
+            _scrollTimer.Tick -= OnScrollTimerTick;
+            _scrollTimer.Stop();
+        }
+
+        // 2. Usuń globalne subskrypcje
+        if (_isMouseSubscribed)
+        {
+            this.MouseMove -= OnGlobalMouseMove;
+            _isMouseSubscribed = false;
+        }
+
+        // 3. Usuń adorner
+        if (_adornerLayer != null && _dragAdorner != null)
+        {
+            _adornerLayer.Remove(_dragAdorner);
+            _dragAdorner = null;
+        }
+
+        // 4. Wyczyszczenie referencji
+        _player = null;
+        _scrollViewer = null;
+        _rightClickMenu = null;
+        Videos = null;
+    }
     #endregion
 
     #region Relay command class

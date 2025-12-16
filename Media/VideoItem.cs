@@ -1,13 +1,16 @@
-// Version: 0.1.17.3
+// Version: 0.1.17.13
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
+
+using Hlsarc.Core;
 
 using MediaToolkit;
 using MediaToolkit.Model;
@@ -42,6 +45,8 @@ public class VideoItem : UIElement, INotifyPropertyChanged
     private bool _isPlaying;
     private List<VideoIndent> _indent = new List<VideoIndent>();
     private bool _isIndents = false;
+    private string _extension;
+    private bool _isPaused;
 
     /// <summary>
     /// Is video playing
@@ -59,6 +64,9 @@ public class VideoItem : UIElement, INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Is video indents
+    /// </summary>
     public bool isIndents {
         get => _isIndents;
         set {
@@ -66,6 +74,9 @@ public class VideoItem : UIElement, INotifyPropertyChanged
             OnPropertyChanged(nameof(isIndents));
         } }
 
+    /// <summary>
+    /// List of video indents
+    /// </summary>
     public List<VideoIndent> Indents {  get => _indent; 
         set { 
             _indent = value;
@@ -149,6 +160,9 @@ public class VideoItem : UIElement, INotifyPropertyChanged
     /// Subtitle file path, if no subtitle is found, it will be an empty string.
     /// </summary>
     public string SubtitlePath { get; set; }
+
+    private bool _isStopped;
+
     /// <summary>
     /// Position property in milliseconds, range from 0.0 to Duration.
     /// </summary>
@@ -163,7 +177,7 @@ public class VideoItem : UIElement, INotifyPropertyChanged
             if (value >= 0.0 && value <= _duration)
             {
                 _position = value;
-                OnPositionChanged(value);
+                //OnPositionChanged(value);
                 OnPropertyChanged("Position");
                 OnPropertyChanged("PositionFormatted");
             }
@@ -174,6 +188,10 @@ public class VideoItem : UIElement, INotifyPropertyChanged
     /// Get the formatted position as a string in "hh:mm:ss" format.
     /// </summary>
     public string PositionFormatted => TimeSpan.FromMilliseconds(_position).ToString("hh\\:mm\\:ss");
+    /// <summary>
+    /// File extension of the media, e.g., ".mp4", ".mkv", ".hlsarc" ,etc.
+    /// </summary>
+    public string Extension => _extension;
     /// <summary>
     /// Volume property, range from 0.0 (mute) to 1.0 (max volume).
     /// </summary>
@@ -194,15 +212,18 @@ public class VideoItem : UIElement, INotifyPropertyChanged
         }
     }
 
+    public bool IsHlsarc
+    {
+        get
+        {
+            return _extension == ".hlsarc";
+        }
+    }
+
     /// <summary>
     /// Invoke when a property is changed.
     /// </summary>
     public event PropertyChangedEventHandler PropertyChanged;
-
-    /// <summary>
-    /// Invoke when the position is changed.
-    /// </summary>
-    public event EventHandler<double> PositionChanged;
 
     /// <summary>
     /// Invoke when the volume is changed.
@@ -221,16 +242,6 @@ public class VideoItem : UIElement, INotifyPropertyChanged
     protected virtual void OnPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    /// <summary>
-    /// Invoke when the position is changed.
-    /// </summary>
-    /// <param name="newPosition">New position</param>
-    protected virtual void OnPositionChanged(double newPosition)
-    {
-        this.WriteLine($"Position change event: {newPosition}");
-        PositionChanged?.Invoke(this, newPosition);
     }
 
     /// <summary>
@@ -261,7 +272,9 @@ public class VideoItem : UIElement, INotifyPropertyChanged
     {
         _index++;
         _uri = new Uri(path);
-        _name = new FileInfo(_uri.LocalPath).Name;
+        var fileInfo = new FileInfo(_uri.LocalPath);
+        _name = fileInfo.Name; 
+        _extension = fileInfo.Extension.ToLowerInvariant();
         LoadMetadata();
         AutoSetSubtitle(path);
     }
@@ -275,6 +288,10 @@ public class VideoItem : UIElement, INotifyPropertyChanged
         : this(path)
     {
         _player = player;
+        _player.TimeChanged += (s, e) =>
+        {
+            Position = e.Time;
+        };
     }
 
     /// <summary>
@@ -290,8 +307,9 @@ public class VideoItem : UIElement, INotifyPropertyChanged
     {
         _index++;
         _uri = new Uri(path);
-        _name = new FileInfo(_uri.LocalPath).Name;
-
+        var fileInfo = new FileInfo(_uri.LocalPath);
+        _name = fileInfo.Name;
+        _extension = fileInfo.Extension.ToLowerInvariant();
         if (!deferMetadata)
         {
             LoadMetadata();
@@ -300,27 +318,88 @@ public class VideoItem : UIElement, INotifyPropertyChanged
 
     private void LoadMetadata()
     {
-        _metadataMediaToolkit = GetMetadata();
-        if (_metadataMediaToolkit != null)
-        {
-            _fps = GetFPS();
-            _duration = GetDuration();
-            _format = GetFormat();
-            _frameSize = GetFrameSize();
-            _audioFormat = GetAudioFormat();
-            _audioSampleRate = GetAudioSampleRate();
-            _audioBitRate = GetAudioBitRate();
-        }
-        else
+        if (_extension == ".hlsarc")
         {
             _fps = 0.0;
-            _duration = 0.0;
-            _format = string.Empty;
+            _duration = GetDurationFromHlsarc(_uri.LocalPath) * 1000.0;
+            _format = "hlsarc";
             _frameSize = string.Empty;
             _audioFormat = string.Empty;
             _audioSampleRate = string.Empty;
             _audioBitRate = 0;
             _audioChanelOutput = string.Empty;
+        }
+        else
+        {
+            _metadataMediaToolkit = GetMetadata();
+            if (_metadataMediaToolkit != null)
+            {
+                _fps = GetFPS();
+                _duration = GetDuration();
+                _format = GetFormat();
+                _frameSize = GetFrameSize();
+                _audioFormat = GetAudioFormat();
+                _audioSampleRate = GetAudioSampleRate();
+                _audioBitRate = GetAudioBitRate();
+            }
+            else
+            {
+                _fps = 0.0;
+                _duration = 0.0;
+                _format = string.Empty;
+                _frameSize = string.Empty;
+                _audioFormat = string.Empty;
+                _audioSampleRate = string.Empty;
+                _audioBitRate = 0;
+                _audioChanelOutput = string.Empty;
+            }
+        }
+    }
+
+    private double GetDurationFromM3u8(string m3u8Path)
+    {
+        if (!File.Exists(m3u8Path))
+            throw new FileNotFoundException("Nie znaleziono pliku playlisty.", m3u8Path);
+
+        double totalSeconds = 0;
+        foreach (var line in File.ReadAllLines(m3u8Path))
+        {
+            if (line.StartsWith("#EXTINF:"))
+            {
+                string val = line.Substring(8).TrimEnd(',');
+                if (double.TryParse(val, NumberStyles.Any, CultureInfo.InvariantCulture, out double dur))
+                    totalSeconds += dur;
+            }
+        }
+
+        return totalSeconds;
+    }
+
+    private double GetDurationFromHlsarc(string archivePath)
+    {
+        using (var reader = new HlsarcReader(archivePath))
+        {
+            reader.Open(); // wczytuje indeks i archiwum
+            string playlist = reader.GetPlaylist();
+
+            double totalSeconds = 0;
+            using (var sr = new StringReader(playlist))
+            {
+                string? line;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    if (line.StartsWith("#EXTINF:"))
+                    {
+                        string val = line.Substring(8).TrimEnd(',');
+                        if (double.TryParse(val, System.Globalization.NumberStyles.Any,
+                                            System.Globalization.CultureInfo.InvariantCulture,
+                                            out double dur))
+                            totalSeconds += dur;
+                    }
+                }
+            }
+
+            return totalSeconds;
         }
     }
 
@@ -338,7 +417,7 @@ public class VideoItem : UIElement, INotifyPropertyChanged
             LoadMetadata();
         });
 
-        // Aktualizuj UI po zako�czeniu
+        // Aktualizuj UI po zakończeniu
         OnPropertyChanged(nameof(Duration));
         OnPropertyChanged(nameof(Format));
         OnPropertyChanged(nameof(Fps));
@@ -410,8 +489,12 @@ public class VideoItem : UIElement, INotifyPropertyChanged
     /// </summary>
     public void Play()
     {
-        _player.Play(this);
-        this.WriteLine($"[{GetType().Name}]: Playing media {Name}");
+        Dispatcher.Invoke(() =>
+        {
+            _player.Play(this);
+            _isPlaying = true;
+            this.WriteLine($"[{GetType().Name}]: Playing media {Name}");
+        });
     }
 
     /// <summary>
@@ -419,8 +502,12 @@ public class VideoItem : UIElement, INotifyPropertyChanged
     /// </summary>
     public void Pause()
     {
-        _player.Pause();
-        this.WriteLine($"[{GetType().Name}]Pause media {Name}");
+        Dispatcher.Invoke(() =>
+        {
+            _player.Pause();
+            _isPaused = true;
+            this.WriteLine($"[{GetType().Name}]Pause media {Name}");
+        });
     }
 
     /// <summary>
@@ -428,9 +515,13 @@ public class VideoItem : UIElement, INotifyPropertyChanged
     /// </summary>
     public void Stop()
     {
-        _player.Stop();
-        Position = 0.0;
-        this.WriteLine($"[{GetType().Name}]Stopped media {Name}");
+        Dispatcher.Invoke(() =>
+        {
+            _player.Stop();
+            _isStopped = true;
+            Position = 0.0;
+            this.WriteLine($"[{GetType().Name}]Stopped media {Name}");
+        });
     }
 
     /// <summary>

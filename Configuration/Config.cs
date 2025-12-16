@@ -1,7 +1,8 @@
-// Version: 0.2.0.25
+// Version: 0.2.0.29
 
 using System;
 using System.IO;
+using System.Windows;
 
 using Newtonsoft.Json;
 
@@ -14,36 +15,23 @@ namespace Thmd.Configuration;
 /// A singleton that manages application configuration. 
 /// It supports JSON read/write and access to settings: database, logs, VLC, OpenAI, etc.
 /// </summary>
-public sealed class Config
+public sealed class Config : IConfig
 {
     #region Singleton Implementation
     // Lock object for thread safety.
     private static readonly object _lock = new();
 
-    private static Config _instance;
+    private static Config _configInstance;
     private static IPlaylistConfig _playlistConfig;
+    private static SubtitleConfig _subtitleConfig;
     private static UpdateConfig _updateConfig;
-    private static OpenAiConfig _openAiConfig;
+    private static AiConfig _openAiConfig;
     private static PerformanceMonitorConfig _performanceMonitor;
 
     private string _filePath = string.Empty;
     #endregion
 
     #region Properties
-    /// <summary>
-    /// Config singleton instance.
-    /// </summary>
-    public static Config Instance
-    {
-        get
-        {
-            lock (_lock)
-            {
-                return _instance ??= LoadFromJsonFile<Config>("config/config.json");
-            }
-        }
-    }
-
     /// <summary>
     /// Path for main configuration file.
     /// </summary>
@@ -53,13 +41,17 @@ public sealed class Config
     /// </summary>
     public static string PlaylistConfigPath => "config/playlist.json";
     /// <summary>
+    /// Path for plugin configuration file.
+    /// </summary>
+    public static string PluginConfigPath => "config/plugin.json";
+    /// <summary>
     /// Path for update configuration file.
     /// </summary>
     public static string UpdateConfigPath => "config/update.json";
     /// <summary>
     /// Path for OpenAI configuration file.
     /// </summary>
-    public static string OpenAiConfigPath => "config/openai.json";
+    public static string AiConfigPath => "config/ai.json";
     /// <summary>
     /// Path for Performance Monitor configuration file.
     /// </summary>
@@ -67,7 +59,7 @@ public sealed class Config
     /// <summary>
     /// Path for Subtitles configuration file.
     /// </summary>
-    public static string SubtitlesConfigPath => "config/subtitles.json";
+    public static string SubtitlesConfigPath => "config/subtitle.json";
     /// <summary>
     /// Connection string for the database.
     /// </summary>
@@ -109,9 +101,41 @@ public sealed class Config
     /// </summary>
     public bool Question_AutoLoadPlaylist { get; set; } = true;
     /// <summary>
-    /// 
+    /// Subtitle configuration.
     /// </summary>
-    public SubtitleConfig SubtitleConfig { get; set; } = new(24.0, "Arial", System.Windows.Media.Brushes.WhiteSmoke, true);
+    public SubtitleConfig SubtitleConfig
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return  _subtitleConfig ??= LoadFromJsonFile<SubtitleConfig>(SubtitlesConfigPath);
+            }
+        }
+    }
+    /// <summary>
+    /// Main application window properties.
+    /// </summary>
+    public Window MainWindow { get; set; } = new Window
+    {
+        Width = 800,
+        Height = 600,
+        Top = 100,
+        Left = 100
+    };
+    /// <summary>
+    /// Config singleton instance.
+    /// </summary>
+    public static Config Conf
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return _configInstance ??= LoadFromJsonFile<Config>(ConfigPath);
+            }
+        }
+    }
     /// <summary>
     /// Playlist configuration.
     /// </summary>
@@ -121,7 +145,7 @@ public sealed class Config
         {
             lock (_lock)
             {
-                return _playlistConfig ??= LoadFromJsonFile<PlaylistConfig>("config/playlist.json");
+                return _playlistConfig ??= LoadFromJsonFile<PlaylistConfig>(PlaylistConfigPath);
             }
         }
         set => _playlistConfig = value;
@@ -135,7 +159,7 @@ public sealed class Config
         {
             lock (_lock)
             {
-                return _updateConfig ??= LoadFromJsonFile<UpdateConfig>("config/update.json");
+                return _updateConfig ??= LoadFromJsonFile<UpdateConfig>(UpdateConfigPath);
             }
         }
         set => _updateConfig = value;
@@ -143,13 +167,13 @@ public sealed class Config
     /// <summary>
     /// OpenAI configuration.
     /// </summary>
-    public OpenAiConfig OpenAiConfig
+    public AiConfig AiConfig
     {
         get
         {
             lock (_lock)
             {
-                return _openAiConfig ??= LoadFromJsonFile<OpenAiConfig>("config/openai.json");
+                return _openAiConfig ??= LoadFromJsonFile<AiConfig>(AiConfigPath);
             }
         }
         set => _openAiConfig = value;
@@ -163,7 +187,7 @@ public sealed class Config
         {
             lock (_lock)
             {
-                return _performanceMonitor ??= LoadFromJsonFile<PerformanceMonitorConfig>("config/performance_monitor.json");
+                return _performanceMonitor ??= LoadFromJsonFile<PerformanceMonitorConfig>(PerformanceMonitorConfigPath);
             }
         }
         set => _performanceMonitor = value;
@@ -186,22 +210,28 @@ public sealed class Config
     /// </summary>
     public static T LoadFromJsonFile<T>(string filePath) where T : new()
     {
-        try
+        lock (_lock)
         {
-            if (!File.Exists(filePath))
+            try
             {
-                var defaultConfig = new T();
-                SaveToFile(filePath, defaultConfig);
-                return defaultConfig;
-            }
+                if (!File.Exists(filePath))
+                {
+                    var defaultConfig = new T();
+                    SaveToFile(filePath, defaultConfig);
+                    return defaultConfig;
+                }
 
-            var json = File.ReadAllText(filePath);
-            return JsonConvert.DeserializeObject<T>(json) ?? new T();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error loading configuration from {filePath}: {ex.Message}");
-            return new T();
+                Console.WriteLine($"Loading configuration from {filePath}.");
+                var json = File.ReadAllText(filePath);
+                Console.WriteLine($"Configuration content: {json}");
+
+                return JsonConvert.DeserializeObject<T>(json) ?? new T();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading configuration from {filePath}: {ex.Message}");
+                return new T();
+            }
         }
     }
 
@@ -210,17 +240,22 @@ public sealed class Config
     /// </summary>
     public static void SaveToFile(string filePath, object obj)
     {
-        try
+        lock (_lock)
         {
-            var fileInfo = new FileInfo(filePath);
-            fileInfo.Directory?.Create();
+            try
+            {
+                var fileInfo = new FileInfo(filePath);
+                fileInfo.Directory?.Create();
 
-            var json = JsonConvert.SerializeObject(obj, Formatting.Indented);
-            File.WriteAllText(filePath, json);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error saving configuration to {filePath}: {ex.Message}");
+                var json = JsonConvert.SerializeObject(obj, Formatting.Indented);
+                File.WriteAllText(filePath, json);
+
+                Console.WriteLine($"Configuration saved to {filePath}.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving configuration to {filePath}: {ex.Message}");
+            }
         }
     }
 
@@ -232,6 +267,42 @@ public sealed class Config
         lock (_lock)
         {
             updateAction?.Invoke(this);
+            SaveToFile(_filePath, this);
+        }
+    }
+
+    /// <summary>
+    /// Loads the configuration from the file.
+    /// </summary>
+    public void Load()
+    {
+        lock(_lock)
+        {
+            var loadedConfig = LoadFromJsonFile<Config>(_filePath);
+            if (loadedConfig != null)
+            {
+                DatabaseConnectionString = loadedConfig.DatabaseConnectionString;
+                Language = loadedConfig.Language;
+                MaxConnections = loadedConfig.MaxConnections;
+                EnableLogging = loadedConfig.EnableLogging;
+                LogsDirectoryPath = loadedConfig.LogsDirectoryPath;
+                LibVlcPath = loadedConfig.LibVlcPath;
+                EnableLibVlc = loadedConfig.EnableLibVlc;
+                EnableConsoleLogging = loadedConfig.EnableConsoleLogging;
+                LogLevel = loadedConfig.LogLevel;
+                Question_AutoLoadPlaylist = loadedConfig.Question_AutoLoadPlaylist;
+                MainWindow = loadedConfig.MainWindow;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Saves the current configuration to the file.
+    /// </summary>
+    public void Save()
+    {
+        lock (_lock)
+        {
             SaveToFile(_filePath, this);
         }
     }

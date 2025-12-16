@@ -439,9 +439,9 @@ namespace Thmd.Logs
 
     // Example usage in a WPF application
     // In App.xaml.cs or MainWindow.xaml.cs:
-    // Logger.Instance.AddHandler(new ConsoleLogHandler());
-    // Logger.Instance.AddHandler(new FileLogHandler("app.log"));
-    // Logger.Instance.AddHandler(new WpfUiLogHandler(LogLevel.Critical));
-    // await Logger.Instance.InfoAsync("Application started.");
+    // Logger.Conf.AddHandler(new ConsoleLogHandler());
+    // Logger.Conf.AddHandler(new FileLogHandler("app.log"));
+    // Logger.Conf.AddHandler(new WpfUiLogHandler(LogLevel.Critical));
+    // await Logger.Conf.InfoAsync("Application started.");
 }
-// Version: 0.1.0.26
+// Version: 0.1.0.27
