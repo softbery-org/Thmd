@@ -106,4 +106,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
+  <Target Name="UpdateAssemblyVersion" BeforeTargets="BeforeBuild">
+    <Message Importance="high" Text="PostBuild: $(TargetPath)" />
+    <Message Importance="high" Text="PostBuild: $(TargetDir)" />
+    <Message Importance="high" Text="PostBuild: $(TargetName)" />
+    <Message Importance="high" Text="PostBuild: $(TargetFrameworkVersion)" />
+    <Message Importance="high" Text="PostBuild: $(TargetFramework)" />
+    <Exec Command=".vsu\vsu.exe" />
+  </Target>
 </Project>
