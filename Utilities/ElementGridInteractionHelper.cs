@@ -1,4 +1,4 @@
-// Version: 0.0.0.1
+// Version: 0.0.0.4
 // Nowa wersja ElementInteractionHelper dla Grid (Margin-based)
 using System;
 using System.Collections.Concurrent;

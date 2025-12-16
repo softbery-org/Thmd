@@ -112,6 +112,6 @@
     <Message Importance="high" Text="PostBuild: $(TargetName)" />
     <Message Importance="high" Text="PostBuild: $(TargetFrameworkVersion)" />
     <Message Importance="high" Text="PostBuild: $(TargetFramework)" />
-    <Exec Command="..\..\vsu\vsu\bin\Debug\net9.0\vsu.exe" />
+    <Exec Command="..\..\.softbery\bin\Debug\net9.0\softbery.exe" />
   </Target>
 </Project>

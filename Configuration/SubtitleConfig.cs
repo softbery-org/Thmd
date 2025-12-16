@@ -1,5 +1,5 @@
 // SubtitleConfig.cs
-// Version: 0.1.17.18
+// Version: 0.1.17.21
 // A class representing the configuration settings for subtitles in the application.
 // Stores properties such as font size, font family, font color, and shadow settings for subtitle display.
 

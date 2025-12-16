@@ -1,4 +1,4 @@
-// Version: 0.0.0.3
+// Version: 0.0.0.6
 using System;
 using System.Windows;
 using System.Windows.Controls;

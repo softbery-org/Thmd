@@ -1,4 +1,4 @@
-// Version: 0.0.0.1
+// Version: 0.0.0.4
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

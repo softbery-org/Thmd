@@ -1,4 +1,4 @@
-// Version: 1.0.0.2
+// Version: 1.0.0.5
 using System.Drawing;
 using System.IO;
 using System.Windows.Media;

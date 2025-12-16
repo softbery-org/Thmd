@@ -1,4 +1,4 @@
-// Version: 0.0.0.1
+// Version: 0.0.0.4
 // Thmd.Utilities/DragAdorner.cs
 using System.Windows;
 using System.Windows.Documents;
