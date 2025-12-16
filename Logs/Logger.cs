@@ -444,4 +444,4 @@ namespace Thmd.Logs
     // Logger.Conf.AddHandler(new WpfUiLogHandler(LogLevel.Critical));
     // await Logger.Conf.InfoAsync("Application started.");
 }
-// Version: 0.1.0.30
+// Version: 0.1.0.31

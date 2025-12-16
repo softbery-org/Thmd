@@ -1,5 +1,5 @@
 // SubtitleControl.xaml.cs
-// Version: 0.1.5.82
+// Version: 0.1.5.83
 // A custom user control for displaying subtitles from an SRT file with support for formatting tags
 // such as <i>, <b>, <u>, <font color="...">, and <font size="...">.
 // Enhanced with AI-powered subtitle translation and subtitle buffering for performance optimization.

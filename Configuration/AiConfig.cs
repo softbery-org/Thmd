@@ -1,4 +1,4 @@
-// Version: 0.1.1.98
+// Version: 0.1.1.99
 namespace Thmd.Configuration
 {
     /// <summary>

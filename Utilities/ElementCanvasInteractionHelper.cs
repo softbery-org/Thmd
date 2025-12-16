@@ -1,4 +1,4 @@
-// Version: 0.3.11.7
+// Version: 0.3.11.8
 // File: ElementInteractionHelper.cs
 // Utworzono na podstawie ControlControllerHelper.cs z rozszerzoną funkcjonalnością
 // Dodano: resize w wielu kierunkach, snap-to-grid, ograniczenia do okna/rodzica, pooling stanu, per-element overrides, globalne ustawienia

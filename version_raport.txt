@@ -2,4 +2,4 @@
 === Version Statistics ===
 Total files processed: 140
 Files updated: 0
-Average project version: 0.0.8.29
+Average project version: 0.0.8.27

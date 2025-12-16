@@ -1,5 +1,5 @@
 // Repeat.cs
-// Version: 0.1.17.19
+// Version: 0.1.17.20
 namespace Thmd.Repeats;
 
 // Placeholder for Repeat enum (assumed to be in Thmd.Repeats)
