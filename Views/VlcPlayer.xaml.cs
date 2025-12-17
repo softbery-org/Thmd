@@ -1,10 +1,12 @@
-// Version: 0.0.2.2
+// Version: 0.0.2.9
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,6 +23,8 @@ using MediaToolkit.Model;
 using MediaToolkit.Options;
 
 using Microsoft.Win32;
+
+using NAudio.Wave;
 
 using Thmd.Consolas;
 using Thmd.Converters;

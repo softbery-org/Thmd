@@ -1,4 +1,4 @@
-// Version: 0.1.17.17
+// Version: 0.1.17.20
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,6 +15,8 @@ using Hlsarc.Core;
 using MediaToolkit;
 using MediaToolkit.Model;
 
+using NAudio.Wave;
+
 using Thmd.Consolas;
 using Thmd.Controls;
 using Thmd.Logs;
@@ -27,7 +29,8 @@ namespace Thmd.Media;
 [Serializable]
 public class VideoItem : UIElement, INotifyPropertyChanged
 {
-    private int _index = 0;
+    private static int _nextIndex = 1; // statyczne, aby ID było unikalne
+    private readonly int _index;
     private Uri _uri;
     private string _name;
     private double _position = 0.0;
@@ -48,9 +51,8 @@ public class VideoItem : UIElement, INotifyPropertyChanged
     private string _extension;
     private bool _isPaused;
 
-    /// <summary>
-    /// Is video playing
-    /// </summary>
+    // --------------------- Właściwości ---------------------
+
     public bool IsPlaying
     {
         get => _isPlaying;
@@ -65,255 +67,191 @@ public class VideoItem : UIElement, INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Is video indents
+    /// Czy wideo ma zdefiniowane indenty (znaczniki)
     /// </summary>
-    public bool isIndents {
+    public bool IsIndents
+    {
         get => _isIndents;
-        set {
-            _isIndents = value;
-            OnPropertyChanged(nameof(isIndents));
-        } }
+        set
+        {
+            if (_isIndents != value)
+            {
+                _isIndents = value;
+                OnPropertyChanged(nameof(IsIndents));
+            }
+        }
+    }
 
-    /// <summary>
-    /// List of video indents
-    /// </summary>
-    public List<VideoIndent> Indents {  get => _indent; 
-        set { 
+    public List<VideoIndent> Indents
+    {
+        get => _indent;
+        set
+        {
             _indent = value;
             OnPropertyChanged(nameof(Indents));
-        } }
-    /// <summary>
-    /// MediaType property representing the type of media (e.g., video, audio, etc.).
-    /// </summary>
+            IsIndents = value?.Count > 0;
+        }
+    }
+
     public object MediaType { get; private set; }
-    /// <summary>
-    /// Video item id.
-    /// </summary>
-    public int Id { get => _index; }
-    /// <summary>
-    /// BaseString property representing the media name.
-    /// </summary>
+
+    public int Id => _index;
+
     public string Name
     {
-        get
-        {
-            return _name;
-        }
+        get => _name;
         set
         {
             _name = value;
-            OnPropertyChanged("BaseString");
+            OnPropertyChanged(nameof(Name));
         }
     }
-    /// <summary>
-    /// URI property representing the media file path.
-    /// </summary>
+
     public Uri Uri => _uri;
+
     /// <summary>
-    /// Duration property in TimeSpan format.
+    /// Czas trwania wideo jako TimeSpan – teraz poprawnie obsługuje >24h
     /// </summary>
-    public TimeSpan Duration
-    {
-        get
-        {
-            string stringTime = TimeSpan.FromMilliseconds(_duration).ToString("hh\\:mm\\:ss");
-            return TimeSpan.Parse(stringTime);
-        }
-    }
+    public TimeSpan Duration => TimeSpan.FromMilliseconds(_duration);
+
     /// <summary>
-    /// Player instance associated with this media item.
+    /// Sformatowany czas trwania do wyświetlania w UI (z dniami jeśli potrzeba)
+    /// Przykład: 1.05:23:45 dla 29 godzin
     /// </summary>
+    public string DurationFormatted => FormatTimeSpan(TimeSpan.FromMilliseconds(_duration));
+
     public IPlayer Player => _player;
-    /// <summary>
-    /// Frames per second (FPS) of the video, e.g., 24.0, 30.0, 60.0, etc.
-    /// </summary>
+
     public double Fps => GetFPS();
-    /// <summary>
-    /// Video format, e.g., "mp4", "mkv", "avi", etc.
-    /// </summary>
+
     public string Format => GetFormat();
-    /// <summary>
-    /// Frame size, e.g., "1920x1080", "1280x720", etc.
-    /// </summary>
+
     public string FrameSize => GetFrameSize();
-    /// <summary>
-    /// Audio format, e.g., "mp3", "aac", "ac3", etc.
-    /// </summary>
+
     public string AudioFormat => GetAudioFormat();
-    /// <summary>
-    /// Audio sample rate in Hz, e.g., "44100 Hz", "48000 Hz", etc.
-    /// </summary>
+
     public string AudioSampleRate => GetAudioSampleRate();
-    /// <summary>
-    /// Audio bit rate in kbps, e.g., 128, 256, etc.
-    /// </summary>
+
     public int AudioBitRate => GetAudioBitRate();
-    /// <summary>
-    /// Audio channel output, e.g., "stereo", "5.1", etc.
-    /// </summary>
+
     public string AudioChanelOutput => GetAudioChanelOutput();
-    /// <summary>
-    /// Media stream information, if no media stream is found, it will be null.
-    /// </summary>
+
     public IMediaStream MediaStream { get; private set; }
-    /// <summary>
-    /// Subtitle file path, if no subtitle is found, it will be an empty string.
-    /// </summary>
+
     public string SubtitlePath { get; set; }
 
-    private bool _isStopped;
-
-    /// <summary>
-    /// Position property in milliseconds, range from 0.0 to Duration.
-    /// </summary>
     public double Position
     {
-        get
-        {
-            return _position;
-        }
+        get => _position;
         set
         {
-            if (value >= 0.0 && value <= _duration)
+            if (value < 0) value = 0;
+            if (value > _duration) value = _duration;
+
+            if (System.Math.Abs(_position - value) > 0.001)
             {
                 _position = value;
-                //OnPositionChanged(value);
-                OnPropertyChanged("Position");
-                OnPropertyChanged("PositionFormatted");
+                OnPropertyChanged(nameof(Position));
+                OnPropertyChanged(nameof(PositionFormatted));
             }
         }
     }
 
     /// <summary>
-    /// Get the formatted position as a string in "hh:mm:ss" format.
+    /// Sformatowana aktualna pozycja – z obsługą długich czasów
     /// </summary>
-    public string PositionFormatted => TimeSpan.FromMilliseconds(_position).ToString("hh\\:mm\\:ss");
-    /// <summary>
-    /// File extension of the media, e.g., ".mp4", ".mkv", ".hlsarc" ,etc.
-    /// </summary>
+    public string PositionFormatted => FormatTimeSpan(TimeSpan.FromMilliseconds(_position));
+
     public string Extension => _extension;
-    /// <summary>
-    /// Volume property, range from 0.0 (mute) to 1.0 (max volume).
-    /// </summary>
+
     public double Volume
     {
-        get
-        {
-            return _volume;
-        }
+        get => _volume;
         set
         {
-            if (value >= 0.0 && value <= 1.0)
+            if (value < 0) value = 0;
+            if (value > 1) value = 1;
+
+            if (System.Math.Abs(_volume - value) > 0.001)
             {
                 _volume = value;
                 OnVolumeChanged(value);
-                OnPropertyChanged("Volume");
+                OnPropertyChanged(nameof(Volume));
             }
         }
     }
 
-    public bool IsHlsarc
+    public bool IsHlsarc => _extension.Equals(".hlsarc", StringComparison.OrdinalIgnoreCase);
+    public bool isIndents
     {
-        get
+        get => _isIndents;
+        set
         {
-            return _extension == ".hlsarc";
+            _isIndents = value;
+            OnPropertyChanged(nameof(isIndents));
         }
     }
 
-    /// <summary>
-    /// Invoke when a property is changed.
-    /// </summary>
+    // --------------------- Events ---------------------
+
     public event PropertyChangedEventHandler PropertyChanged;
-
-    /// <summary>
-    /// Invoke when the volume is changed.
-    /// </summary>
     public event EventHandler<double> VolumeChanged;
-
-    /// <summary>
-    /// Invoke when the player instance is changed.
-    /// </summary>
     public event EventHandler<IPlayer> PlayerChanged;
 
-    /// <summary>
-    /// Invoke when a property is changed.
-    /// </summary>
-    /// <param name="propertyName">property name in string</param>
     protected virtual void OnPropertyChanged(string propertyName)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
+        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-    /// <summary>
-    /// Invoke when the volume is changed.
-    /// </summary>
-    /// <param name="newVolume">double volume value</param>
     protected virtual void OnVolumeChanged(double newVolume)
     {
         this.WriteLine($"Volume change: {newVolume}");
         VolumeChanged?.Invoke(this, newVolume);
     }
 
-    /// <summary>
-    /// Invoke when the player instance is changed.
-    /// </summary>
-    /// <param name="player">IPlayer interface</param>
     protected virtual void OnPlayerChanged(IPlayer player)
     {
         this.WriteLine($"Player change event: {player}");
         PlayerChanged?.Invoke(this, player);
     }
 
-    /// <summary>
-    /// Initialize a new instance of the VideoItem class with a specified file path.
-    /// </summary>
-    /// <param name="path">Media path</param>
     public VideoItem(string path)
     {
-        _index++;
-        _uri = new Uri(path);
-        var fileInfo = new FileInfo(_uri.LocalPath);
-        _name = fileInfo.Name; 
-        _extension = fileInfo.Extension.ToLowerInvariant();
-        LoadMetadata();
-        AutoSetSubtitle(path);
-    }
-
-    /// <summary>
-    /// Initialize a new instance of the VideoItem class with a specified media player.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="player"></param>
-    public VideoItem(string path, IPlayer player)
-        : this(path)
-    {
-        _player = player;
-        _player.TimeChanged += (s, e) =>
-        {
-            Position = e.Time;
-        };
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="VideoItem"/> class with the specified file path and metadata
-    /// loading option.
-    /// </summary>
-    /// <remarks>If <paramref name="deferMetadata"/> is set to <see langword="false"/>, metadata for the video
-    /// is loaded immediately. Otherwise, metadata loading is deferred until explicitly triggered.</remarks>
-    /// <param name="path">The file path of the video. This must be a valid URI or a local file path.</param>
-    /// <param name="deferMetadata">A value indicating whether to defer loading metadata for the video.  <see langword="true"/> to defer metadata
-    /// loading; otherwise, <see langword="false"/>.</param>
-    public VideoItem(string path, bool deferMetadata)
-    {
-        _index++;
+        _index = _nextIndex++;
         _uri = new Uri(path);
         var fileInfo = new FileInfo(_uri.LocalPath);
         _name = fileInfo.Name;
         _extension = fileInfo.Extension.ToLowerInvariant();
+
+        LoadMetadata();
+        AutoSetSubtitle(path);
+    }
+
+    public VideoItem(string path, IPlayer player) : this(path)
+    {
+        SetPlayer(player);
+        _player.TimeChanged += (s, e) => Position = e.Time;
+    }
+
+    public VideoItem(string path, bool deferMetadata)
+    {
+        _index = _nextIndex++;
+        _uri = new Uri(path);
+        var fileInfo = new FileInfo(_uri.LocalPath);
+        _name = fileInfo.Name;
+        _extension = fileInfo.Extension.ToLowerInvariant();
+
         if (!deferMetadata)
-        {
             LoadMetadata();
-        }
+
+        AutoSetSubtitle(path);
+    }
+
+    // --------------------- Pomocnicze metody ---------------------
+
+    private string FormatTimeSpan(TimeSpan ts)
+    {
+        if (ts.TotalDays >= 1)
+            return $"{(int)ts.TotalDays}.{ts.Hours:D2}:{ts.Minutes:D2}:{ts.Seconds:D2}";
+        return ts.ToString(@"hh\:mm\:ss");
     }
 
     private void LoadMetadata()
@@ -518,7 +456,7 @@ public class VideoItem : UIElement, INotifyPropertyChanged
         Dispatcher.Invoke(() =>
         {
             _player.Stop();
-            _isStopped = true;
+            //_isStopped = true;
             Position = 0.0;
             this.WriteLine($"[{GetType().Name}]Stopped media {Name}");
         });
@@ -577,6 +515,19 @@ public class VideoItem : UIElement, INotifyPropertyChanged
         {
             double duration = _metadataMediaToolkit.Duration.TotalMilliseconds;
             Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: Get media {TimeSpan.FromMilliseconds(duration)} duration");
+            if (duration==0)
+            {
+                try
+                {
+                    // Próba pobrania czasu za pomocą alternatywnej biblioteki NAudio.Wave
+                    var p = new MediaFoundationReader(this._uri.AbsoluteUri);
+                    duration = p.TotalTime.TotalMilliseconds;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: {ex.Message}");
+                }
+            }
             return duration;
         }
         catch (Exception ex)

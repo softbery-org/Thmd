@@ -6774,5 +6774,89 @@
     "NewVersion": "0.0.2.2",
     "Date": "2025-12-16T14:07:12.0815354Z",
     "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Media\\VideoItem.cs",
+    "OldVersion": "0.1.17.17",
+    "NewVersion": "0.1.17.18",
+    "Date": "2025-12-16T17:05:45.6697464Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Media\\VideoItem.cs",
+    "OldVersion": "0.1.17.18",
+    "NewVersion": "0.1.17.19",
+    "Date": "2025-12-16T17:06:50.0069597Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Media\\VideoItem.cs",
+    "OldVersion": "0.1.17.19",
+    "NewVersion": "0.1.17.20",
+    "Date": "2025-12-17T14:59:52.4771462Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.2.2",
+    "NewVersion": "0.0.2.3",
+    "Date": "2025-12-17T15:03:29.3350894Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.2.3",
+    "NewVersion": "0.0.2.4",
+    "Date": "2025-12-17T15:06:38.0341575Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.2.4",
+    "NewVersion": "0.0.2.5",
+    "Date": "2025-12-17T15:07:43.8604682Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.2.5",
+    "NewVersion": "0.0.2.6",
+    "Date": "2025-12-17T15:11:07.231011Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.2.6",
+    "NewVersion": "0.0.2.7",
+    "Date": "2025-12-17T15:12:39.5215371Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.2.7",
+    "NewVersion": "0.0.2.8",
+    "Date": "2025-12-17T15:14:46.8608924Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.2.7",
+    "NewVersion": "0.0.2.8",
+    "Date": "2025-12-17T16:58:08.4676107Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Media\\VideoItem.cs",
+    "OldVersion": "0.1.17.19",
+    "NewVersion": "0.1.17.20",
+    "Date": "2025-12-17T17:01:31.8884735Z",
+    "Type": "auto"
+  },
+  {
+    "File": "D:\\dev\\Thmd\\Thmd\\Views\\VlcPlayer.xaml.cs",
+    "OldVersion": "0.0.2.8",
+    "NewVersion": "0.0.2.9",
+    "Date": "2025-12-17T17:01:31.9063359Z",
+    "Type": "auto"
   }
 ]
