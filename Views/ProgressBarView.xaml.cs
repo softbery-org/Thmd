@@ -1,4 +1,4 @@
-// Version: 0.1.11.28
+// Version: 0.1.11.29
 using System;
 using System.ComponentModel;
 using System.Drawing;
@@ -242,7 +242,12 @@ namespace Thmd.Views
             {
                 var current = TimeSpan.FromMilliseconds(Value);
                 var total = TimeSpan.FromMilliseconds(Maximum);
-                ProgressText = total.TotalHours >= 1
+                if (total.TotalHours>100)
+                {
+                    ProgressText = $"{(int)current.TotalHours}:{current:mm\\:ss} / {(int)total.TotalHours}:{total:mm\\:ss}";
+                }
+                else
+                    ProgressText = total.TotalHours >= 1
                     ? $"{current:hh\\:mm\\:ss} / {total:hh\\:mm\\:ss}"
                     : $"{current:mm\\:ss} / {total:mm\\:ss}";
             }

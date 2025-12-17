@@ -1,4 +1,4 @@
-// Version: 0.1.17.20
+// Version: 0.1.17.21
 using System.Windows;
 using System.Windows.Controls;
 
@@ -54,14 +54,14 @@ public static class ScreenHelper
 					window.WindowStyle = _lastWindowStance.Style;
 					window.WindowState = _lastWindowStance.State;
 					_fullscreen = false;
-					Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"Exit fullscreen: Change video screen from fullscreen to last stance {_lastWindowStance.State}");
+					Logger.Info($"Exit fullscreen: Change video screen from fullscreen to last stance {_lastWindowStance.State}");
 					return;
 				}
 				window.ResizeMode = ResizeMode.CanResize;
 				window.WindowStyle = WindowStyle.SingleBorderWindow;
 				window.WindowState = WindowState.Normal;
 				_fullscreen = false;
-				Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"Exit fullscreen: Change video screen from fullscreen to default stance {_lastWindowStance.State}");
+				Logger.Info($"Exit fullscreen: Change video screen from fullscreen to default stance {_lastWindowStance.State}");
 			}
 			_lastWindowStance = new WindowLastStance
 			{
@@ -74,11 +74,11 @@ public static class ScreenHelper
 			window.WindowState = WindowState.Normal;
 			window.WindowState = WindowState.Maximized;
 			_fullscreen = true;
-			Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"Enter fullscreen: Change video screen to fullscreen from last stance {_lastWindowStance.State}");
+			Logger.Info($"Enter fullscreen: Change video screen to fullscreen from last stance {_lastWindowStance.State}");
 		}
 		else
 		{
-			Logger.Log.Log(LogLevel.Error, new string[2] { "Console", "File" }, "Fullscreen: Window is null");
+			Logger.Error("Fullscreen: Window is null");
 		}
 	}
 }

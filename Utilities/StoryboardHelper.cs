@@ -1,20 +1,14 @@
-// Version: 0.1.17.34
+// Version: 0.1.17.36
 // StoryboardHelper.cs
 // A static helper class that provides extension methods for animating the visibility of WPF controls
 // using storyboards. It supports asynchronous hiding and showing of controls with error handling
 // and logging for animation operations.
 
 using System;
-using System.ComponentModel;
-using System.IO.Ports;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
-using System.Windows.Threading;
-
-using Thmd.Logs;
 
 namespace Thmd.Utilities;
 
@@ -75,7 +69,7 @@ public static class StoryboardHelper
             }
             catch (Exception ex)
             {
-                Logger.Log.Log(LogLevel.Error, new string[] { "Console", "File" }, ex.Message ?? "");
+                Logger.Error(ex.Message);
             }
         });
         await Task.FromResult(task).Result;
@@ -108,7 +102,8 @@ public static class StoryboardHelper
             }
             catch (Exception ex)
             {
-                Logger.Log.Log(LogLevel.Error, new string[] { "Console", "File" }, ex.Message ?? "");
+                
+                Logger.Error(ex.Message);
             }
         });
         await Task.FromResult(task).Result;
@@ -136,7 +131,7 @@ public static class StoryboardHelper
             }
             catch (Exception ex)
             {
-                Logger.Log.Log(LogLevel.Error, new string[] { "Console", "File" }, ex.Message ?? "");
+                Logger.Error(ex.Message);
             }
         });
         await Task.FromResult(task).Result;

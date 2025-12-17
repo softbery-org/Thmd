@@ -1,5 +1,5 @@
 // SubtitleControl.xaml.cs
-// Version: 0.1.5.85
+// Version: 0.1.5.88
 // A custom user control for displaying subtitles from an SRT file with support for formatting tags
 // such as <i>, <b>, <u>, <font color="...">, and <font size="...">.
 // Enhanced with AI-powered subtitle translation and subtitle buffering for performance optimization.
@@ -25,9 +25,9 @@ using System.Windows.Media.Effects;
 using Newtonsoft.Json; // Required for JSON serialization
 using Newtonsoft.Json.Linq; // Required for JObject
 
+using Thmd.Configuration;
 using Thmd.Consolas;
 using Thmd.Controls.Enums;
-using Thmd.Logs;
 using Thmd.Subtitles;
 
 namespace Thmd.Views;
@@ -390,7 +390,7 @@ public partial class SubtitleControl : UserControl, INotifyPropertyChanged
     {
         InitializeComponent();
         // AI Setup: Load API key from config if available
-        _openAiApiKey = Thmd.Configuration.Config.Conf.AiConfig.OpenApiKey ?? string.Empty; // Assume Config has OpenAiApiKey property added
+        _openAiApiKey = _config.AiConfig.OpenApiKey ?? string.Empty; // Assume Config has OpenAiApiKey property added
     }
 
     private bool _lectoreOnOff = false;
@@ -558,14 +558,14 @@ public partial class SubtitleControl : UserControl, INotifyPropertyChanged
         }
     }
 
-    public string _geminiApiKey = Thmd.Configuration.Config.Conf.AiConfig.GeminiApiKey ?? string.Empty;
+    private readonly Config _config = Config.Instance;
 
     /// <summary>
     /// Translates text using Google Gemini API with rate limiting.
     /// </summary>
     private async Task<string> TranslateWithGeminiAiAsync(string text)
     {
-        if (string.IsNullOrEmpty(_geminiApiKey))
+        if (string.IsNullOrEmpty(_config.AiConfig.GeminiApiKey))
         {
             this.WriteLine("Gemini API key is not set. Skipping translation.");
             return text;
@@ -585,7 +585,7 @@ public partial class SubtitleControl : UserControl, INotifyPropertyChanged
 
             using (var client = new HttpClient())
             {
-                var url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={_geminiApiKey}";
+                var url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={_config.AiConfig.GeminiApiKey}";
 
                 var requestBody = new
                 {
@@ -640,7 +640,7 @@ public partial class SubtitleControl : UserControl, INotifyPropertyChanged
     /// <returns>The translated text or original if translation fails.</returns>
     private async Task<string> TranslateWithGemini2_0AiAsync(string text)
     {
-        if (string.IsNullOrEmpty(_geminiApiKey))
+        if (string.IsNullOrEmpty(_config.AiConfig.GeminiApiKey))
         {
             this.WriteLine("Gemini API key is not set. Skipping translation.");
             return text;
@@ -661,7 +661,7 @@ public partial class SubtitleControl : UserControl, INotifyPropertyChanged
             using var client = new HttpClient();
 
             var url =
-                $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={_geminiApiKey}";
+                $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={_config.AiConfig.GeminiApiKey}";
 
             var requestBody = new
             {

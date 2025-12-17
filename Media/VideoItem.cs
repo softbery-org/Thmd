@@ -1,4 +1,4 @@
-// Version: 0.1.17.20
+// Version: 0.1.17.22
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -369,7 +369,7 @@ public class VideoItem : UIElement, INotifyPropertyChanged
     public void Dispose()
     {
         _player.Dispose();
-        Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "[" + GetType().Name + "]: Disposing: " + Name);
+        Logger.Info("[" + GetType().Name + "]: Disposing: " + Name);
     }
 
     /// <summary>
@@ -469,7 +469,7 @@ public class VideoItem : UIElement, INotifyPropertyChanged
     public void Forward(double seconds)
     {
         Position += seconds;
-        Logger.Log.Log(LogLevel.Info, new string[] { "Console", "File" }, $"[{GetType().Name}]: Change position to forward with +{seconds} second(s)");
+        Logger.Info($"[{GetType().Name}]: Change position to forward with +{seconds} second(s)");
     }
 
     /// <summary>
@@ -479,14 +479,14 @@ public class VideoItem : UIElement, INotifyPropertyChanged
     public void Rewind(double seconds)
     {
         Position -= seconds;
-        Logger.Log.Log(LogLevel.Info, new string[] { "Console", "File" }, $"[{GetType().Name}]: Rewind position by -{seconds} second(s)");
+        Logger.Info($"[{GetType().Name}]: Rewind position by -{seconds} second(s)");
     }
 
     private Metadata GetMetadata()
     {
         if (_uri == null || string.IsNullOrEmpty(_uri.LocalPath) || !File.Exists(_uri.LocalPath))
         {
-            Logger.Log.Log(LogLevel.Error, new string[2] { "Console", "File" }, "[" + GetType().Name + "]: Invalid media file path: " + _uri?.LocalPath);
+            Logger.Error("[" + GetType().Name + "]: Invalid media file path: " + _uri?.LocalPath);
             return null;
         }
         try
@@ -499,12 +499,12 @@ public class VideoItem : UIElement, INotifyPropertyChanged
             {
                 engine.GetMetadata(inputFile);
             }
-            Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "[" + GetType().Name + "]: Get metadata for media: " + _uri.LocalPath);
+            Logger.Info("[" + GetType().Name + "]: Get metadata for media: " + _uri.LocalPath);
             return inputFile.Metadata;
         }
         catch (Exception exception)
         {
-            Logger.Log.Log(LogLevel.Error, new string[2] { "Console", "File" }, "[" + GetType().Name + "]: Error getting metadata for media: " + _uri.LocalPath, exception);
+            Logger.Error("]: Error getting metadata for media: " + _uri.LocalPath, exception);
             return null;
         }
     }
@@ -514,7 +514,7 @@ public class VideoItem : UIElement, INotifyPropertyChanged
         try
         {
             double duration = _metadataMediaToolkit.Duration.TotalMilliseconds;
-            Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: Get media {TimeSpan.FromMilliseconds(duration)} duration");
+            Logger.Info($"[{GetType().Name}]: Get media {TimeSpan.FromMilliseconds(duration)} duration");
             if (duration==0)
             {
                 try
@@ -525,14 +525,14 @@ public class VideoItem : UIElement, INotifyPropertyChanged
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: {ex.Message}");
+                    Logger.Info($"[{GetType().Name}]: {ex.Message}");
                 }
             }
             return duration;
         }
         catch (Exception ex)
         {
-            Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: {ex.Message}");
+            Logger.Info($"[{GetType().Name}]: {ex.Message}");
             return 0;
         }
     }
@@ -544,14 +544,14 @@ public class VideoItem : UIElement, INotifyPropertyChanged
             if (_metadataMediaToolkit != null)
             {
                 double fps = _metadataMediaToolkit.VideoData.Fps;
-                Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: Get media {fps} frame_size");
+                Logger.Info($"[{GetType().Name}]: Get media {fps} frame_size");
                 return fps;
             }
             return 0;
         }
         catch (Exception ex)
         {
-            Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: {ex.Message}");
+            Logger.Info($"[{GetType().Name}]: {ex.Message}");
             return 0;
         }
     }
@@ -563,14 +563,14 @@ public class VideoItem : UIElement, INotifyPropertyChanged
             if (_metadataMediaToolkit != null)
             {
                 string format = _metadataMediaToolkit.VideoData.Format;
-                Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "[" + GetType().Name + "]: Get media " + format + " format");
+                Logger.Info("[" + GetType().Name + "]: Get media " + format + " format");
                 return format;
             }
             return String.Empty;
         }
         catch (Exception ex)
         {
-            Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: {ex.Message}");
+            Logger.Info($"[{GetType().Name}]: {ex.Message}");
             return String.Empty;
         }
     }
@@ -582,14 +582,14 @@ public class VideoItem : UIElement, INotifyPropertyChanged
             if (_metadataMediaToolkit != null)
             {
                 string frame_size = _metadataMediaToolkit.VideoData.FrameSize;
-                Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "[" + GetType().Name + "]: Get media " + frame_size + " frame_size");
+                Logger.Info("[" + GetType().Name + "]: Get media " + frame_size + " frame_size");
                 return frame_size;
             }
             return String.Empty;
         }
         catch (Exception ex)
         {
-            Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: {ex.Message}");
+            Logger.Info($"[{GetType().Name}]: {ex.Message}");
             return String.Empty;
         }
     }
@@ -601,14 +601,14 @@ public class VideoItem : UIElement, INotifyPropertyChanged
             if (_metadataMediaToolkit != null)
             {
                 string format = _metadataMediaToolkit.AudioData.Format;
-                Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "[" + GetType().Name + "]: Get media " + format + " audio_format");
+                Logger.Info("[" + GetType().Name + "]: Get media " + format + " audio_format");
                 return format;
             }
             return String.Empty;
         }
         catch (Exception ex)
         {
-            Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: {ex.Message}");
+            Logger.Info($"[{GetType().Name}]: {ex.Message}");
             return String.Empty;
         }
     }
@@ -620,14 +620,14 @@ public class VideoItem : UIElement, INotifyPropertyChanged
             if (_metadataMediaToolkit != null)
             {
                 string rate = _metadataMediaToolkit.AudioData.SampleRate;
-                Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "[" + GetType().Name + "]: Get media " + rate + " audio_sample_rate");
+                Logger.Info("[" + GetType().Name + "]: Get media " + rate + " audio_sample_rate");
                 return rate;
             }
             return String.Empty;
         }
         catch (Exception ex)
         {
-            Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: {ex.Message}");
+            Logger.Info($"[{GetType().Name}]: {ex.Message}");
             return String.Empty;
         }
     }
@@ -639,14 +639,14 @@ public class VideoItem : UIElement, INotifyPropertyChanged
             if (_metadataMediaToolkit != null)
             {
                 int rate = _metadataMediaToolkit.AudioData.BitRateKbs;
-                Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: Get media {rate} audio_bit_rate");
+                Logger.Info($"[{GetType().Name}]: Get media {rate} audio_bit_rate");
                 return rate;
             }
             return 0;
         }
         catch (Exception ex)
         {
-            Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: {ex.Message}");
+            Logger.Info($"[{GetType().Name}]: {ex.Message}");
             return 0;
         }
     }
@@ -658,14 +658,14 @@ public class VideoItem : UIElement, INotifyPropertyChanged
             if (_metadataMediaToolkit != null)
             {
                 string chanel_output = _metadataMediaToolkit.AudioData.ChannelOutput;
-                Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, "[" + GetType().Name + "]: Get media " + chanel_output + " audio_channel_output");
+                Logger.Info("[" + GetType().Name + "]: Get media " + chanel_output + " audio_channel_output");
                 return chanel_output;
             }
             return String.Empty;
         }
         catch (Exception ex)
         {
-            Logger.Log.Log(LogLevel.Info, new string[2] { "Console", "File" }, $"[{GetType().Name}]: {ex.Message}");
+            Logger.Info($"[{GetType().Name}]: {ex.Message}");
             return String.Empty;
         }
     }

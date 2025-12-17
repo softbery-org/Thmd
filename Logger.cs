@@ -1,4 +1,4 @@
-// Version: 0.2.0.30
+// Version: 0.2.0.34
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,6 @@ namespace Thmd;
 public static class Logger
 {
     private static readonly List<string> _categories = new() { "Console", "File" };
-    private static AsyncLogger _log = new();
     /// <summary>
     /// Zwraca lub ustawia instancję konfiguracji aplikacji.
     /// </summary>
@@ -22,41 +21,7 @@ public static class Logger
     { 
         get; 
         set;
-    } = Config.Conf;
-
-    /// <summary>
-    /// Zwraca instancj� loggera asynchronicznego.
-    /// </summary>
-    public static AsyncLogger Log
-    {
-        get => _log;
-        set => _log = value ?? throw new ArgumentNullException(nameof(value));
-    }
-
-    /// <summary>
-    /// Inicjalizuje system logowania i dodaje podstawowe sinki (Console, File).
-    /// </summary>
-    public static AsyncLogger InitLogs()
-    {
-        var asyncLogger = new AsyncLogger
-        {
-            MinLogLevel = Config.LogLevel
-        };
-
-        asyncLogger.CategoryFilters["Console"] = true;
-        asyncLogger.CategoryFilters["File"] = true;
-
-        asyncLogger.AddSink(new CategoryFilterSink(
-            new FileSink("Logs", "log", new TextFormatter(), 10 * 1024 * 1024, 5),
-            new[] { "File" }));
-
-        asyncLogger.AddSink(new CategoryFilterSink(
-            new ConsoleSink(new TextFormatter()),
-            new[] { "Console" }));
-
-        _log = asyncLogger;
-        return _log;
-    }
+    } = Config.Instance;
 
     /// <summary>
     /// Dodaje nowy wpis do log�w.
@@ -73,8 +38,6 @@ public static class Logger
                     finalCategories.Add(cat);
             }
         }
-
-        _log.Log(level, finalCategories.ToArray(), message, exception);
     }
 
     /// <summary>

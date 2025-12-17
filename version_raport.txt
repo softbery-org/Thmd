@@ -1,5 +1,9 @@
+D:\dev\Thmd\Thmd\Media\MediaEditor.cs -> 0.1.17.21
+D:\dev\Thmd\Thmd\Media\VideoItem.cs -> 0.1.17.22
+D:\dev\Thmd\Thmd\Utilities\CommandLineHandler.cs -> 0.1.11.85
+D:\dev\Thmd\Thmd\Utilities\ScreenHelper.cs -> 0.1.17.21
 
 === Version Statistics ===
-Total files processed: 140
-Files updated: 0
-Average project version: 0.0.8.26
+Total files processed: 131
+Files updated: 4
+Average project version: 0.0.7.26

@@ -1,4 +1,4 @@
-// Version: 0.1.11.37
+// Version: 0.1.11.42
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -259,18 +259,9 @@ namespace Thmd.Views
             
             if (cb._player != null && System.Math.Abs(cb._player.Volume - newValue) > 0.1)
             {
-                cb._player.Volume = newValue;
+                var v = Math.Clamp(cb._player.Volume - newValue, 0, 100);
+                cb._player.Volume = v;
             }
-
-            ////_controlbar._volumeSlider.Value = value;
-            //if (cb._player != null)
-            //    cb._player.Volume = cb.Volume;
-
-            //var newValue = (double)e.NewValue;
-            //if (cb._player != null && System.Math.Abs(cb._player.Volume - newValue) > 0.1)
-            //{
-            //    cb._player.Volume = newValue;
-            //}
         }
 
         private static void OnIsMutedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

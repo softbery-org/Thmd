@@ -1,4 +1,4 @@
-// Version: 0.2.0.33
+// Version: 0.2.0.38
 
 using System;
 using System.IO;
@@ -17,191 +17,131 @@ namespace Thmd.Configuration;
 /// </summary>
 public sealed class Config : IConfig
 {
-    #region Singleton Implementation
-    // Lock object for thread safety.
+    #region Singleton
     private static readonly object _lock = new();
+    private static readonly Lazy<Config> _instance = new(() => new Config(), true);
 
-    private static Config _configInstance;
-    private static IPlaylistConfig _playlistConfig;
-    private static SubtitleConfig _subtitleConfig;
-    private static UpdateConfig _updateConfig;
-    private static AiConfig _openAiConfig;
-    private static PerformanceMonitorConfig _performanceMonitor;
+    public static Config Instance => _instance.Value;
 
-    private string _filePath = string.Empty;
     #endregion
 
-    #region Properties
-    /// <summary>
-    /// Path for main configuration file.
-    /// </summary>
-    public static string ConfigPath => "config/config.json";
-    /// <summary>
-    /// Path for playlist configuration file.
-    /// </summary>
-    public static string PlaylistConfigPath => "config/playlist.json";
-    /// <summary>
-    /// Path for plugin configuration file.
-    /// </summary>
-    public static string PluginConfigPath => "config/plugin.json";
-    /// <summary>
-    /// Path for update configuration file.
-    /// </summary>
-    public static string UpdateConfigPath => "config/update.json";
-    /// <summary>
-    /// Path for OpenAI configuration file.
-    /// </summary>
-    public static string AiConfigPath => "config/ai.json";
-    /// <summary>
-    /// Path for Performance Monitor configuration file.
-    /// </summary>
-    public static string PerformanceMonitorConfigPath => "config/performance_monitor.json";
-    /// <summary>
-    /// Path for Subtitles configuration file.
-    /// </summary>
-    public static string SubtitlesConfigPath => "config/subtitle.json";
-    /// <summary>
-    /// Connection string for the database.
-    /// </summary>
-    public string DatabaseConnectionString { get; set; }
-    /// <summary>
-    /// Application language (e.g., "pl_PL" for Polish).
-    /// </summary>
-    public string Language { get; set; } = "pl_PL";
-    /// <summary>
-    /// Maximum number of concurrent connections.
-    /// </summary>
-    public int MaxConnections { get; set; } = 10;
-    /// <summary>
-    /// Enables or disables logging.
-    /// </summary>
-    public bool EnableLogging { get; set; } = true;
-    /// <summary>
-    /// Path to the logs directory.
-    /// </summary>
-    public string LogsDirectoryPath { get; set; } = "logs";
-    /// <summary>
-    /// Path to the LibVLC library.
-    /// </summary>
-    public string LibVlcPath { get; set; } = "libvlc";
-    /// <summary>
-    /// Enables or disables the use of LibVLC for media playback.
-    /// </summary>
-    public bool EnableLibVlc { get; set; } = true;
-    /// <summary>
-    /// Enables or disables console logging.
-    /// </summary>
-    public bool EnableConsoleLogging { get; set; } = true;
-    /// <summary>
-    /// Minimum log level to record.
-    /// </summary>
-    public LogLevel LogLevel { get; set; } = LogLevel.Info;
-    /// <summary>
-    /// Automatically load the playlist on application start with question.
-    /// </summary>
-    public bool Question_AutoLoadPlaylist { get; set; } = true;
-    /// <summary>
-    /// Subtitle configuration.
-    /// </summary>
-    public SubtitleConfig SubtitleConfig
-    {
-        get
-        {
-            lock (_lock)
-            {
-                return  _subtitleConfig ??= LoadFromJsonFile<SubtitleConfig>(SubtitlesConfigPath);
-            }
-        }
-    }
-    /// <summary>
-    /// Main application window properties.
-    /// </summary>
-    public Window MainWindow { get; set; } = new Window
-    {
-        Width = 800,
-        Height = 600,
-        Top = 100,
-        Left = 100
-    };
-    /// <summary>
-    /// Config singleton instance.
-    /// </summary>
-    public static Config Conf
-    {
-        get
-        {
-            lock (_lock)
-            {
-                return _configInstance ??= LoadFromJsonFile<Config>(ConfigPath);
-            }
-        }
-    }
-    /// <summary>
-    /// Playlist configuration.
-    /// </summary>
+    #region �cie�ki do plik�w konfiguracyjnych
+
+    private static readonly string ConfigDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config");
+
+    public static string ConfigPath => Path.Combine(ConfigDirectory, "config.json");
+    public static string PlaylistConfigPath => Path.Combine(ConfigDirectory, "playlist.json");
+    public static string ControlbarConfigPath => Path.Combine(ConfigDirectory, "controlbar.json");
+    public static string UpdateConfigPath => Path.Combine(ConfigDirectory, "update.json");
+    public static string AiConfigPath => Path.Combine(ConfigDirectory, "ai.json");
+    public static string PerformanceMonitorConfigPath => Path.Combine(ConfigDirectory, "performance_monitor.json");
+    public static string SubtitlesConfigPath => Path.Combine(ConfigDirectory, "subtitle.json");
+
+    #endregion
+
+    #region Podkonfiguracje (lazy loading)
+
+    private SubtitleConfig _subtitleConfig;
+    private IPlaylistConfig _playlistConfig;
+    private ControlbarConfig _controlbarConfig;
+    private UpdateConfig _updateConfig;
+    private AiConfig _aiConfig;
+    private PerformanceMonitorConfig _performanceMonitor;
+    private string _filePath;
+
+    public SubtitleConfig SubtitleConfig =>
+        _subtitleConfig ??= LoadConfig<SubtitleConfig>(SubtitlesConfigPath);
+
     public IPlaylistConfig PlaylistConfig
     {
-        get
-        {
-            lock (_lock)
-            {
-                return _playlistConfig ??= LoadFromJsonFile<PlaylistConfig>(PlaylistConfigPath);
-            }
-        }
+        get => _playlistConfig ??= LoadConfig<PlaylistConfig>(PlaylistConfigPath);
         set => _playlistConfig = value;
     }
-    /// <summary>
-    /// Update configuration.
-    /// </summary>
+
+    public ControlbarConfig ControlbarConfig
+    {
+        get => _controlbarConfig ??= LoadConfig<ControlbarConfig>(ControlbarConfigPath);
+        set => _controlbarConfig = value;
+    }
+
     public UpdateConfig UpdateConfig
     {
-        get
-        {
-            lock (_lock)
-            {
-                return _updateConfig ??= LoadFromJsonFile<UpdateConfig>(UpdateConfigPath);
-            }
-        }
+        get => _updateConfig ??= LoadConfig<UpdateConfig>(UpdateConfigPath);
         set => _updateConfig = value;
     }
-    /// <summary>
-    /// OpenAI configuration.
-    /// </summary>
+
     public AiConfig AiConfig
     {
-        get
-        {
-            lock (_lock)
-            {
-                return _openAiConfig ??= LoadFromJsonFile<AiConfig>(AiConfigPath);
-            }
-        }
-        set => _openAiConfig = value;
+        get => _aiConfig ??= LoadConfig<AiConfig>(AiConfigPath);
+        set => _aiConfig = value;
     }
-    /// <summary>
-    /// Performance Monitor configuration.
-    /// </summary>
+
     public PerformanceMonitorConfig PerformanceMonitor
     {
-        get
-        {
-            lock (_lock)
-            {
-                return _performanceMonitor ??= LoadFromJsonFile<PerformanceMonitorConfig>(PerformanceMonitorConfigPath);
-            }
-        }
+        get => _performanceMonitor ??= LoadConfig<PerformanceMonitorConfig>(PerformanceMonitorConfigPath);
         set => _performanceMonitor = value;
     }
+
     #endregion
 
-    #region Constructor
-    /// <summary>
-    /// Default constructor.
-    /// </summary>
-    public Config()
+    #region Ustawienia g��wne
+
+    // Database
+    public string DatabaseConnectionString { get; set; } = "Data Source=database.db;";
+    // System
+    public string Language { get; set; } = "pl_PL";
+
+    // Player
+    public int PlayerVolume { get; set; } = 100;
+    public bool AutoloadPlaylist { get; set; } = true;
+    public int MaxConnections { get; set; } = 10;
+
+    // Logs
+    public bool LoggingEnabled { get; set; } = true;
+    public string LogsDirectoryPath { get; set; } = "logs";
+    
+    public bool EnableConsolLogging { get; set; } = true;
+    public LogLevel LogLevel { get; set; } = LogLevel.Info;
+
+    // ffmpeg
+    public string FfmpegPath { get; set; } = "ffmpeg";
+
+    // Vlc
+    public string VlcLibPath { get; set; } = "libvlc";
+    public bool VlcLibEnabled { get; set; } = true;
+
+    // Playlist
+    public bool PlaylistEnableShuffle { get; set; } = false;
+    public string PlaylistRepeat { get; set; } = "None";
+    public bool PlaylistAutoPlay { get; set; } = true;
+
+
+    public WindowState MainWindowState { get; set; } = WindowState.Normal;
+    public double MainWindowWidth { get; set; } = 800;
+    public double MainWindowHeight { get; set; } = 600;
+    public double MainWindowTop { get; set; } = 100;
+    public double MainWindowLeft { get; set; } = 100;
+
+    public static string PluginConfigPath { get; internal set; }
+
+    #endregion
+
+    #region Konstruktor prywatny
+
+    private Config()
     {
-        this.WriteLine("Initialize configuration.");
+        this.WriteLine("Initialize main configuration.");
+        EnsureConfigDirectoryExists();
     }
+
+    private void EnsureConfigDirectoryExists()
+    {
+        if (!Directory.Exists(ConfigDirectory))
+        {
+            Directory.CreateDirectory(ConfigDirectory);
+        }
+    }
+
     #endregion
 
     #region Methods
@@ -270,41 +210,97 @@ public sealed class Config : IConfig
             SaveToFile(_filePath, this);
         }
     }
+    #endregion
 
-    /// <summary>
-    /// Loads the configuration from the file.
-    /// </summary>
+    #region Metody pomocnicze
+
+    public static T LoadConfig<T>(string filePath) where T : new()
+    {
+        try
+        {
+            if (!File.Exists(filePath))
+            {
+                var defaultConfig = new T();
+                SaveConfig(filePath, defaultConfig);
+                return defaultConfig;
+            }
+
+            var json = File.ReadAllText(filePath);
+            var config = JsonConvert.DeserializeObject<T>(json);
+            return config ?? new T();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading config {filePath}: {ex.Message}");
+            return new T();
+        }
+    }
+
+    public static void SaveConfig(string filePath, object config)
+    {
+        try
+        {
+            var directory = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory!);
+
+            var json = JsonConvert.SerializeObject(config, Formatting.Indented);
+            File.WriteAllText(filePath, json);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error saving config {filePath}: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+    #region Load / Save g��wnej konfiguracji
+
     public void Load()
     {
-        lock(_lock)
+        try
         {
-            var loadedConfig = LoadFromJsonFile<Config>(_filePath);
-            if (loadedConfig != null)
+            if (!File.Exists(ConfigPath))
             {
-                DatabaseConnectionString = loadedConfig.DatabaseConnectionString;
-                Language = loadedConfig.Language;
-                MaxConnections = loadedConfig.MaxConnections;
-                EnableLogging = loadedConfig.EnableLogging;
-                LogsDirectoryPath = loadedConfig.LogsDirectoryPath;
-                LibVlcPath = loadedConfig.LibVlcPath;
-                EnableLibVlc = loadedConfig.EnableLibVlc;
-                EnableConsoleLogging = loadedConfig.EnableConsoleLogging;
-                LogLevel = loadedConfig.LogLevel;
-                Question_AutoLoadPlaylist = loadedConfig.Question_AutoLoadPlaylist;
-                MainWindow = loadedConfig.MainWindow;
+                Save(); // zapisujemy domyślną konfigurację
+                return;
             }
+
+            var json = File.ReadAllText(ConfigPath);
+            var loaded = JsonConvert.DeserializeObject<Config>(json);
+
+            DatabaseConnectionString = loaded.DatabaseConnectionString;
+            Language = loaded.Language;
+            MaxConnections = loaded.MaxConnections;
+            LoggingEnabled = loaded.LoggingEnabled;
+            PlayerVolume = loaded.PlayerVolume;
+            LogsDirectoryPath = loaded.LogsDirectoryPath;
+            VlcLibPath = loaded.VlcLibPath;
+            VlcLibEnabled = loaded.VlcLibEnabled;
+            EnableConsolLogging = loaded.EnableConsolLogging;
+            LogLevel = loaded.LogLevel;
+
+            // Playlist
+            AutoloadPlaylist = loaded.AutoloadPlaylist;
+
+
+            MainWindowState = loaded.MainWindowState;
+            MainWindowWidth = loaded.MainWindowWidth;
+            MainWindowHeight = loaded.MainWindowHeight;
+            MainWindowTop = loaded.MainWindowTop;
+            MainWindowLeft = loaded.MainWindowLeft;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading main config: {ex.Message}");
         }
     }
 
-    /// <summary>
-    /// Saves the current configuration to the file.
-    /// </summary>
     public void Save()
     {
-        lock (_lock)
-        {
-            SaveToFile(_filePath, this);
-        }
+        SaveConfig(ConfigPath, this);
     }
+
     #endregion
 }

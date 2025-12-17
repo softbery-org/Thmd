@@ -1,5 +1,5 @@
 // CommandLineHandler.cs
-// Version: 0.1.11.84
+// Version: 0.1.11.85
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -58,7 +58,7 @@ namespace Thmd.Utilities
                             if (!string.IsNullOrEmpty(filePath) && System.IO.File.Exists(filePath))
                             {
                                 MediaFileToOpenOnStartup = filePath; // Zaktualizowana przestrzeń nazw
-                                Logger.Log.Log(LogLevel.Info, new[] { "Console", "File" }, $"Will open file: {filePath}");
+                                Logger.Info($"Will open file: {filePath}");
                             }
                             else
                             {
@@ -78,7 +78,7 @@ namespace Thmd.Utilities
 
                     case "--fullscreen":
                         StartInFullscreen = true; // Zaktualizowana przestrzeń nazw
-                        Logger.Log.Log(LogLevel.Info, new[] { "Console", "File" }, "Starting in fullscreen mode.");
+                        Logger.Info("Starting in fullscreen mode.");
                         break;
 
                     case "--playlist":
@@ -88,7 +88,7 @@ namespace Thmd.Utilities
                             if (!string.IsNullOrEmpty(playlistPath) && System.IO.File.Exists(playlistPath))
                             {
                                 PlaylistToLoadOnStartup = playlistPath; // Zaktualizowana przestrzeń nazw
-                                Logger.Log.Log(LogLevel.Info, new[] { "Console", "File" }, $"Will load playlist: {playlistPath}");
+                                Logger.Info($"Will load playlist: {playlistPath}");
                             }
                             else
                             {
@@ -108,7 +108,7 @@ namespace Thmd.Utilities
                             if (double.TryParse(volumeStr, out double volume) && volume >= 0 && volume <= 100)
                             {
                                 InitialVolume = volume; // Zaktualizowana przestrzeń nazw
-                                Logger.Log.Log(LogLevel.Info, new[] { "Console", "File" }, $"Initial volume set to: {volume}");
+                                Logger.Info($"Initial volume set to: {volume}");
                             }
                             else
                             {
@@ -168,7 +168,7 @@ For more details, run the application without arguments.
         {
             Console.WriteLine($"Error: {message}");
             Console.WriteLine("Use -h or --help for usage information.");
-            Logger.Log.Log(LogLevel.Error, new[] { "Console", "File" }, message);
+            Logger.Error(message);
         }
     }
 }

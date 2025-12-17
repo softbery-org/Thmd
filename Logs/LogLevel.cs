@@ -1,10 +1,12 @@
-// Version: 0.1.17.20
+// Version: 0.0.0.1
+// LogLevel.cs
 namespace Thmd.Logs;
 
-public enum LoggerLevel
+public enum LogLevel
 {
-	Debug,
-	Info,
-	Warning,
-	Error
+    Debug = 0,
+    Info = 1,
+    Warning = 2,
+    Error = 3,
+    Fatal = 4
 }

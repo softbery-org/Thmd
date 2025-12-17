@@ -1,4 +1,4 @@
-// Version: 0.1.17.20
+// Version: 0.1.17.21
 using System;
 using System.IO;
 using System.Windows.Controls;
@@ -65,7 +65,7 @@ namespace Thmd.Media
             }
             catch (Exception ex)
             {
-                Logger.Log.Log(LogLevel.Error, new string[2] { "File", "Console" }, "Error getting thumbnail: " + ex.Message);
+                Logger.Error("Error getting thumbnail: " + ex.Message);
                 return null;
             }
         }
@@ -79,7 +79,7 @@ namespace Thmd.Media
         /// <returns>True if the operation succeeds; otherwise, false.</returns>
         public bool CutVideo(string outputPath, TimeSpan startTime, TimeSpan endTime)
         {
-            Logger.Log.Log(LogLevel.Info, new string[2] { "File", "Console" }, $"Cutting video from {_videoUri.LocalPath} to {outputPath} from {startTime} to {endTime}");
+            Logger.Info($"Cutting video from {_videoUri.LocalPath} to {outputPath} from {startTime} to {endTime}");
 
             MediaFile inputFile = new MediaFile
             {
@@ -90,7 +90,7 @@ namespace Thmd.Media
                 Filename = outputPath ?? ""
             };
 
-            Logger.Log.Log(LogLevel.Info, new string[2] { "File", "Console" }, "Run MediaToolkit engine for cutting.");
+            Logger.Info("Run MediaToolkit engine for cutting.");
 
             using Engine engine = new Engine();
             try
@@ -103,7 +103,7 @@ namespace Thmd.Media
             }
             catch (Exception ex)
             {
-                Logger.Log.Log(LogLevel.Error, new string[2] { "File", "Console" }, "Error cutting video: " + ex.Message);
+                Logger.Error("Error cutting video: " + ex.Message);
                 return false;
             }
         }

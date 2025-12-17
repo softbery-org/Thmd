@@ -1,4 +1,4 @@
-// Version: 0.1.10.2
+// Version: 0.1.10.4
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -39,6 +39,8 @@ namespace Thmd.Controls;
 /// </summary>
 public partial class VlcPlayerView : VideoView, IPlayer, INotifyPropertyChanged
 {
+    private readonly Config _config = Config.Instance;
+
     // System execution state flags to prevent system sleep during playback.
     private const uint ES_CONTINUOUS = 2147483648u;
     private const uint ES_SYSTEM_REQUIRED = 1u;
@@ -446,7 +448,7 @@ public partial class VlcPlayerView : VideoView, IPlayer, INotifyPropertyChanged
     public void LoadAiConfig()
     {
         var ai = Configuration.Config.LoadFromJsonFile<AiConfig>("config/ai.json");
-        Config.Conf.AiConfig = ai;
+        _config.AiConfig = ai;
     }
 
     /// <summary>
@@ -455,7 +457,7 @@ public partial class VlcPlayerView : VideoView, IPlayer, INotifyPropertyChanged
     public void LoadUpdateConfig()
     {
         var up = Configuration.Config.LoadFromJsonFile<UpdateConfig>("config/update.json");
-        Config.Conf.UpdateConfig = up;
+        _config.UpdateConfig = up;
     }
 
     /// <summary>
@@ -484,7 +486,7 @@ public partial class VlcPlayerView : VideoView, IPlayer, INotifyPropertyChanged
         Loaded += async (s, e) =>
         {
             //Startup with question to load previous playlist
-            //if (!Config.Conf.Question_AutoLoadPlaylist)
+            //if (!Config.Configuration.AutoloadPlaylist)
             //    return;
 
             //if (!IsConsole())
@@ -579,9 +581,8 @@ public partial class VlcPlayerView : VideoView, IPlayer, INotifyPropertyChanged
     /// </summary>
     public void SaveConfig()
     {
-        var cfg = new Configuration.Config();
-        cfg.MainWindow = Application.Current.MainWindow;
-        Configuration.Config.SaveToFile(Config.ConfigPath, cfg);
+        _config.MainWindowState = Application.Current.MainWindow.WindowState;
+        Config.SaveConfig(Config.ConfigPath, _config);
     }
 
     /// <summary>

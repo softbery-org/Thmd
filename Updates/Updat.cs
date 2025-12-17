@@ -1,5 +1,5 @@
 // Updater.cs
-// Version: 0.1.18.10
+// Version: 0.1.18.13
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -24,7 +24,6 @@ namespace Thmd.Updates;
 public class Updat : IDisposable
 {
     private readonly HttpClient _httpClient;
-    private readonly AsyncLogger _logger;
     private bool _disposed = false;
     private readonly Config _config;
 
@@ -75,10 +74,9 @@ public class Updat : IDisposable
     {
         _httpClient = new HttpClient
         {
-            Timeout = TimeSpan.FromSeconds(Config.Conf.UpdateConfig.UpdateTimeout)
+            Timeout = TimeSpan.FromSeconds(_config.UpdateConfig.UpdateTimeout)
         };
-        _logger = new AsyncLogger();
-        _config = Config.Conf;
+        _config = Config.Instance;
         CurrentVersion = Assembly.GetExecutingAssembly().GetName().Version ?? new Version(0, 1, 0, 99);
     }
 
@@ -104,7 +102,6 @@ public class Updat : IDisposable
         if (disposing)
         {
             _httpClient?.Dispose();
-            _logger?.Dispose();
         }
         _disposed = true;
     }
@@ -117,7 +114,7 @@ public class Updat : IDisposable
     {
         if (!_config.UpdateConfig.CheckForUpdates)
         {
-            _logger.Log(LogLevel.Info, new[] { "Console", "File" }, "Update checking is disabled in configuration.");
+            Logger.Info("Update checking is disabled in configuration.");
             return false;
         }
 
@@ -128,16 +125,16 @@ public class Updat : IDisposable
             if (LatestVersion > CurrentVersion)
             {
                 UpdateAvailable?.Invoke(this, new UpdateAvailableEventArgs(LatestVersion));
-                _logger.Log(LogLevel.Info, new[] { "Console", "File" }, $"New version available: {LatestVersion}");
+                Logger.Info($"New version available: {LatestVersion}");
                 return true;
             }
-            _logger.Log(LogLevel.Info, new[] { "Console", "File" }, "No new updates available.");
+            Logger.Info("No new updates available.");
             return false;
         }
         catch (Exception ex)
         {
             UpdateFailed?.Invoke(this, new UpdateErrorEventArgs(ex));
-            _logger.Log(LogLevel.Error, new[] { "Console", "File" }, $"Error checking for updates: {ex.Message}", ex);
+            Logger.Error($"Error checking for updates: {ex.Message}", ex);
             return false;
         }
     }
@@ -154,7 +151,7 @@ public class Updat : IDisposable
             if (!Directory.Exists(updateDir))
             {
                 Directory.CreateDirectory(updateDir);
-                _logger.Log(LogLevel.Info, new[] { "Console", "File" }, $"Directory created: {updateDir}");
+                Logger.Info($"Directory created: {updateDir}");
             }
 
             TempFilePath = Path.Combine(updateDir, _config.UpdateConfig.UpdateFileName);
@@ -180,12 +177,12 @@ public class Updat : IDisposable
             }
 
             UpdateCompleted?.Invoke(this, EventArgs.Empty);
-            _logger.Log(LogLevel.Info, new[] { "Console", "File" }, $"Update downloaded to: {TempFilePath}");
+            Logger.Info($"Update downloaded to: {TempFilePath}");
         }
         catch (Exception ex)
         {
             UpdateFailed?.Invoke(this, new UpdateErrorEventArgs(ex));
-            _logger.Log(LogLevel.Error, new[] { "Console", "File" }, $"Error downloading update: {ex.Message}", ex);
+            Logger.Error($"Error downloading update: {ex.Message}", ex);
         }
     }
 
@@ -198,7 +195,7 @@ public class Updat : IDisposable
         {
             var ex = new FileNotFoundException($"Update package not found at: {TempFilePath}");
             UpdateFailed?.Invoke(this, new UpdateErrorEventArgs(ex));
-            _logger.Log(LogLevel.Error, new[] { "Console", "File" }, ex.Message, ex);
+            Logger.Error(ex.Message, ex);
             return;
         }
 
@@ -214,14 +211,14 @@ public class Updat : IDisposable
             if (!Directory.Exists(extractDir))
             {
                 Directory.CreateDirectory(extractDir);
-                _logger.Log(LogLevel.Info, new[] { "Console", "File" }, $"Extraction directory created: {extractDir}");
+                Logger.Info($"Extraction directory created: {extractDir}");
             }
 
             // Extract the archive based on its type
             if (extension == ".zip")
             {
                 ZipFile.ExtractToDirectory(TempFilePath, extractDir, System.Text.Encoding.UTF8);
-                _logger.Log(LogLevel.Info, new[] { "Console", "File" }, $"Extracted ZIP archive to: {extractDir}");
+                Logger.Info($"Extracted ZIP archive to: {extractDir}");
             }
             else if (extension == ".rar")
             {
@@ -237,41 +234,40 @@ public class Updat : IDisposable
                         });
                     }
                 }
-                _logger.Log(LogLevel.Info, new[] { "Console", "File" }, $"Extracted RAR archive to: {extractDir}");
+                Logger.Info($"Extracted RAR archive to: {extractDir}");
             }
             else
             {
                 var ex = new NotSupportedException($"Unsupported archive format: {extension}");
                 UpdateFailed?.Invoke(this, new UpdateErrorEventArgs(ex));
-                _logger.Log(LogLevel.Error, new[] { "Console", "File" }, ex.Message, ex);
+                Logger.Error(ex.Message, ex);
                 return;
             }
 
             // Copy extracted files to the application directory, overwriting existing files
             CopyDirectory(extractDir, appDir);
-            _logger.Log(LogLevel.Info, new[] { "Console", "File" }, $"Copied extracted files to: {appDir}");
+            Logger.Info($"Copied extracted files to: {appDir}");
 
             // Clean up: Delete extracted directory and original archive
             try
             {
                 Directory.Delete(extractDir, recursive: true);
                 File.Delete(TempFilePath);
-                _logger.Log(LogLevel.Info, new[] { "Console", "File" }, $"Cleaned up: {extractDir} and {TempFilePath}");
+                Logger.Info($"Cleaned up: {extractDir} and {TempFilePath}");
             }
             catch (Exception cleanupEx)
             {
-                _logger.Log(LogLevel.Warning, new[] { "Console", "File" },
-                    $"Failed to clean up extracted files: {cleanupEx.Message}", cleanupEx);
+                Logger.Warn($"Failed to clean up extracted files: {cleanupEx.Message}");
             }
 
-            _logger.Log(LogLevel.Info, new[] { "Console", "File" }, "Update applied successfully. Exiting application.");
+            Logger.Info("Update applied successfully. Exiting application.");
             ScheduleFileReplacement(extractDir, appDir);
             Environment.Exit(0);
         }
         catch (Exception ex)
         {
             UpdateFailed?.Invoke(this, new UpdateErrorEventArgs(ex));
-            _logger.Log(LogLevel.Error, new[] { "Console", "File" }, $"Error applying update: {ex.Message}", ex);
+            Logger.Error($"Error applying update: {ex.Message}", ex);
         }
     }
 
@@ -315,13 +311,11 @@ public class Updat : IDisposable
                 try
                 {
                     file.CopyTo(destFilePath, overwrite: true);
-                    _logger.Log(LogLevel.Info, new[] { "Console", "File" },
-                        $"Copied file: {destFilePath}");
+                    Logger.Info($"Copied file: {destFilePath}");
                 }
                 catch (IOException ioEx)
                 {
-                    _logger.Log(LogLevel.Warning, new[] { "Console", "File" },
-                        $"Failed to copy file {file.FullName}: {ioEx.Message}", ioEx);
+                    Logger.Warn($"Failed to copy file {file.FullName}: {ioEx.Message}");
                     // Continue copying other files
                 }
             }

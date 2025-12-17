@@ -1,4 +1,4 @@
-// Version: 0.0.2.9
+// Version: 0.0.2.13
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -94,7 +94,7 @@ namespace Thmd.Views
                 if (System.Math.Abs(_volume - value) < 0.001) return; // <-- kluczowe!
 
                 _volume = Math.Clamp(value, 0, 100);
-                Dispatcher.Invoke(() =>
+                Dispatcher.InvokeAsync(() =>
                 {
                     if (MediaPlayer != null)
                         MediaPlayer.Volume = (int)_volume;
@@ -565,7 +565,6 @@ namespace Thmd.Views
 
         private void ProgressBarMouseMove(object sender, MouseEventArgs e)
         {
-            //if (DesignerProperties.GetIsInDesignMode(this)) return;
             if (Playlist.Current == null) return;
 
             Dispatcher.Invoke(() =>
@@ -771,11 +770,11 @@ namespace Thmd.Views
 
             _progressbar.Value = (_progressbar.Maximum * timeMs)/Playlist.Current.Duration.TotalMilliseconds;
             
-            _progressbar.ProgressText = $"{_position:hh\\:mm\\:ss} / {Playlist.Current.Duration:hh\\:mm\\:ss}";
+            _progressbar.ProgressText = $"{Playlist.Current.PositionFormatted} / {Playlist.Current.DurationFormatted}";
 
             _controlbar.MediaTitle = Playlist.Current.Name;
             _controlbar.Position = _position.ToString("hh\\:mm\\:ss");
-            _controlbar.Duration = Playlist.Current.Duration.ToString("hh\\:mm\\:ss");
+            _controlbar.Duration = Playlist.Current.DurationFormatted;
 
             _subtitle.PositionTime = _position;
         }

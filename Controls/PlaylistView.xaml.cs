@@ -1,4 +1,4 @@
-// Version: 0.1.14.23
+// Version: 0.1.14.26
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -61,7 +61,7 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
 
     private bool _isMouseSubscribed;  // Fix: Flaga dla subskrypcji eventu
 
-    private Configuration.Config _config = new Thmd.Configuration.Config();
+    private Configuration.Config _config = Config.Instance;
 
     #endregion
 
@@ -562,8 +562,8 @@ public partial class PlaylistView : ListView, INotifyPropertyChanged
         _draggedItem = null;
         _draggedIndex = -1;
 
-        Config.Conf.PlaylistConfig.Size = new Size(this.Width, this.Height);
-        Config.Conf.PlaylistConfig.MediaList = CreateMediaList();
+        _config.PlaylistConfig.Size = new Size(this.Width, this.Height);
+        _config.PlaylistConfig.MediaList = CreateMediaList();
 
         EndDrag();
     }

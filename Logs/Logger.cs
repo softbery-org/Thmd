@@ -1,447 +1,119 @@
+// Logger.cs
+// Version: 1.0.0.2
+// Prosty, thread-safe logger z obsługą poziomów logów, zapisu do pliku i opcjonalnie konsoli.
+
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Windows; // For WPF integration, e.g., MessageBox for UI alerts
-using System.Threading.Tasks; // For asynchronous logging
-using System.Windows.Threading; // For Dispatcher
+using System.Text;
 
-namespace Thmd.Logs
+using Thmd.Configuration;
+
+namespace Thmd.Logs;
+
+public static class Logger
 {
-    /// <summary>
-    /// Enum representing different levels of logging severity.
-    /// </summary>
-    public enum LogLevel
-    {
-        /// <summary>
-        /// Debug level
-        /// </summary>
-        Debug,
-        /// <summary>
-        /// Info level
-        /// </summary>
-        Info,
-        /// <summary>
-        /// Warning level
-        /// </summary>
-        Warning,
-        /// <summary>
-        /// Error level
-        /// </summary>
-        Error,
-        /// <summary>
-        /// Critical level
-        /// </summary>
-        Critical
-    }
+    private static readonly object _lock = new();
+    private static bool _isInitialized = false;
+    private static string _logFilePath = string.Empty;
+    private static LogLevel _minimumLevel = LogLevel.Info;
 
     /// <summary>
-    /// Interface defining the contract for log handlers.
-    /// Handlers implement this to process log messages.
+    /// Inicjalizuje system logowania. Wywoływać raz na starcie aplikacji.
     /// </summary>
-    public interface ILogHandler
+    public static void InitLogs()
     {
-        /// <summary>
-        /// Logs a message with the specified level and optional exception.
-        /// </summary>
-        /// <param name="level">The severity level of the log.</param>
-        /// <param name="message">The log message.</param>
-        /// <param name="ex">Optional exception associated with the log.</param>
-        void Log(LogLevel level, string message, Exception ex = null);
-    }
-
-    /// <summary>
-    /// Abstract base class for log handlers providing common functionality
-    /// such as minimum level filtering.
-    /// </summary>
-    public abstract class BaseLogHandler : ILogHandler
-    {
-        /// <summary>
-        /// Gets or sets the minimum log level this handler will process.
-        /// </summary>
-        protected LogLevel MinimumLevel { get; set; }
-
-        /// <summary>
-        /// Initializes a new instance of the BaseLogHandler class.
-        /// </summary>
-        /// <param name="minLevel">The minimum log level to handle (default: Info).</param>
-        protected BaseLogHandler(LogLevel minLevel = LogLevel.Info)
+        lock (_lock)
         {
-            MinimumLevel = minLevel;
-        }
+            if (_isInitialized)
+                return;
 
-        /// <summary>
-        /// Logs a message if the level meets or exceeds the minimum level.
-        /// </summary>
-        /// <param name="level">The severity level of the log.</param>
-        /// <param name="message">The log message.</param>
-        /// <param name="ex">Optional exception associated with the log.</param>
-        public void Log(LogLevel level, string message, Exception ex = null)
-        {
-            if (level >= MinimumLevel)
-            {
-                HandleLog(level, message, ex);
-            }
-        }
+            var config = Config.Instance;
+            
+            _minimumLevel = config.LogLevel;
 
-        /// <summary>
-        /// Abstract method to be implemented by derived handlers for actual logging logic.
-        /// </summary>
-        /// <param name="level">The severity level of the log.</param>
-        /// <param name="message">The log message.</param>
-        /// <param name="ex">Optional exception associated with the log.</param>
-        protected abstract void HandleLog(LogLevel level, string message, Exception ex = null);
-    }
+            // Tworzenie katalogu logs
+            var logsDirectory = Path.GetFullPath(config.LogsDirectoryPath);
+            if (!Directory.Exists(logsDirectory))
+                Directory.CreateDirectory(logsDirectory);
 
-    /// <summary>
-    /// Console log handler that outputs logs to the console.
-    /// </summary>
-    public class ConsoleLogHandler : BaseLogHandler
-    {
-        /// <summary>
-        /// Initializes a new instance of the ConsoleLogHandler class.
-        /// </summary>
-        /// <param name="minLevel">The minimum log level to handle (default: Info).</param>
-        public ConsoleLogHandler(LogLevel minLevel = LogLevel.Info) : base(minLevel) { }
+            // Nazwa pliku: logs/yyyy-MM-dd.log
+            var datePrefix = DateTime.Now.ToString("yyyy-MM-dd");
+            _logFilePath = Path.Combine(logsDirectory, $"{datePrefix}.log");
 
-        /// <summary>
-        /// Handles logging by writing to the console.
-        /// </summary>
-        /// <param name="level">The severity level of the log.</param>
-        /// <param name="message">The log message.</param>
-        /// <param name="ex">Optional exception associated with the log.</param>
-        protected override void HandleLog(LogLevel level, string message, Exception ex = null)
-        {
-            var logMessage = $"[{DateTime.Now}] [{level}] {message}";
-            if (ex != null)
-            {
-                logMessage += $"\n{ex}";
-            }
-            Console.WriteLine(logMessage);
+            // Nagłówek pliku logów
+            var header = $"\r\n" +
+                         $"============================================================\r\n" +
+                         $" LOG STARTED: {DateTime.Now:yyyy-MM-dd HH:mm:ss}\r\n" +
+                         $" Application version: 0.2.0.33\r\n" +
+                         $"============================================================\r\n";
+
+            File.AppendAllText(_logFilePath, header);
+
+            _isInitialized = true;
+
+            WriteLog(LogLevel.Info, "Logger initialized successfully.");
         }
     }
 
     /// <summary>
-    /// File log handler that appends logs to a specified file.
+    /// Zapisuje wiadomość do loga (jeśli poziom pozwala).
     /// </summary>
-    public class FileLogHandler : BaseLogHandler
+    public static void Log(LogLevel level, string message, params object[] args)
     {
-        private readonly string _filePath;
-        private readonly object _lock = new object();
+        if (!_isInitialized)
+            InitLogs(); // Automatyczna inicjalizacja, jeśli zapomniano
 
-        /// <summary>
-        /// Initializes a new instance of the FileLogHandler class.
-        /// </summary>
-        /// <param name="filePath">The path to the log file.</param>
-        /// <param name="minLevel">The minimum log level to handle (default: Info).</param>
-        public FileLogHandler(string filePath, LogLevel minLevel = LogLevel.Info) : base(minLevel)
-        {
-            _filePath = filePath;
-            EnsureFileExists();
-        }
+        if (level < _minimumLevel)
+            return;
 
-        /// <summary>
-        /// Ensures the log file exists and creates the directory if necessary.
-        /// </summary>
-        private void EnsureFileExists()
+        WriteLog(level, string.Format(message, args));
+    }
+
+    /// <summary>
+    /// Skróty dla poszczególnych poziomów
+    /// </summary>
+    public static void Debug(string message, params object[] args) => Log(LogLevel.Debug, message, args);
+    public static void Info(string message, params object[] args) => Log(LogLevel.Info, message, args);
+    public static void Warning(string message, params object[] args) => Log(LogLevel.Warning, message, args);
+    public static void Error(string message, params object[] args) => Log(LogLevel.Error, message, args);
+    public static void Fatal(string message, params object[] args) => Log(LogLevel.Fatal, message, args);
+
+    private static void WriteLog(LogLevel level, string message)
+    {
+        lock (_lock)
         {
-            if (!File.Exists(_filePath))
+            var timestamp = DateTime.Now.ToString("HH:mm:ss");
+            var levelStr = level.ToString().PadRight(7);
+            var threadId = AppDomain.GetCurrentThreadId().ToString().PadLeft(3);
+
+            var line = $"[{timestamp}][{levelStr}][Thread:{threadId}] {message}\r\n";
+
+            try
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(_filePath) ?? string.Empty);
-                File.Create(_filePath).Dispose();
-            }
-        }
+                File.AppendAllText(_logFilePath, line);
 
-        /// <summary>
-        /// Handles logging by appending to the file (thread-safe).
-        /// </summary>
-        /// <param name="level">The severity level of the log.</param>
-        /// <param name="message">The log message.</param>
-        /// <param name="ex">Optional exception associated with the log.</param>
-        protected override void HandleLog(LogLevel level, string message, Exception ex = null)
-        {
-            lock (_lock)
-            {
-                using (var writer = File.AppendText(_filePath))
+                // Opcjonalnie: wypisz na konsolę (pomocne przy debugowaniu)
+                if (Config.Instance.EnableConsolLogging)
                 {
-                    var logMessage = $"[{DateTime.Now}] [{level}] {message}";
-                    if (ex != null)
+                    var consoleColor = level switch
                     {
-                        logMessage += $"\n{ex}";
-                    }
-                    writer.WriteLine(logMessage);
+                        LogLevel.Debug => ConsoleColor.Gray,
+                        LogLevel.Info => ConsoleColor.White,
+                        LogLevel.Warning => ConsoleColor.Yellow,
+                        LogLevel.Error => ConsoleColor.Red,
+                        LogLevel.Fatal => ConsoleColor.DarkRed,
+                        _ => ConsoleColor.White
+                    };
+
+                    Console.ForegroundColor = consoleColor;
+                    Console.Write(line.TrimEnd());
+                    Console.ResetColor();
                 }
             }
-        }
-    }
-
-    /// <summary>
-    /// WPF UI log handler that displays logs via MessageBox for UI thread safety.
-    /// </summary>
-    public class WpfUiLogHandler : BaseLogHandler
-    {
-        /// <summary>
-        /// Initializes a new instance of the WpfUiLogHandler class.
-        /// </summary>
-        /// <param name="minLevel">The minimum log level to handle (default: Error).</param>
-        public WpfUiLogHandler(LogLevel minLevel = LogLevel.Error) : base(minLevel) { }
-
-        /// <summary>
-        /// Handles logging by showing a MessageBox on the UI thread.
-        /// </summary>
-        /// <param name="level">The severity level of the log.</param>
-        /// <param name="message">The log message.</param>
-        /// <param name="ex">Optional exception associated with the log.</param>
-        protected override void HandleLog(LogLevel level, string message, Exception ex = null)
-        {
-            Application.Current?.Dispatcher.Invoke(() =>
+            catch
             {
-                var fullMessage = $"{message}{(ex != null ? $"\n{ex.Message}\n{ex.StackTrace}" : "")}";
-                MessageBox.Show($"[{level}] {fullMessage}", "Log Message", MessageBoxButton.OK, GetMessageBoxImage(level));
-            });
-        }
-
-        /// <summary>
-        /// Gets the appropriate MessageBox image based on the log level.
-        /// </summary>
-        /// <param name="level">The log level.</param>
-        /// <returns>The corresponding MessageBoxImage.</returns>
-        private MessageBoxImage GetMessageBoxImage(LogLevel level)
-        {
-            return level switch
-            {
-                LogLevel.Warning => MessageBoxImage.Warning,
-                LogLevel.Error => MessageBoxImage.Error,
-                LogLevel.Critical => MessageBoxImage.Error,
-                _ => MessageBoxImage.Information
-            };
-        }
-    }
-
-    /// <summary>
-    /// Main singleton Logger class that manages multiple handlers and global settings.
-    /// </summary>
-    public class Logger
-    {
-        private static Logger _instance;
-        private static readonly object _instanceLock = new object();
-        private readonly List<ILogHandler> _handlers = new List<ILogHandler>();
-        private LogLevel _globalMinLevel = LogLevel.Info;
-
-        private Logger() { }
-
-        /// <summary>
-        /// Gets the singleton instance of the Logger.
-        /// </summary>
-        public static Logger Instance
-        {
-            get
-            {
-                lock (_instanceLock)
-                {
-                    return _instance ??= new Logger();
-                }
+                // Nie rzucamy wyjątków z loggera – to mogłoby zabić aplikację
             }
         }
-
-        /// <summary>
-        /// Adds a log handler to the list of active handlers.
-        /// </summary>
-        /// <param name="handler">The ILogHandler to add.</param>
-        public void AddHandler(ILogHandler handler)
-        {
-            _handlers.Add(handler);
-        }
-
-        /// <summary>
-        /// Sets the global minimum log level for all handlers.
-        /// </summary>
-        /// <param name="level">The new global minimum level.</param>
-        public void SetGlobalMinLevel(LogLevel level)
-        {
-            _globalMinLevel = level;
-        }
-
-        /// <summary>
-        /// Logs a message synchronously (without exception).
-        /// </summary>
-        /// <param name="level">The severity level of the log.</param>
-        /// <param name="message">The log message.</param>
-        public void Log(LogLevel level, string message)
-        {
-            Log(level, message, null);
-        }
-
-        /// <summary>
-        /// Logs a message synchronously with optional exception.
-        /// </summary>
-        /// <param name="level">The severity level of the log.</param>
-        /// <param name="message">The log message.</param>
-        /// <param name="ex">Optional exception associated with the log.</param>
-        public void Log(LogLevel level, string message, Exception ex)
-        {
-            if (level < _globalMinLevel) return;
-
-            foreach (var handler in _handlers)
-            {
-                handler.Log(level, message, ex);
-            }
-        }
-
-        /// <summary>
-        /// Logs a message asynchronously (without exception).
-        /// </summary>
-        /// <param name="level">The severity level of the log.</param>
-        /// <param name="message">The log message.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task LogAsync(LogLevel level, string message)
-        {
-            await LogAsync(level, message, null);
-        }
-
-        /// <summary>
-        /// Logs a message asynchronously with optional exception.
-        /// </summary>
-        /// <param name="level">The severity level of the log.</param>
-        /// <param name="message">The log message.</param>
-        /// <param name="ex">Optional exception associated with the log.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task LogAsync(LogLevel level, string message, Exception ex)
-        {
-            if (level < _globalMinLevel) return;
-
-            await Task.Run(() => Log(level, message, ex));
-        }
-
-        // Convenience methods (sync)
-        /// <summary>
-        /// Logs a debug message synchronously (without exception).
-        /// </summary>
-        /// <param name="message">The log message.</param>
-        public void Debug(string message) => Log(LogLevel.Debug, message);
-        /// <summary>
-        /// Logs a debug message synchronously with exception.
-        /// </summary>
-        /// <param name="message">The log message.</param>
-        /// <param name="ex">The exception.</param>
-        public void Debug(string message, Exception ex) => Log(LogLevel.Debug, message, ex);
-        /// <summary>
-        /// Logs an info message synchronously (without exception).
-        /// </summary>
-        /// <param name="message">The log message.</param>
-        public void Info(string message) => Log(LogLevel.Info, message);
-        /// <summary>
-        /// Logs an info message synchronously with exception.
-        /// </summary>
-        /// <param name="message">The log message.</param>
-        /// <param name="ex">The exception.</param>
-        public void Info(string message, Exception ex) => Log(LogLevel.Info, message, ex);
-        /// <summary>
-        /// Logs a warning message synchronously (without exception).
-        /// </summary>
-        /// <param name="message">The log message.</param>
-        public void Warn(string message) => Log(LogLevel.Warning, message);
-        /// <summary>
-        /// Logs a warning message synchronously with exception.
-        /// </summary>
-        /// <param name="message">The log message.</param>
-        /// <param name="ex">The exception.</param>
-        public void Warn(string message, Exception ex) => Log(LogLevel.Warning, message, ex);
-        /// <summary>
-        /// Logs an error message synchronously (without exception).
-        /// </summary>
-        /// <param name="message">The log message.</param>
-        public void Error(string message) => Log(LogLevel.Error, message);
-        /// <summary>
-        /// Logs an error message synchronously with exception.
-        /// </summary>
-        /// <param name="message">The log message.</param>
-        /// <param name="ex">The exception.</param>
-        public void Error(string message, Exception ex) => Log(LogLevel.Error, message, ex);
-        /// <summary>
-        /// Logs a critical message synchronously (without exception).
-        /// </summary>
-        /// <param name="message">The log message.</param>
-        public void Critical(string message) => Log(LogLevel.Critical, message);
-        /// <summary>
-        /// Logs a critical message synchronously with exception.
-        /// </summary>
-        /// <param name="message">The log message.</param>
-        /// <param name="ex">The exception.</param>
-        public void Critical(string message, Exception ex) => Log(LogLevel.Critical, message, ex);
-
-        // Simplified async convenience methods
-        /// <summary>
-        /// Logs a debug message asynchronously (without exception).
-        /// </summary>
-        /// <param name="message">The log message.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task DebugAsync(string message) => await LogAsync(LogLevel.Debug, message);
-        /// <summary>
-        /// Logs a debug message asynchronously with exception.
-        /// </summary>
-        /// <param name="message">The log message.</param>
-        /// <param name="ex">The exception.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task DebugAsync(string message, Exception ex) => await LogAsync(LogLevel.Debug, message, ex);
-        /// <summary>
-        /// Logs an info message asynchronously (without exception).
-        /// </summary>
-        /// <param name="message">The log message.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task InfoAsync(string message) => await LogAsync(LogLevel.Info, message);
-        /// <summary>
-        /// Logs an info message asynchronously with exception.
-        /// </summary>
-        /// <param name="message">The log message.</param>
-        /// <param name="ex">The exception.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task InfoAsync(string message, Exception ex) => await LogAsync(LogLevel.Info, message, ex);
-        /// <summary>
-        /// Logs a warning message asynchronously (without exception).
-        /// </summary>
-        /// <param name="message">The log message.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task WarnAsync(string message) => await LogAsync(LogLevel.Warning, message);
-        /// <summary>
-        /// Logs a warning message asynchronously with exception.
-        /// </summary>
-        /// <param name="message">The log message.</param>
-        /// <param name="ex">The exception.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task WarnAsync(string message, Exception ex) => await LogAsync(LogLevel.Warning, message, ex);
-        /// <summary>
-        /// Logs an error message asynchronously (without exception).
-        /// </summary>
-        /// <param name="message">The log message.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task ErrorAsync(string message) => await LogAsync(LogLevel.Error, message);
-        /// <summary>
-        /// Logs an error message asynchronously with exception.
-        /// </summary>
-        /// <param name="message">The log message.</param>
-        /// <param name="ex">The exception.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task ErrorAsync(string message, Exception ex) => await LogAsync(LogLevel.Error, message, ex);
-        /// <summary>
-        /// Logs a critical message asynchronously (without exception).
-        /// </summary>
-        /// <param name="message">The log message.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task CriticalAsync(string message) => await LogAsync(LogLevel.Critical, message);
-        /// <summary>
-        /// Logs a critical message asynchronously with exception.
-        /// </summary>
-        /// <param name="message">The log message.</param>
-        /// <param name="ex">The exception.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task CriticalAsync(string message, Exception ex) => await LogAsync(LogLevel.Critical, message, ex);
     }
-
-    // Example usage in a WPF application
-    // In App.xaml.cs or MainWindow.xaml.cs:
-    // Logger.Conf.AddHandler(new ConsoleLogHandler());
-    // Logger.Conf.AddHandler(new FileLogHandler("app.log"));
-    // Logger.Conf.AddHandler(new WpfUiLogHandler(LogLevel.Critical));
-    // await Logger.Conf.InfoAsync("Application started.");
 }
-// Version: 0.1.0.31

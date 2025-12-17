@@ -1,4 +1,4 @@
-// Version: 2.0.0.26
+// Version: 2.0.0.28
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -28,6 +28,7 @@ namespace Thmd.Controls;
 /// </summary>
 public partial class Playlist : ListView, INotifyPropertyChanged
 {
+    private IPlaylistConfig _config = Config.Instance.PlaylistConfig;
     private dynamic _player;
     private readonly ObservableCollection<VideoItem> _videos = new();
     private int _currentIndex = -1;
@@ -373,8 +374,8 @@ public partial class Playlist : ListView, INotifyPropertyChanged
         _draggedItem = null;
         _draggedIndex = -1;
 
-        Config.Conf.PlaylistConfig.Size = new Size(this.Width, this.Height);
-        Config.Conf.PlaylistConfig.MediaList = CreateMediaList();
+        _config.Size = new Size(this.Width, this.Height);
+        _config.MediaList = CreateMediaList();
 
         EndDrag();
     }
